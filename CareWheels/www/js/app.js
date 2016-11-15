@@ -16,7 +16,7 @@ angular.module('careWheels', [
 
 
 //contant definition for endpoint base url
-.constant('BASE_URL', 'https://carewheels.cecs.pdx.edu:8443')
+.constant('BASE_URL', 'https://CareBank.CareWheels.org:8443')
 
 // change the version number here
 .constant('VERSION_NUMBER', '1.00')
