@@ -1,3 +1,13 @@
+// 
+// CareWheels Corporation 2016
+// Filename: sensorDataDownload.js
+// Description: CareBank app calls the CareBank Server to download the sensor data to refresh user screen
+//
+// Author: Capstone students PSU Aug 2016
+// Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
+//
+//
+
 angular.module('careWheels')
   .factory('Download', function ($http, $httpParamSerializerJQLike, WorkerService, GroupInfo, User, notifications) {
     var DownloadService = {};
@@ -56,7 +66,8 @@ angular.module('careWheels')
 
 
         //http request to carebank /getfeeds/ endpoint
-        var dataUrl = "https://carewheels.cecs.pdx.edu:8443/analysis.php";//get page of nodes for this user
+		var dataUrl = "https://CareBank.CareWheels.org:8443/analysis.php";//get page of nodes for this user ABCMods
+        //var dataUrl = "https://10.0.0.229:8443/analysis.php";//get page of nodes for this user ABCMods
         return $http({
           url: dataUrl,
           method: 'POST',

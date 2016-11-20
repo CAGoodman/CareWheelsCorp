@@ -1,3 +1,13 @@
+// 
+// CareWheels Corporation 2016
+// Filename: app.js
+// Description: The basic API's are initialized here so that all of them have a direct access to CareBank server
+//
+// Author: Capstone students PSU Aug 2016
+// Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
+//
+//
+
 // Ionic Starter App
 
 
@@ -16,7 +26,8 @@ angular.module('careWheels', [
 
 
 //contant definition for endpoint base url
-.constant('BASE_URL', 'https://CareBank.CareWheels.org:8443')
+.constant('BASE_URL', 'https://CareBank.CareWheels.org:8443')	// ABCMods
+//.constant('BASE_URL', 'https://10.0.0.229:8443')	// ABCMods
 
 // change the version number here
 .constant('VERSION_NUMBER', '1.00')
