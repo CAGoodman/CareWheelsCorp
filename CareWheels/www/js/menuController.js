@@ -1,3 +1,12 @@
+// 
+// CareWheels Corporation 2016
+// Filename: menucontroller.js
+// Description: When the menu items are clicked the control comes here
+//
+// Authors: Capstone students PSU Aug 2016
+// Revision: Added a nedw menu item called Development - AV 11/28/16
+//
+//
 angular.module('careWheels')
 
 .controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, VERSION_NUMBER) {
@@ -85,6 +94,10 @@ angular.module('careWheels')
             openCyclos();
     };
 
+	$scope.clickOptions = function () {
+		$state.go('app.options');				// ABC mods. Introducing a new menu item Options during Devrlopmental phase
+    };
+	
     var openSense = function () {
         document.addEventListener("deviceready",
             startApp.set({

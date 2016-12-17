@@ -3,7 +3,7 @@
 // Filename: app.js
 // Description: The basic API's are initialized here so that all of them have a direct access to CareBank server
 //
-// Author: Capstone students PSU Aug 2016
+// Authors: Capstone students PSU Aug 2016
 // Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
 //
 //
@@ -26,8 +26,8 @@ angular.module('careWheels', [
 
 
 //contant definition for endpoint base url
-.constant('BASE_URL', 'https://CareBank.CareWheels.org:8443')	// ABCMods
-//.constant('BASE_URL', 'https://10.0.0.229:8443')	// ABCMods
+.constant('BASE_URL', 'https://CareBank.CareWheels.org:8443')	// ABCMods for final release
+//.constant('BASE_URL', 'https://10.0.0.229:8443')				// ABCMods for local server usage during development
 
 // change the version number here
 .constant('VERSION_NUMBER', '1.00')
@@ -36,6 +36,7 @@ angular.module('careWheels', [
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
     console.log('state change');
+    
     if (User.credentials() === null) {
       if (next.name !== 'login') {
         event.preventDefault();
@@ -72,7 +73,8 @@ angular.module('careWheels', [
     groupMemberInfo: BASE_URL + '/groupmemberinfo.php',
     updateLastOwnership: BASE_URL + '/updatelastownershiptakentime.php',
     creditUser: BASE_URL + '/credituser.php',
-    updateSettings:BASE_URL + '/updatesettings.php'
+    updateSettings:BASE_URL + '/updatesettings.php',
+	refreshScreen:BASE_URL + '/refreshScreen.php'
   };
   return api;
 });

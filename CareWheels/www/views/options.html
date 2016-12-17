@@ -1,0 +1,26 @@
+<!-- 
+CareWheels Corporation 2016
+Filename: options.html
+Description: This creates the screen for options
+
+Authors: Ananda Vardhana  11/28/16
+-->
+
+<ion-view view-title="app.options">
+  <ion-nav-title>Options</ion-nav-title>
+  <!-- user group block: holds the -->
+  <ion-content>
+
+    <ion-list>
+
+      <ion-item>
+              <div class="item item-light miniCardHeader center">
+                <ion-toggle ng-model="value" ng-checked="value" ng-change="ScreenRefresh()" toggle-class="toggle toggle-balanced  onOffToggle">Screen Refresh</ion-toggle>
+              </div>
+      </ion-item>
+
+    </ion-list>
+
+  </ion-content>
+
+</ion-view>	

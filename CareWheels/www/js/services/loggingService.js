@@ -3,7 +3,7 @@
 // Filename: loggingService.js
 // Description: CareBank app calls this to log into the CareBank Server
 //
-// Author: Capstone students PSU Aug 2016
+// Authors: Capstone students PSU Aug 2016
 // Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
 //
 // 
@@ -65,8 +65,10 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       var pp = this;
 
       // var uri = encodeURI(BASE_URL + "/logupload.php");
-       var uri = encodeURI("http://CareBank.CareWheels.org:8080/logupload.php");		//ABCmods
-	  //var uri = encodeURI("http://10.0.0.229:8080/logupload.php");		//ABCmods
+      var uri = encodeURI("http://CareBank.CareWheels.org:8080/logupload.php");			//ABCmods for final release
+	  //var uri = encodeURI("http://10.0.0.229:8080/logupload.php");					//ABCmods for local server usage during development
+      // var uri = encodeURI("https://carewheels.cecs.pdx.edu:8443/logupload.php");
+
       $fileLogger.checkFile().then(function (d) {
         var cpp = pp;
 

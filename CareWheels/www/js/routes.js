@@ -1,3 +1,12 @@
+// 
+// CareWheels Corporation 2016
+// Filename: routes.js
+// Description: This routes the Clickable menu to a new HTML page 
+//
+// Authors: Capstone students PSU Aug 2016
+// Revision: Added Options menu item  - AV 11/28/16
+//
+//
 angular.module('careWheels')
 
   .config(function ($stateProvider, $urlRouterProvider) {
@@ -56,8 +65,16 @@ angular.module('careWheels')
             controller: 'settingsController'
           }
         }
+      })
+      .state('app.options', {							// ABCMods for adding a new menu item options
+        url: '/options',
+        views: {
+          'menuContent': {
+            templateUrl: 'views/options.html',
+            controller: 'optionsController'
+          }
+        }
       });
-
       $urlRouterProvider.otherwise(function ($injector, $location) {
         var $state = $injector.get("$state");
         $state.go("app.groupStatus");

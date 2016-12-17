@@ -3,7 +3,7 @@
 // Filename: userService.js
 // Description: This handles all transactions related to Logging in, vacation mode, getting GroupInfo
 //
-// Author: Capstone students PSU Aug 2016
+// Authors: Capstone students PSU Aug 2016
 // Revision: Added a switch statement and cleaned up the tabs increasing readability - AV 11/19/16
 //
 //
@@ -165,6 +165,16 @@ angular.module('careWheels')
 			return false;
 		})
 	};	// userService.setOnVacation
+	
+/*
+    userService.RefreshScreen = function (uname, passwd) {
+		//var creds = userService.credentials();
+		//var currentUserObject = GroupInfo.getMember(creds.username);
+		// console.log("currentUserobject is: " + currentUserObject);
+		//Download.DownloadData(function(){
+		return false;
+    }; // userService.Refresh
+	*/
 	return userService;
 }); // factory
 

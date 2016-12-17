@@ -8,14 +8,19 @@ echo It is recommended to run ionic reset once every 10 builds
 echo This builds apk for ARMv7 processors only
 IF "%1"=="-?" goto HELP 
 IF "%1"=="-r" goto RESET
+IF "%1"=="-a" goto ADD_PLATFORM
 goto CONTINUE
 :RESET
 echo Please note the folder platform will be deleted and recreated so ensure that the folder is not being used
 pause
 ionic state reset
 goto END
+:ADD_PLATFORM
+cordova platform add android
+goto END
 :CONTINUE
 start cordova build --release android
+REM At this point we get the file platforms\android\build\outputs\apk\android-release-unsigned.apk
 echo Did it build successfully?
 set /p ans=Enter y or n:
 IF "%ans%"=="y" goto CHECK_KEY
@@ -43,7 +48,7 @@ REM Here we get the Date Stamp
 set DS=%day-num%%mo-name%%year-num%
 
 REM Let us get the saved keystore file name
-
+set CareBank_Saved_key=""
 dir /B *.*keystore > KeyFileName.txt
 set /a N=0
 for /f "tokens=* delims= " %%a in (KeyFileName.txt) do (
@@ -62,37 +67,41 @@ cd platforms\android\build\outputs\apk
 
 REM During devleopemnt we build many times and it is possible the old APK is still there so need to delete it
 del CareBank-armv7-%DS%-release-unsigned.apk >nul 2>&1
-ren android-armv7-release-unsigned.apk CareBank-armv7-%DS%-release-unsigned.apk
-echo Do you want to create a new key?
+if %CareBank_Saved_key%=="" goto CREATE_KEY
+echo We have found a saved key %CareBank_Saved_key%
+echo Do you want to use the old key? If you say no then we will create a new key
 set /p ans=Enter y or n:
-IF "%ans%"=="y" goto CREATE_KEY
+IF "%ans%"=="n" goto CREATE_KEY
 goto SIGNIT
 
 :CREATE_KEY
 REM Delete old key and create a new key
 del *.keystore >nul 2>&1
-echo It is going to ask you for a password: ZXCV(9vcxz
+echo It is going to ask you for a password: ZXCV\(9vcxz
 keytool -genkey -v -keystore CareBank_%DS%_key.keystore -alias CareBank_key_alias -keyalg RSA -keysize 2048 -validity 10000
 REM Delte the old saved key and copy new key for subsequent use
 del ..\..\..\..\..\*.key >nul 2>&1
 move CareBank_%DS%_key.keystore ..\..\..\..\..\ >nul 2>&1
 REM We will keep the alias as same and not date stamp it
 echo It is going to ask you for a password: ZXCV(9vcxz
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore CareBank_%DS%_key.keystore CareBank-armv7-%DS%-release-unsigned.apk CareBank_key_alias
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore CareBank_%DS%_key.keystore android-armv7-release-unsigned.apk CareBank_key_alias
 goto ALIGNIT
 
 :SIGNIT
 echo It is going to ask you for a password: ZXCV(9vcxz
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% CareBank-armv7-%DS%-release-unsigned.apk CareBank_key_alias
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% android-armv7-release-unsigned.apk CareBank_key_alias
 
 :ALIGNIT
 del CareBank-armv7-%DS%.apk >nul 2>&1
-zipalign -v 4 CareBank-armv7-%DS%-release-unsigned.apk CareBank-armv7-%DS%.apk
+zipalign -v 4 android-armv7-release-unsigned.apk CareBank-armv7-%DS%.apk
 goto END
 
 :HELP
 echo BuildApk       will not do ionic rest, will not add the platform but just do the full build
-echo BuildApk -r    will reset the ionic state, add the platform and exit will not do the build
+echo BuildApk -r    will reset the ionic state, and exit will not do the build
+echo BuildApk -a    will add the platform and exit will not do the build
 echo Note: First time use -r later on just use BuildApk
 echo Set this folder C:\Program Files\Java\jdk1.8.0_102\bin into the path.
 echo Please refer to CBA_DbgDev.docx, Build_Release_Apk.docx and GitHub_Repo_Operation.docx for more details
