@@ -1,12 +1,12 @@
-// 
-// CareWheels Corporation 2016
-// Filename: routes.js
-// Description: This routes the Clickable menu to a new HTML page 
-//
-// Authors: Capstone students PSU Aug 2016
-// Revision: Added Options menu item  - AV 11/28/16
-//
-//
+/*++ 
+ CareWheels Corporation 2016
+ Filename: routes.js
+ Description: This routes the Clickable menu to a new HTML page 
+
+ Authors: Capstone students PSU Aug 2016
+ Revision: Added Options menu item  - AV 11/28/2016
+
+--*/
 angular.module('careWheels')
 
   .config(function ($stateProvider, $urlRouterProvider) {

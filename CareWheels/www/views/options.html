@@ -15,7 +15,8 @@ Authors: Ananda Vardhana  11/28/16
 
       <ion-item>
               <div class="item item-light miniCardHeader center">
-                <ion-toggle ng-model="value" ng-checked="value" ng-change="ScreenRefresh()" toggle-class="toggle toggle-balanced  onOffToggle">Screen Refresh</ion-toggle>
+                <ion-toggle ng-model="value" ng-checked="value" ng-change="ScreenRefresh()" toggle-class=("toggle", "toggle-balanced", "onOffToggle")>
+                Screen Refresh</ion-toggle>
               </div>
       </ion-item>
 

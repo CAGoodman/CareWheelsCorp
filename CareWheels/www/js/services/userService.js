@@ -1,12 +1,12 @@
-// 
-// CareWheels Corporation 2016
-// Filename: userService.js
-// Description: This handles all transactions related to Logging in, vacation mode, getting GroupInfo
-//
-// Authors: Capstone students PSU Aug 2016
-// Revision: Added a switch statement and cleaned up the tabs increasing readability - AV 11/19/16
-//
-//
+/*++ 
+ CareWheels Corporation 2016
+ Filename: userService.js
+ Description: This handles all transactions related to Logging in, vacation mode, getting GroupInfo
+
+ Authors: Capstone students PSU Aug 2016
+ Revision: Added a switch statement and cleaned up the tabs increasing readability - AV 11/19/16
+
+--*/
 
 angular.module('careWheels')
 // User factory

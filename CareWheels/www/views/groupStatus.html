@@ -1,50 +1,65 @@
+<!-- 
+CareWheels Corporation 2016
+Filename: groupStatus.html
+Description: This creates the main group screen
+
+Authors: Capstone students PSU Aug 2016
+Revision: Enabled center user, made it clickable, appropriatley tabbed it - AV 12/18/2016
+Notes for the unintiated:
+The browser calls the index.html first and that loads this file.
+-->
 <ion-view view-title="app.groupStatus">
-  <ion-nav-title>CareWheels Group</ion-nav-title>
-  <!-- user group block: holds the -->
-  <ion-content>
+	<ion-nav-title>CareWheels Group</ion-nav-title>
+	<!-- user group block: holds the -->
+	<ion-content>
 
-    <ion-list>
-      <ion-item>
-        <ul id="userGroup">
-          <li class="userSquare topLeft" ng-click="clickTopLeft()">
-            <div id="topLeftAlert" class="alertOverlay"
-                 ng-class="group[1].status"></div>
-            <img class=" userImage topLeft" ng-src="{{group[1].image}}">
-          </li>
-          <li class="userSquare topRight" ng-click="clickTopRight()">
-            <div id="topRightAlert" class="alertOverlay"
-                 ng-class="group[2].status"></div>
-            <img class="userImage topRight" ng-src="{{group[2].image}}">
-          </li>
-          <li class="userSquare bottomLeft" ng-click="clickBottomLeft()">
-            <div id="bottomLeftAlert" class="alertOverlay"
-                 ng-class="group[3].status"></div>
-            <img class="userImage bottomLeft" ng-src="{{group[3].image}}">
-          </li>
-          <li class="userSquare bottomRight" ng-click="clickBottomRight()">
-            <div id="bottomRightAlert" class="alertOverlay"
-                 ng-class="group[4].status"></div>
-            <img class="userImage bottomRight" ng-src="{{group[4].image}}">
-          </li>
-          <img class="userImage centerUser" ng-src="{{group[0].image}}">
-        </ul>
-      </ion-item>
-      <ion-item>
-        <div id="careBankBlock" class="card" ng-click="clickCareBank()">
-          <div id="careBankHeader" class="item item-stable">CareBank</div>
-          <div id="careBankData" class="">
-            <div class="careBankDetail careBankBalance">
-              <div class="miniCardHeader center">
-                Balance: <b>{{group[0].balance}}</b>
-              </div>
-            </div>
-          </div>
-        </div>
+		<ion-list>
+			<ion-item>
+				<ul id="userGroup">
+					<li class="userSquare topLeft" ng-click="clickTopLeft()">
+						<div id="topLeftAlert" class="alertOverlay"
+							ng-class="group[1].status"></div>
+						<img class="userImage topLeft" ng-src="{{group[1].image}}">
+					</li>
+					<li class="userSquare topRight" ng-click="clickTopRight()">
+						<div id="topRightAlert" class="alertOverlay"
+							ng-class="group[2].status"></div>
+						<img class="userImage topRight" ng-src="{{group[2].image}}">
+					</li>
+					<li class="userSquare bottomLeft" ng-click="clickBottomLeft()">
+						<div id="bottomLeftAlert" class="alertOverlay"
+							ng-class="group[3].status"></div>
+						<img class="userImage bottomLeft" ng-src="{{group[3].image}}">
+					</li>
+					<li class="userSquare bottomRight" ng-click="clickBottomRight()">
+						<div id="bottomRightAlert" class="alertOverlay"
+							ng-class="group[4].status"></div>
+						<img class="userImage bottomRight" ng-src="{{group[4].image}}">
+					</li>
+					<li class="userSquare centerUser" ng-click="clickCenter()">
+						<div id="centerAlert" class="alertOverlay"
+							ng-class="group[0].status"></div>
+						<img class="userImage center" ng-src="{{group[0].image}}">
+					</li>
+				
+				</ul>
+			</ion-item>
+			<ion-item>
+				<div id="careBankBlock" class="card" ng-click="clickCareBank()">
+					<div id="careBankHeader" class="item item-stable">CareBank</div>
+					<div id="careBankData" class="">
+						<div class="careBankDetail careBankBalance">
+							<div class="miniCardHeader center">
+								Balance: <b>{{group[0].balance}}</b>
+							</div>
+						</div>
+					</div>
+				</div>
 
-      </ion-item>
-    </ion-list>
-    <div id="vacationMode" class="bar bar-footer bar-assertive">
-      <div class="title">Vacation Mode Enabled</div>
-    </div>
-  </ion-content>
+			</ion-item>
+		</ion-list>
+		<div id="vacationMode" class="bar bar-footer bar-assertive">
+			<div class="title">Vacation Mode Enabled</div>
+		</div>
+	</ion-content>
 </ion-view>

@@ -1,12 +1,12 @@
-// 
-// CareWheels Corporation 2016
-// Filename: loggingService.js
-// Description: CareBank app calls this to log into the CareBank Server
-//
-// Authors: Capstone students PSU Aug 2016
-// Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
-//
-// 
+/*++
+ CareWheels Corporation 2016
+ Filename: loggingService.js
+ Description: CareBank app calls this to log into the CareBank Server
+
+ Authors: Capstone students PSU Aug 2016
+ Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
+
+--*/
 
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
   .service('fileloggerService', function (BASE_URL, $fileLogger, $filter, $ionicPlatform, $cordovaFile, $cordovaFileTransfer) {
