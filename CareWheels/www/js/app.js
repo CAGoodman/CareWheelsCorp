@@ -1,19 +1,18 @@
-// 
-// CareWheels Corporation 2016
-// Filename: app.js
-// Description: The basic API's are initialized here so that all of them have a direct access to CareBank server
-//
-// Authors: Capstone students PSU Aug 2016
-// Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
-//
-//
+/* eslint-env angular */
+/*++
+ CareWheels Corporation 2016
+ Filename: app.js
+ Description: The basic API's are initialized here so that all of them have a direct access to CareBank server
 
-// Ionic Starter App
+ Authors: Capstone students PSU Aug 2016
+ Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
 
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
+ Ionic Starter App
+ angular.module is a global place for creating, registering and retrieving Angular modules
+ 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
+ the 2nd parameter is an array of 'requires'
+--*/
 
 angular.module('careWheels', [
   'ionic',
@@ -21,7 +20,8 @@ angular.module('careWheels', [
   'ngCordova',
   'FredrikSandell.worker-pool',
   'angularMoment',
-  'careWheels.fileloggermodule'
+  'careWheels.fileloggermodule',
+  'app.constants'
 ])
 
 
@@ -36,7 +36,7 @@ angular.module('careWheels', [
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
     console.log('state change');
-    
+
     if (User.credentials() === null) {
       if (next.name !== 'login') {
         event.preventDefault();

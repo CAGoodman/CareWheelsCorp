@@ -1,15 +1,22 @@
-@echo off
+@echo off & setlocal enableextensions
 REM Batch file building a releasable APK for ARMv7
 REM CareWheels Corporation 2016
 REM Author: Ananda Vardhana Nov 22, 2016
-
 echo MAKE SURE YOU ARE AT THE HOME DIRECTORY EX: ....\CareWheelsCorp\CareWheels
 echo It is recommended to run ionic reset once every 10 builds
 echo This builds apk for ARMv7 processors only
-IF "%1"=="-?" goto HELP 
+
+IF "%1"=="-?" goto HELP
+IF "%1"=="-p" goto PROPERTY
 IF "%1"=="-r" goto RESET
 IF "%1"=="-a" goto ADD_PLATFORM
+IF "%1"=="-v" goto RESET_VERSION
+IF "%1"=="-maj" goto RESET_MAJOR_VERSION
+IF "%1"=="-min" goto RESET_MINOR_VERSION
 goto CONTINUE
+:PROPERTY
+gulp getProperty
+goto END
 :RESET
 echo Please note the folder platform will be deleted and recreated so ensure that the folder is not being used
 pause
@@ -17,6 +24,16 @@ ionic state reset
 goto END
 :ADD_PLATFORM
 cordova platform add android
+goto END
+:RESET_VERSION
+IF "%2"=="" goto VER_ERR
+gulp resetVersion --version "%2"
+goto END
+:RESET_MAJOR_VERSION
+gulp bumpMajor
+goto END
+:RESET_MINOR_VERSION
+gulp bumpMinor
 goto END
 :CONTINUE
 start cordova build --release android
@@ -46,6 +63,7 @@ set day-num=%date:~7,2%
 set year-num=%date:~12,8%
 REM Here we get the Date Stamp
 set DS=%day-num%%mo-name%%year-num%
+start gulp bumpApk --apk "CareBank-armv7-%DS%.apk"
 
 REM Let us get the saved keystore file name
 set CareBank_Saved_key=""
@@ -53,13 +71,13 @@ dir /B *.*keystore > KeyFileName.txt
 set /a N=0
 for /f "tokens=* delims= " %%a in (KeyFileName.txt) do (
 set /a N+=1
-set v[!N!]=%%a 
+set v[!N!]=%%a
 )
 
 del KeyFileName.txt >nul 2>&1
 
 REM If the keystore file is not there then CareBank_Saved_key will be empty
-REM if there are more then one keystore file we will get the alphabetically the last one. 
+REM if there are more then one keystore file we will get the alphabetically the last one.
 REM It is users responsibility to have a single file there
 set CareBank_Saved_key=%v[!N!]%
 
@@ -96,13 +114,30 @@ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\
 :ALIGNIT
 del CareBank-armv7-%DS%.apk >nul 2>&1
 zipalign -v 4 android-armv7-release-unsigned.apk CareBank-armv7-%DS%.apk
+
+start gulp bumpAll
 goto END
 
 :HELP
-echo BuildApk       will not do ionic rest, will not add the platform but just do the full build
-echo BuildApk -r    will reset the ionic state, and exit will not do the build
-echo BuildApk -a    will add the platform and exit will not do the build
-echo Note: First time use -r later on just use BuildApk
+echo Description: On a clean gitHub repo download do the following operation:
+echo BuildApk -a; BuildApk -r; Then if you want to mess with versions BuildApk -v or -maj or -min.
+echo When all of the above are done then do just BuildApk.
+echo Details:
+echo BuildApk       will not do ionic rest, will not add the platform but just do the full build.
+echo BuildApk -r    will reset the ionic state, and exit will not do the build.
+echo BuildApk -a    will add the platform and exit will not do the build.
+echo Version is shown as Major.Minor.Patch. Ex: 2.4.5. Version can be totally reset or bump either
+echo Major or Minor part.
+echo Version bumping is optional by default the patch number is bumped.
+echo BuildApk -v <Version Number>   will reset the full version number.
+echo BuildApk -maj  will bump the major part of the version.
+echo BuildApk -min  will bump the minor part of the version.
+echo BuildApk -p  will get the full property of the APK.
+echo Note: First time use -r later on just use BuildApk.
 echo Set this folder C:\Program Files\Java\jdk1.8.0_102\bin into the path.
-echo Please refer to CBA_DbgDev.docx, Build_Release_Apk.docx and GitHub_Repo_Operation.docx for more details
+echo Please refer to CBA_DbgDev.docx, Build_Release_Apk.docx and
+echo GitHub_Repo_Operation.docx for more details.
+goto END
+:VER_ERR
+echo Usage: BuildApk -v "Version to reset"
 :END

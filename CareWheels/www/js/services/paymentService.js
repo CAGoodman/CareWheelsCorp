@@ -59,7 +59,7 @@ angular.module('careWheels')
   };
 
   //creates IndividualStatus Sensor View transaction; alertLevel is status of the user that is being viewed
-  PaymentService.sensorDataView = function(creditsAsFloat, alertlevelAsString) {
+  PaymentService.sensorDataView = function(creditsAsFloat, alertlevelAsString/* targetUser*/) {
     var myUser = User.credentials();
     if (myUser != undefined) {
       var status = null;
@@ -77,6 +77,7 @@ angular.module('careWheels')
           callpayment: 'False',
           sensordataviewpayment: 'True',
           membersummarypayment: 'False'
+          //sensorDataViwed: <targetUser>
         }),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP

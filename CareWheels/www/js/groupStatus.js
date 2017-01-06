@@ -156,14 +156,15 @@ function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentServic
 
 		// next lets set the data for the user that logged in,
 		// this is reserved at index zero.
+		//TODO VIKAS duplicate, should be handled inside for loop
 		$scope.group[currentUser].image = groupArray[loggedInUserIndex].photoUrl;
 		$scope.group[currentUser].username = groupArray[loggedInUserIndex].username;
 		$scope.group[currentUser].name = groupArray[loggedInUserIndex].name;
 		$scope.group[currentUser].balance = trimZeros(groupArray[loggedInUserIndex].balance);
+		$scope.group[currentUser].vacationMode = groupArray[loggedInUserIndex].analysisData.vacationMode;
 		//$scope.group[currentUser].onVacation = User.getVacationValue();
 
 		currentUser++; // = 1 at this point
-
 		// put everyone else into the array
 		for (var i = 0; i < 5; i++) {
 			// skip the user who logged in
@@ -171,6 +172,7 @@ function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentServic
 				$scope.group[currentUser].image = groupArray[i].photoUrl;
 				$scope.group[currentUser].username = groupArray[i].username;
 				$scope.group[currentUser].name = groupArray[i].name;
+				$scope.group[currentUser].vacationMode = groupArray[i].analysisData.vacationMode;
 
 				try {
 					fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
@@ -199,7 +201,7 @@ function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentServic
     }
 
     function clickUser(index) {
-		if (!$scope.group[index].error) {
+		if (!$scope.group[index].error && !$scope.group[index].vacationMode) {
 			PaymentService.sensorDataView(0.1, $scope.group[index].alertLevelColor);
 			$scope.group[0].userSelected = $scope.group[index].name;
 			GroupInfo.setSelectedMemberIndex($scope.group[index].username);

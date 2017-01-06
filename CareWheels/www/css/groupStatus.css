@@ -78,10 +78,31 @@ ul {
 .userSquare {
 	position: absolute;
 	background-color: none;
+
+	/*background-color: dimgrey;
+	background-color: none;*/
 	width: 50%;
 	height: 50%;
+	/*-webkit-box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.75);
+	-moz-box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.75);
+	box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.75);*/
 	border: none;
 }
+
+/*
+WOULD NOT BE TARGETED
+<div class="userSquare">
+	<div class="vacationMode">
+		<img />
+	</div>
+</div>
+
+any images within a div with userSquare AND vacationMode classes, will get opacity 0.5,
+classes without spaces indicate AND */
+.userSquare.vacationMode img {
+	opacity:0.5;
+}
+
 /* This determines the size of the user image */
 .userImage {
 	position: absolute;
