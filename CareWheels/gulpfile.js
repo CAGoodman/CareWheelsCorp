@@ -135,11 +135,11 @@ gulp.task('resetDispVer', function(callback) {
 
 gulp.task('getProperty', function () {
   var data = require('./package.json')
-  console.log('Name = ' + data.name)
-  console.log('Title = ' + data.title)
-  console.log('Version = ' + data.version)
-  console.log('APK = ' + data.apk)
-  console.log('Date = ' + data.date);
+  console.log('Name = ' + data.apkName)
+  console.log('Company = ' + data.apkCompany)
+  console.log('Version = ' + data.apkVersion)
+  console.log('APK = ' + data.apkPackage)
+  console.log('Date = ' + data.apkDate);
 });
 
 //
@@ -149,7 +149,7 @@ gulp.task('getProperty', function () {
 
 gulp.task('getVersion', function () {
   var data = require('./package.json')
-  console.log('Version = ' + data.version)
+  console.log('Version = ' + data.apkVersion)
 });
 
 //
@@ -163,22 +163,26 @@ gulp.task('fourGulps', function(callback) {
 //
 // As such bumping date is not a supported functionality in gulp so we use gulp-replace.
 // Usage: gulp bumpDate
+// How this works: In package.json it greps for thw word "Date" followed by anything and replaces
+// it with the word "Date" + the actual date returned by Date()
 //
 
 gulp.task('bumpDate', function () {
   return gulp.src('./package.json')
-    .pipe(replace(/"date*.*/, "\"date\": " + "\"" + Date() + "\","))
+    .pipe(replace(/"Date*.*/, "\"Date\": " + "\"" + Date() + "\","))
     .pipe(gulp.dest('./'));
 });
 
 //
 // For bumping APK name we use gulp-replace.
 // Usage: gulp bumpApk --apk "CareBank-armv7-04Jan17.apk"
+// How this works: In package.json it greps for the word "Name" followed by anything and replaces
+// it with the word "Name" + the actual apk name being passed as an argument
 //
 
 gulp.task('bumpApk', function () {
   return gulp.src('./package.json')
-    .pipe(replace(/"apk*.*/, "\"apk\": "  + "\"" + argv.apk + "\","))
+    .pipe(replace(/"Name*.*/, "\"Name\": "  + "\"" + argv.apk + "\","))
     .pipe(gulp.dest('./'));
 });
 
@@ -189,7 +193,7 @@ gulp.task('bumpApk', function () {
 //
 
 gulp.task('bumpAll', function(callback) {
-    runSequence('bumpPatch', ['bumpDate'], ['constants'], 'getProperty', callback);
+    runSequence('bumpPatch', ['bumpDate'], ['bumpConstants'], 'getProperty', callback);
 });
 
 //
@@ -198,7 +202,7 @@ gulp.task('bumpAll', function(callback) {
 // Usage: gulp constants
 //
 
-gulp.task('constants', function() {
+gulp.task('bumpConstants', function() {
   var packageJSON = require('./package');
   return ngConstant({
     constants: packageJSON,

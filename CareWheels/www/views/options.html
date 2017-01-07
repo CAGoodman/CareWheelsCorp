@@ -1,4 +1,4 @@
-<!-- 
+<!--
 CareWheels Corporation 2016
 Filename: options.html
 Description: This creates the screen for options
@@ -15,20 +15,18 @@ Authors: Ananda Vardhana  11/28/16
 
 			<ion-item>
 				<div class="item item-light miniCardHeader center">
-					<!-- Currently this toggles, it ought to be a real reset switch meaning it should come back to its original position like a real push button
-					switch. This has to be fixed - TBD -->
-					<ion-toggle ng-model="value" ng-checked="value" ng-change="ScreenRefresh()" toggle-class=("toggle", "toggle-balanced", "onOffToggle")>
-					Screen Refresh</ion-toggle>
+					<button class="button icon icon-left ion-refresh button-positive" ng-click="ScreenRefresh()">
+					Screen Refresh</button>
 				</div>
 			</ion-item>
 			<ion-item>
 				<div class="item item-light miniCardHeader center">
-					<ion-toggle ng-model="value" ng-checked="value" ng-change="About()" toggle-class=("toggle", "toggle-balanced", "onOffToggle")>
-					About</ion-toggle>
+					<button class="button icon icon-left ion-star button-positive" ng-click="About()">
+					About</button>
 				</div>
 			</ion-item>
 		</ion-list>
 
 	</ion-content>
 
-</ion-view>	
+</ion-view>

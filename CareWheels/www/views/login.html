@@ -2,10 +2,11 @@
   <ion-content class="moveDown">
     <div class="alignLogo">
       <img ng-src="{{logoImage}}">
+      <p> VERSION {{versionNumber}}</p>
     </div>
     <div class="list list-inset">
       <label class="item item-input">
-        <input type="text" placeholder="Username" ng-model="username">
+        <input type="text" placeholder="Username" ng-model="username" autocapitalize="none">
       </label>
       <label class="item item-input">
         <input type="password" placeholder="Password" ng-model="password">
@@ -13,12 +14,12 @@
       </br>
       <ion-list>
         <ion-checkbox ng-model="rememberMe">Remember Credentials</ion-checkbox>
-		 <button class="button button-block button-calm" ng-click="getCredentials()">Forgot Credentials</button>
+		    <div class=alignLogo>
+          <a href="mailto:admin@carewheels.org?subject=Please%20issue%20me%20new%20CareBank%20credentials"
+          style="font-style:italic;color:rgb(0,0,0);text-decoration: underline">Forgot Credentials</a>
+        </div>
       </ion-list>
     </div>
-
     <button class="button button-block button-calm" ng-click="login(username, password, rememberMe)">Login</button>
-
-    <div class="version">{{versionNumber}}</div>
   </ion-content>
 </ion-view>

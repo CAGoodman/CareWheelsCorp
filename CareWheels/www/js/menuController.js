@@ -1,4 +1,4 @@
-// 
+//
 // CareWheels Corporation 2016
 // Filename: menucontroller.js
 // Description: When the menu items are clicked the control comes here
@@ -9,9 +9,9 @@
 //
 angular.module('careWheels')
 
-.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, VERSION_NUMBER) {
+.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkVersion) {
 
-    $scope.versionNumber = VERSION_NUMBER;
+    $scope.versionNumber = apkVersion;
 
     $scope.navHistory = function() {
       if($ionicHistory.backView() != null) {
@@ -97,7 +97,7 @@ angular.module('careWheels')
 	$scope.clickOptions = function () {
 		$state.go('app.options');				// ABC mods. Introducing a new menu item Options during Devrlopmental phase
     };
-	
+
     var openSense = function () {
         document.addEventListener("deviceready",
             startApp.set({

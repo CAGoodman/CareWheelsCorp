@@ -5,7 +5,8 @@
 angular.module('careWheels')
   .controller('loginController',
 
-    function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup, GroupInfo, $interval, notifications, onlineStatus, VERSION_NUMBER, Download, $fileLogger, fileloggerService){
+    function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup,
+      GroupInfo, $interval, notifications, onlineStatus, apkVersion, Download, $fileLogger, fileloggerService){
 
     var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5 mins
     var LOGIN_TIMEOUT = 1000 * 60;         // timeout for login
@@ -23,7 +24,7 @@ angular.module('careWheels')
     $scope.rememberMe = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
     $scope.connectionError = false;
-    $scope.versionNumber = VERSION_NUMBER;
+    $scope.versionNumber = apkVersion;
 
 
     /**

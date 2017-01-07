@@ -9,7 +9,7 @@
 //
 angular.module('careWheels')
 .controller('OptionsController', function ($scope, $controller, $ionicPopup, GroupInfo, User,
-	Download, name, title, version, apk, date) {
+	Download, apkName, apkCompany, apkVersion, apkDate, apkPackage) {
   $scope.ScreenRefresh = function () {
     Download.DownloadData(function () {
       console.log('Forced Screen Refresh finished')
@@ -17,17 +17,17 @@ angular.module('careWheels')
   }
 
   $scope.About = function () {
-  	console.log('Name: ' + name)
-    console.log('Title: ' + title)
-    console.log('Version: ' + version)
-    console.log('Apk: ' + apk)
-    console.log('Date: ' + date)
+  	console.log('Name: ' + apkName)
+    console.log('Company: ' + apkCompany)
+    console.log('Version: ' + apkVersion)
+    console.log('Apk: ' + apkPackage)
+    console.log('Date: ' + apkDate)
   	var aboutEntries = [
-  		{ label: 'Name', value: name },
-  		{ label: 'Title', value: title },
-  		{ label: 'Version', value: version },
-  		{ label: 'Apk', value: apk },
-  		{ label: 'Date', value: date }
+  		{ label: 'Name', value: apkName },
+  		{ label: 'Company', value: apkCompany },
+  		{ label: 'Version', value: apkVersion },
+  		{ label: 'Apk', value: apkPackage },
+  		{ label: 'Date', value: apkDate }
 	]
 
   	var template = ''

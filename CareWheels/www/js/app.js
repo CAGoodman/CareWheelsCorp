@@ -26,11 +26,7 @@ angular.module('careWheels', [
 
 
 //contant definition for endpoint base url
-.constant('BASE_URL', 'https://CareBank.CareWheels.org:8443')	// ABCMods for final release
-//.constant('BASE_URL', 'https://10.0.0.229:8443')				// ABCMods for local server usage during development
-
-// change the version number here
-.constant('VERSION_NUMBER', '1.00')
+.constant('BASE_URL', 'https://CareBank.CareWheels.org:8443')
 
 .run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, $window, User) {
 
@@ -74,7 +70,7 @@ angular.module('careWheels', [
     updateLastOwnership: BASE_URL + '/updatelastownershiptakentime.php',
     creditUser: BASE_URL + '/credituser.php',
     updateSettings:BASE_URL + '/updatesettings.php',
-	refreshScreen:BASE_URL + '/refreshScreen.php'
+    refreshScreen:BASE_URL + '/refreshScreen.php'
   };
   return api;
 });

@@ -13,7 +13,7 @@ IF "%1"=="-a" goto ADD_PLATFORM
 IF "%1"=="-v" goto RESET_VERSION
 IF "%1"=="-maj" goto RESET_MAJOR_VERSION
 IF "%1"=="-min" goto RESET_MINOR_VERSION
-goto CONTINUE
+goto GET_DATE
 :PROPERTY
 gulp getProperty
 goto END
@@ -35,17 +35,8 @@ goto END
 :RESET_MINOR_VERSION
 gulp bumpMinor
 goto END
-:CONTINUE
-start cordova build --release android
-REM At this point we get the file platforms\android\build\outputs\apk\android-release-unsigned.apk
-echo Did it build successfully?
-set /p ans=Enter y or n:
-IF "%ans%"=="y" goto CHECK_KEY
-goto END
 
-:CHECK_KEY
-REM Let us get the Date Stamp for naming the APK
-
+:GET_DATE
 set month-num=%date:~3,3%
 if %month-num%==01 set mo-name=Jan
 if %month-num%==02 set mo-name=Feb
@@ -63,7 +54,34 @@ set day-num=%date:~7,2%
 set year-num=%date:~12,8%
 REM Here we get the Date Stamp
 set DS=%day-num%%mo-name%%year-num%
+REM APK name is bumped up in package.json
 start gulp bumpApk --apk "CareBank-armv7-%DS%.apk"
+echo Did the bumpApk finish successfully?
+set /p ans=Enter y or n:
+IF "%ans%"=="y" goto DO_BUMPALL
+goto END
+
+:DO_BUMPALL
+REM This calls bumpPatch, bumpDate, bumpConstants and finally calls getProperty
+REM bumpApk, bumpPatch, bumpDate all bump it up in the package.json only
+REM bumpConstants creates a new file ngconstants.js which gets bundled with the APK
+REM ngconstants.js has all the source/binary controls
+start gulp bumpAll
+echo Did the bumpAll finish successfully?
+set /p ans=Enter y or n:
+IF "%ans%"=="y" goto APK_BUILD
+goto END
+
+:APK_BUILD
+start cordova build --release android
+REM At this point we get the file platforms\android\build\outputs\apk\android-release-unsigned.apk
+echo Did it build successfully?
+set /p ans=Enter y or n:
+IF "%ans%"=="y" goto CHECK_KEY
+goto END
+
+:CHECK_KEY
+REM Let us get the Date Stamp for naming the APK
 
 REM Let us get the saved keystore file name
 set CareBank_Saved_key=""
@@ -114,8 +132,6 @@ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\
 :ALIGNIT
 del CareBank-armv7-%DS%.apk >nul 2>&1
 zipalign -v 4 android-armv7-release-unsigned.apk CareBank-armv7-%DS%.apk
-
-start gulp bumpAll
 goto END
 
 :HELP
