@@ -4,7 +4,8 @@
 // Description: When the menu items are clicked the control comes here
 //
 // Authors: Capstone students PSU Aug 2016
-// Revision: Added a nedw menu item called Development - AV 11/28/16
+// Revision: Added a nedw menu item called Options - AV 11/28/16
+//           Pull up implementation - NXB 01/08/2017
 //
 //
 angular.module('careWheels')

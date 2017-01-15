@@ -1,4 +1,4 @@
-/*++ 
+/*++
  CareWheels Corporation 2016
  Filename: userService.js
  Description: This handles all transactions related to Logging in, vacation mode, getting GroupInfo
@@ -14,7 +14,7 @@ angular.module('careWheels')
 	var user = {};
 	var userService = {};
 	var failCount = 0;
-	//window.localStorage['loginCredentials'] = null;
+	//window.localStorage['loginCredentials'] = null; // This is where credentials are saved
 
 	userService.login = function (uname, passwd, rmbr) {
 		$ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
@@ -34,8 +34,11 @@ angular.module('careWheels')
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		}).then(function (response) {
-			if (rmbr)
+			if (rmbr) {					// In case of Android we need to figure out how to cler memory
 				window.localStorage['loginCredentials'] = angular.toJson({"username": uname, "password": passwd});
+			} else {
+				window.localStorage.removeItem('loginCredentials');
+			}
 				//store user info
 				//store groupMember info
 
@@ -80,7 +83,7 @@ angular.module('careWheels')
 							title: 'Login failed!',
 							//template: errorMsg
 							template: response.data
-						});	
+						});
 				}
 			}
 		})
@@ -165,7 +168,7 @@ angular.module('careWheels')
 			return false;
 		})
 	};	// userService.setOnVacation
-	
+
 /*
     userService.RefreshScreen = function (uname, passwd) {
 		//var creds = userService.credentials();

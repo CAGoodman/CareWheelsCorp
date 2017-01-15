@@ -1,3 +1,14 @@
+/*++
+ CareWheels Corporation 2016
+ Filename: groupInfoServices.js
+ Description: Group Info Services
+
+ Authors: Capstone students PSU Aug 2016
+ Revision: Vacation mode and blance have been fixed: NXB/AV - 01/12/
+ groupStatus interacts with the html interface exposed to the user
+ poor groupInfoServices() does the real work
+--*/
+
 // GroupInfo factory for global GroupInfo
 angular.module('careWheels')
 .factory('GroupInfo', function () {

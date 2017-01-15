@@ -1,13 +1,13 @@
-/*++ 
+/*++
  CareWheels Corporation 2016
  Filename: groupStatus.css
- Description: This provides the layout, style and formatting of the main group status screen 
+ Description: This provides the layout, style and formatting of the main group status screen
 
  Authors: Capstone students PSU Aug 2016
  Revision: Enabled center user - AV 12/18/2016
  Notes: This is a general notes on CSS for the uninitated
  Anything starting with a # means ID. The name folliwng # has to be unique per page. html counterpart
- calls ID y name to set the style of the page.
+ calls ID by name to set the style of the page.
  Anything staring with a "." is a class meaning a group od values/attributes. ID is also a class but unique
  Both of them what the style will be when HTML code calls them.
  We identify 4 major ID's which get called by HTML and some other smalled ID's too
@@ -15,7 +15,7 @@
  2. careBankHeader	--> This provides the space for the name CareWheels Group
  3. careBankData
  4. userGroup
-The HTML file will cal the ID or the Class by "string name" explicitly and CSS will define the style of the display
+The HTML file will call the ID or the Class by "string name" explicitly and CSS will define the style of the display
 --*/
 ul {
 	list-style: none;

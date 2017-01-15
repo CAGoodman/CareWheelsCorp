@@ -1,20 +1,22 @@
-/*++ 
+/*++
  CareWheels Corporation 2016
  Filename: groupStatus.js
- Description: Group Status controller 
+ Description: Group Status controller
 
  Authors: Capstone students PSU Aug 2016
  Revision: Enabled center user - AV 12/18/2016
- Notes: The control enters via the HTML displays the page in accordance to the style 
+ 		   Implemented Refresh on pull up - NXB 01/09/2017
+ Notes: The control enters via the HTML displays the page in accordance to the style
  dictated by the CSS file and JS files takes care of the action part. Like what happens
  when the user clicks.
  In JavaScript, scope is the set of variables, objects, and functions you have access to.
- $scope is defined as part of the function call. Any variales including function names included as 
+ $scope is defined as part of the function call. Any variales including function names included as
  the part of argument becomes accessible globally. Anything defined inside the function remains local
  Ex: The function Download in login.js has been declared globally and hence could be called by option.js
 --*/
+
 angular.module('careWheels').controller('groupStatusController',
-function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService) {
+function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService, Download) {
 
 	runOnStateChange();
 
@@ -76,7 +78,7 @@ function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentServic
 			status: '',
 			image: '',
 			alertLevelColor: '',
-			error: false 
+			error: false
 		},
 		{ // top left @ index 1
 			name: '',
@@ -129,6 +131,16 @@ function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentServic
     $scope.clickBottomRight = function () {
 		clickUser(4);
     };
+
+   	// pulldown refresh event
+    $scope.doRefresh = function () {
+        Download.DownloadData(function(){
+            console.log('Pull down refresh done!')
+            console.log('Sending refresh complete');
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+     };
+
     // lets figure out which user logged in at this point
     function getLoggedInUser(groupInfo) {
 		var user = User.credentials();
@@ -156,11 +168,11 @@ function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentServic
 
 		// next lets set the data for the user that logged in,
 		// this is reserved at index zero.
-		//TODO VIKAS duplicate, should be handled inside for loop
+
 		$scope.group[currentUser].image = groupArray[loggedInUserIndex].photoUrl;
 		$scope.group[currentUser].username = groupArray[loggedInUserIndex].username;
 		$scope.group[currentUser].name = groupArray[loggedInUserIndex].name;
-		$scope.group[currentUser].balance = trimZeros(groupArray[loggedInUserIndex].balance);
+		$scope.group[currentUser].balance = trimZeros(groupArray[loggedInUserIndex].analysisData.balance);
 		$scope.group[currentUser].vacationMode = groupArray[loggedInUserIndex].analysisData.vacationMode;
 		//$scope.group[currentUser].onVacation = User.getVacationValue();
 
@@ -177,7 +189,8 @@ function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentServic
 				try {
 					fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
 					medsAlert = groupArray[i].analysisData.medsAlertLevel;
-					$scope.group[currentUser].status = $scope.getAlertColor(fridgeAlert, medsAlert, i);
+ 					vacationMode = groupArray[i].analysisData.vacationMode;
+ 					$scope.group[currentUser].status = $scope.getAlertColor(fridgeAlert, medsAlert, vacationMode, i);
 				}
 				catch (Exception) {
 					$scope.group[currentUser].status = 'grey';
@@ -230,10 +243,12 @@ function ($scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentServic
      * alert level. This string is used with ng-class, to
      * append the color class onto the div
      * */
-    $scope.getAlertColor = function (fridgeAlert, medsAlert, index) {
+    $scope.getAlertColor = function (fridgeAlert, medsAlert, vacationMode, index) {
 		// check for null params
 		if (fridgeAlert == null || medsAlert == null) {
 			return '';
+		} else if (vacationMode) {
+ 			alertString = 'grey';
 		}
 		var fridge = parseInt(fridgeAlert);
 		var meds = parseInt(medsAlert);

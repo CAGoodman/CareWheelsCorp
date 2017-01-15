@@ -1,7 +1,15 @@
-/**
- * CareWheels - Login Controller
- *
- */
+/* eslint-env angular */
+/*++
+ CareWheels Corporation 2016
+ Filename: login.js aka Login Controller
+ Description: Getting the user credential, getting it authenticated by the server
+ then pulling the data of the server is done here
+
+ Authors: Capstone students PSU Aug 2016
+ Revision: Added logout, remember, forgot credentials - AV 0108/2017
+
+--*/
+
 angular.module('careWheels')
   .controller('loginController',
 
@@ -14,6 +22,8 @@ angular.module('careWheels')
 
     var popupTemplate = '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>';
 
+    // When we select remember this is where the login credentials are stored.
+    // Right here storage
     var credentials = angular.fromJson(window.localStorage['loginCredentials']);
 
     $ionicHistory.nextViewOptions({disableBack: true});
@@ -22,10 +32,27 @@ angular.module('careWheels')
     //$controller('AnalysisCtrl', {$scope : dataAnalysis});
 
     $scope.rememberMe = false;
+    $scope.showPassword = false;
+    $scope.showHelp = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
     $scope.connectionError = false;
     $scope.versionNumber = apkVersion;
 
+    //
+    // If the remember me set then the credential is in the local memory so can be written
+    // back on the login screen.
+    //
+
+    if (credentials)  {
+      $scope.username = credentials.username;
+      $scope.passwd = credentials.password;
+      $scope.rememberMe = true;
+    }
+
+    $scope.TappedOrClicked = function() {
+      console.log("TappedOrClicked");
+      $scope.showHelp = true;
+    }
 
     /**
      * Login function is called from app.js. This method
@@ -42,16 +69,31 @@ angular.module('careWheels')
       User.login(uname, passwd, rmbr).then(function(response) {
 
         if (User.credentials()) {
-          // do the log upload
-          // console.log(uname + " - " + passwd);
+          //
+          // do the log upload. This is where the app talks to the server for credentials authentication
+          // The credential remembering is within the app only the server is unaware of it
+          //
           fileloggerService.initLogComponent();
           fileloggerService.logUpload(uname, passwd);
-          console.log("Done uploading log file!");
+          console.log("Done uploading login credentials to the server for authentication!");
 
-          //pull up loading overlay so user knows App hasn't frozen
+          //
+          // Pull up loading overlay so user knows App hasn't frozen
+          // This is the twirling icon which says "Contacting Server..."
+          //
           $ionicLoading.show({ template: popupTemplate });
 
+          //
+          // Notification of user reminder is intialized here. That is if they
+          // have set reminders for themselves to take meds, meals etc ...
+          //
+
           notifications.Init_Notifs();        // initialize notifications
+
+          //
+          // Here a time out is set and if the server does not come back in
+          // LOGIN_TIMEOUT time then we issue login failed message
+          //
 
           var loginPromise = setTimeout(function(){
             loginTimeout = true;
@@ -129,8 +171,12 @@ angular.module('careWheels')
       });
     }
 
+    //
+    // Here if credentials are true meaning it has been saved in the Locoal Storage
+    // then the login screen is not even poped. It just logs you in. Autologin
+    // was done during developement has been commented out for actual product.
 
-    if (credentials)
-      $scope.login(credentials.username, credentials.password, true);
+ //   if (credentials)
+ //     $scope.login(credentials.username, credentials.password, false);
 
   });

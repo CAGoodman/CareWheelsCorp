@@ -1,5 +1,16 @@
+/* eslint-env angular */
+/*++
+ CareWheels Corporation 2016
+ Filename: resetcontrollers.js
+ Description: All resets happen here and login errors are generated here.
+
+ Authors: Capstone students PSU Aug 2016
+ Revision:
+
+--*/
+
 //Call to the UserInfo custom rest endpoint, which logs user in and then returns all the field data of another user as $scope.data;
-//or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by 
+//or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by
 //exceeding invalid login attempts", or a default catch "Error while performing login: errorCode".
 angular.module('careWheels')
 
@@ -9,13 +20,13 @@ angular.module('careWheels')
     $scope.code = null;
     $scope.response = null;
     $http({
-      url:$scope.url, 
+      url:$scope.url,
       method:'POST',    //all our custom REST endpoints have been designed to use POST
-      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-        username:userIn, 
-        password:passIn, 
-        usernametofind:tofindIn        
-      }), 
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+        username:userIn,
+        password:passIn,
+        usernametofind:tofindIn
+      }),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
       }
@@ -96,7 +107,7 @@ angular.module('careWheels')
 })
 
 //Call to the UpdateUserReminders endpoint, which logs a user in and updates all three of a user's (does not have to be the same user)
-//reminder slots in the format HH:MM:SS. Returns same login errors as UserRestController. The contents of a reminder slot 
+//reminder slots in the format HH:MM:SS. Returns same login errors as UserRestController. The contents of a reminder slot
 //are cleared by passing in '' rather than a string of the correct format.
 .controller("ReminderRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'https://carebank.carewheels.org:8443/updateuserreminders.php';
@@ -104,16 +115,16 @@ angular.module('careWheels')
     $scope.code = null;
     $scope.response = null;
     $http({
-      url:$scope.url, 
+      url:$scope.url,
       method:'POST',    //all our custom REST endpoints have been designed to use POST
-      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-        username:userIn, 
-        password:passIn, 
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+        username:userIn,
+        password:passIn,
         usernametoupdate:toUpdate,
         reminder1:rem1,
         reminder2:rem2,
-        reminder3:rem3        
-      }), 
+        reminder3:rem3
+      }),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
       }
@@ -137,13 +148,13 @@ angular.module('careWheels')
     $scope.code = null;
     $scope.response = null;
     $http({
-      url:$scope.url, 
+      url:$scope.url,
       method:'POST',    //all our custom REST endpoints have been designed to use POST
-      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-        username:userIn, 
-        password:passIn, 
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+        username:userIn,
+        password:passIn,
         groupInternalName:groupName
-      }), 
+      }),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
       }
@@ -161,7 +172,7 @@ angular.module('careWheels')
 })
 
 //Call to the UpdateLastOwnershipTakenTime endpoint, which logs a user in and updates the LastOwnershipTakenTime field for
-//the member has an alert. This field uses the format XXXX/XX/XX XX:XX:XX. This will report the following error messages upon 
+//the member has an alert. This field uses the format XXXX/XX/XX XX:XX:XX. This will report the following error messages upon
 //failure: "Missing username / password", "Invalid username / password", "Your access is blocked by exceeding invalid login
 //attempts", or a default catch "Error while performing login: errorCode".
 
@@ -172,14 +183,14 @@ angular.module('careWheels')
     $scope.code = null;
     $scope.response = null;
     $http({
-      url:$scope.url, 
+      url:$scope.url,
       method:'POST',    //all our custom REST endpoints have been designed to use POST
-      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-        username:userIn, 
-        password:passIn, 
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+        username:userIn,
+        password:passIn,
         usernametoupdate:toUpdate,
-        lastownershiptakentime:ownershipTime,        
-      }), 
+        lastownershiptakentime:ownershipTime,
+      }),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
       }
@@ -196,7 +207,7 @@ angular.module('careWheels')
   };
 
 /*** Test Functions for UpdateLastOwnershipTakenTime enpoint ***/
-  
+
   //Verifies the returned json contains updated lastownershiptakentime value sent in the request.
   $scope.test = function() {
     var userIn = "b_test_1";
@@ -285,33 +296,33 @@ angular.module('careWheels')
 
 })
 
-//This doesn't work at all. I don't know the solution. Looking at the JSON string that returns, there is no instance of 
-//"LastOwnershipTakenTime":XXXX/XX/XX XX:XX:XX anywhere in the string. There are several instances of "id":xxx..xx, so I 
+//This doesn't work at all. I don't know the solution. Looking at the JSON string that returns, there is no instance of
+//"LastOwnershipTakenTime":XXXX/XX/XX XX:XX:XX anywhere in the string. There are several instances of "id":xxx..xx, so I
 //tried using id to get something/anything to print out.
 
 //Based on:
 //    var json = '{"count":1, "LastOwnershipTakenTime":"2016/07/06 18:00:00", "count":2}',
 //    obj = JSON.parse(json);
 //    alert(obj.count);
-//    
+//
 //    prints out: 2 ...
 
 //...I figured that obj.id should print out the last instance of id in the string, but nothing printed. I am not sure
 //why. However, since "LastOwnershipTakenTime":XXXX/XX/XX XX:XX:XX does not actually appear in the string, using
-//JSON.parse is probably not the answer. 
+//JSON.parse is probably not the answer.
 .controller("GetOwnershipRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'https://carebank.carewheels.org:8443/groupmemberinfo.php';
   $scope.fetch = function(userIn, passIn, groupNameIn) {
     $scope.code = null;
     $scope.response = null;
     $http({
-      url:$scope.url, 
+      url:$scope.url,
       method:'POST',   //all our custom REST endpoints have been designed to use POST
-      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-        username:userIn, 
-        password:passIn, 
-        groupInternalName:groupNameIn,        
-      }), 
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+        username:userIn,
+        password:passIn,
+        groupInternalName:groupNameIn,
+      }),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
       }
@@ -332,7 +343,7 @@ angular.module('careWheels')
 })
 
 //Call to the UserAndGroupMemberInfo custom rest endpoint, which logs user in and then returns all the field data of all users in their group as $scope.data;
-//or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by 
+//or one of the following error messages: "Missing username / password", "Invalid username / password", "Your access is blocked by
 //exceeding invalid login attempts", or a default catch "Error while performing login: errorCode" or "Error while performing group search".
 .controller("UserAndGroupRestController", function($scope, $http, $log, $httpParamSerializerJQLike){
   $scope.url = 'https://carebank.carewheels.org:8443/userandgroupmemberinfo.php';
@@ -340,13 +351,13 @@ angular.module('careWheels')
     $scope.code = null;
     $scope.response = null;
     $http({
-      url:$scope.url, 
+      url:$scope.url,
       method:'POST',    //all our custom REST endpoints have been designed to use POST
-      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects 
-        username:userIn, 
-        password:passIn, 
-        usernametofind:tofindIn        
-      }), 
+      data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
+        username:userIn,
+        password:passIn,
+        usernametofind:tofindIn
+      }),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
       }
@@ -365,7 +376,7 @@ angular.module('careWheels')
 
 
 // .controller("CreditController", function($scope, $http, $log, $httpParamSerializerJQLike){
-  
+
 //   //creditUser is the main function which will get called by the other components in the application
 //   //(individual group member sensor data or group member summary status subsystem)
 //   $scope.creditUser = function(username, password, credits, creditType, alertLevel) {
@@ -381,30 +392,30 @@ angular.module('careWheels')
 //   var memberSummaryPayment = 'False';
 
 //   var getHistory = function() {
-//   var url = 'https://carebank.carewheels.org:8443/dailytransactionhistory.php';  
+//   var url = 'https://carebank.carewheels.org:8443/dailytransactionhistory.php';
 //   //console.log("reached transaction function", url);
 //   $http({
-//     url:url, 
+//     url:url,
 //     method:'POST',
 //     data: $httpParamSerializerJQLike({
-//       username:username, 
-//       password:password, 
-//       usernametofind:toFind       
-//     }), 
+//       username:username,
+//       password:password,
+//       usernametofind:toFind
+//     }),
 //     headers: {
 //       'Content-Type': 'application/x-www-form-urlencoded'
 //     }
 //   }).then(function(response) {
 //     $scope.status = response.status;
 //     $scope.data = response.data;
-     
+
 //         //insert conditional statement and iterate through events/views in last 24 hours
 //         var countMemberSummaryViews = 0;
-//         for (item in response.data.elements){         
+//         for (item in response.data.elements){
 //           if(item.date.hour == current_time.hour)
 //             return 0;
 //           if(item.customValues.MemberSummaryView == True)
-//             ++countMemberSummaryViews;                             
+//             ++countMemberSummaryViews;
 //           if(countMemberSummarViews > 9) {
 //             return 0;
 //                        }
@@ -412,9 +423,9 @@ angular.module('careWheels')
 //         memberSummaryPayment = 'True';
 //         creditRequest();
 
-//         //else 
+//         //else
 //         //sensorDataViewPayment = true
-        
+
 
 //     }, function(response) {
 //       $scope.data = response.data || "Request failed";
@@ -426,20 +437,20 @@ angular.module('careWheels')
 //     var creditRequest = function() {
 //     var creditUrl = 'https://carebank.carewheels.org:8443/credituser.php';
 //     //console.log("reached creditrequest function", creditUrl);
-    
+
 //     $http({
-//       url:creditUrl, 
+//       url:creditUrl,
 //       method:'POST',
 //       data: $httpParamSerializerJQLike({
-//         username:username, 
-//         password:password, 
-//         usernametocredit:username, 
-//         credits:credits, 
+//         username:username,
+//         password:password,
+//         usernametocredit:username,
+//         credits:credits,
 //         alertlevel:alertLevel,
 //         callpayment:callPayment,
 //         sensordataviewpayment:sensorDataViewPayment,
-//         membersummarypayment:memberSummaryPayment      
-//       }), 
+//         membersummarypayment:memberSummaryPayment
+//       }),
 //       headers: {
 //         'Content-Type': 'application/x-www-form-urlencoded'
 //       }

@@ -1,6 +1,6 @@
 <ion-view view-title="app.individualStatus" class="overflow-scroll">
   <ion-nav-title>Status: {{name}}
-    <a href="{{getPhoneNumber()}}" class="blue" >
+    <a href="{{getPhoneNumber()}}" class="blue" ng-show="showCallButton">
       <div id="callArea"
            class="button"
            ng-class="getCallButtonColor()">
@@ -13,6 +13,11 @@
 
   <!-- individual status content -->
   <ion-content class="moveDown">
+    <ion-refresher
+      pulling-text="Pull to refresh Carebank data ..."
+      on-refresh="doRefresh()">
+    </ion-refresher>
+
     <ul class="row header">
       <li class="col no_border col-25 blackFont"></li>
       <li class="col no_border col-25 blackFont">presence</li>

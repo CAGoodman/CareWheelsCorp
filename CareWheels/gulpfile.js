@@ -73,7 +73,7 @@ gulp.task('git-check', function(done) {
 });
 
 //
-// This function just bumps the version string only by default.
+// This function just bumps the apkVersion string only by default.
 // Gulp functions operate async hence you will find the retun's in the middle.
 // line 78: It reads package.json pipes the read info to bump() and returns
 // Bump() does its work and pipes it to dest() which will copy it to package.json in the current folder.
@@ -163,26 +163,26 @@ gulp.task('fourGulps', function(callback) {
 //
 // As such bumping date is not a supported functionality in gulp so we use gulp-replace.
 // Usage: gulp bumpDate
-// How this works: In package.json it greps for thw word "Date" followed by anything and replaces
-// it with the word "Date" + the actual date returned by Date()
+// How this works: In package.json it greps for thw word "apkDate" followed by anything and replaces
+// it with the word "apkDate" + the actual date returned by Date()
 //
 
 gulp.task('bumpDate', function () {
   return gulp.src('./package.json')
-    .pipe(replace(/"Date*.*/, "\"Date\": " + "\"" + Date() + "\","))
+    .pipe(replace(/"apkDate*.*/, "\"apkDate\": " + "\"" + Date() + "\","))
     .pipe(gulp.dest('./'));
 });
 
 //
 // For bumping APK name we use gulp-replace.
 // Usage: gulp bumpApk --apk "CareBank-armv7-04Jan17.apk"
-// How this works: In package.json it greps for the word "Name" followed by anything and replaces
-// it with the word "Name" + the actual apk name being passed as an argument
+// How this works: In package.json it greps for the word "apkPackage" followed by anything and replaces
+// it with the word "apkPackage" + the actual apk name being passed as an argument
 //
 
 gulp.task('bumpApk', function () {
   return gulp.src('./package.json')
-    .pipe(replace(/"Name*.*/, "\"Name\": "  + "\"" + argv.apk + "\","))
+    .pipe(replace(/"apkPackage*.*/, "\"apkPackage\": "  + "\"" + argv.apk + "\","))
     .pipe(gulp.dest('./'));
 });
 

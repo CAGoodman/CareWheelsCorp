@@ -8,8 +8,9 @@
 //
 //
 angular.module('careWheels')
-.controller('OptionsController', function ($scope, $controller, $ionicPopup, GroupInfo, User,
+.controller('OptionsController', function ($scope, $state, $controller, $ionicPopup, GroupInfo, User,
 	Download, apkName, apkCompany, apkVersion, apkDate, apkPackage) {
+
   $scope.ScreenRefresh = function () {
     Download.DownloadData(function () {
       console.log('Forced Screen Refresh finished')
@@ -28,7 +29,7 @@ angular.module('careWheels')
   		{ label: 'Version', value: apkVersion },
   		{ label: 'Apk', value: apkPackage },
   		{ label: 'Date', value: apkDate }
-	]
+  	]
 
   	var template = ''
   	aboutEntries.forEach(function (item) {
@@ -43,5 +44,9 @@ angular.module('careWheels')
       title: 'About CareBank Application',
       template: template
     });
+  }
+
+  $scope.Logout = function () {
+    $state.go('login');
   }
 })

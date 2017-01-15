@@ -3,7 +3,7 @@
  *
  */
 angular.module('careWheels')
-  .controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService, $fileLogger, fileloggerService) {
+  .controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService, $fileLogger, fileloggerService, Download) {
 
     fileloggerService.initLogComponent();
 
@@ -12,7 +12,7 @@ angular.module('careWheels')
      */
     var analysis = GroupInfo.getSelectedMemberIndex();
     //console.log(analysis); ////////////testing
-
+    $scope.GroupInfo = GroupInfo;
     var timeNow = new Date().getHours();
     var phoneNumberError = false;
 
@@ -174,6 +174,8 @@ angular.module('careWheels')
     $scope.getCallButtonColor = function () {
       //console.log("getCallButtonColor();", analysis);
 
+      $scope.showCallButton = true;
+
       // check for null params
       if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)
         return 'button-dark disableCallButton';
@@ -198,6 +200,7 @@ angular.module('careWheels')
       }
       else {
         returnString += ' button-dark disableCallButton';
+         $scope.showCallButton = false;
       }
       // done
       return returnString;
@@ -248,6 +251,16 @@ angular.module('careWheels')
       else if ($scope.alertLevel != '') {
         PaymentService.call(analysis.name, 0.1, $scope.alertLevel);
       }
+    };
+
+    // pulldown refresh event
+    $scope.doRefresh = function () {
+      Download.DownloadData(function(){
+        console.log('Pull down refresh done!')
+        console.log('Sending refresh complete');
+        $scope.$broadcast('scroll.refreshComplete');
+      });
+
     };
 
     $scope.name = analysis.name;

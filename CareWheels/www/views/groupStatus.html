@@ -1,4 +1,4 @@
-<!-- 
+<!--
 CareWheels Corporation 2016
 Filename: groupStatus.html
 Description: This creates the main group screen
@@ -12,12 +12,15 @@ The browser calls the index.html first and that loads this file.
 	<ion-nav-title>CareWheels Group</ion-nav-title>
 	<!-- user group block: holds the -->
 	<ion-content>
-
+		<ion-refresher
+     		pulling-text="Pull to refresh Carebank data ..."
+     		on-refresh="doRefresh()">
+   	    </ion-refresher>
 		<ion-list>
 			<ion-item>
 				<ul id="userGroup">
 					<!--this could be implemented using ng-repeat-->
-					
+
 					<!--ng-class conditionally adds a css class. ex: {className: Bool} -->
 					<!--for example, if group[1].vacationMode === True, then userSquare topLeft will also get class of vacationMode -->
 					<li class="userSquare topLeft" ng-class="{vacationMode: group[1].vacationMode}" ng-click="clickTopLeft()">
@@ -45,7 +48,7 @@ The browser calls the index.html first and that loads this file.
 							ng-class="group[0].status"></div>
 						<img class="userImage center" ng-src="{{group[0].image}}">
 					</li>
-				
+
 				</ul>
 			</ion-item>
 			<ion-item>

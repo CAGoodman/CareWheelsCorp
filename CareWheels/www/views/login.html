@@ -1,25 +1,52 @@
-<ion-view view-title="Login">
-  <ion-content class="moveDown">
-    <div class="alignLogo">
-      <img ng-src="{{logoImage}}">
-      <p> VERSION {{versionNumber}}</p>
-    </div>
-    <div class="list list-inset">
-      <label class="item item-input">
-        <input type="text" placeholder="Username" ng-model="username" autocapitalize="none">
-      </label>
-      <label class="item item-input">
-        <input type="password" placeholder="Password" ng-model="password">
-      </label>
-      </br>
-      <ion-list>
-        <ion-checkbox ng-model="rememberMe">Remember Credentials</ion-checkbox>
-		    <div class=alignLogo>
-          <a href="mailto:admin@carewheels.org?subject=Please%20issue%20me%20new%20CareBank%20credentials"
+<!--
+CareWheels Corporation 2016
+Filename: login.html
+Description: This creates the screen for options
+
+Authors:  Capstone Students PSU Aug 2016
+Revision: Ananda Vardhana  11/28/16
+          Bhasker Narjala - Show Passwrd, autocapitalize & remember password   01/09/2017
+-->
+
+<html>
+  <ion-view view-title="Login">
+    <ion-content class="moveDown">
+      <div class="alignLogo">
+        <img ng-src="{{logoImage}}">
+        <p> VERSION {{versionNumber}}</p>
+      </div>
+      <div class="list list-inset">
+        <label class="item item-input">
+          <input type="text" placeholder="Username" ng-model="username" autocapitalize="none">
+        </label>
+        <label class="item item-input">
+        <!-- type="text" line becomes active when "showPassword" is +ve. placeholder displays the word Password.
+        ng-model gets what the user typed into passwd and ensures no autocapitalize. When "showPassowrd" is -ve
+        type is "password" meaning it is crypted. ng-click will pass the control to the function login()
+          -->
+          <input type="text" ng-show="showPassword" placeholder="Password" ng-model="passwd" autocapitalize="none">
+          <input type="password" ng-show="!showPassword" placeholder="Password" ng-model="passwd">
+        </label>
+        </br>
+        <ion-list>
+          <!--ng-model directive binds an input to a property which is "showPassword in our case"          -->
+          <ion-checkbox ng-model="showPassword">Show Password</ion-checkbox>
+          <ion-checkbox ng-model="rememberMe">Remember Credentials</ion-checkbox>
+        </ion-list>
+      </div>
+              <!-- User clicks on Remember Credentials and rememberMe is set which
+              is passed down below along with uname & passwd    -->
+      <button class="button button-block button-calm" ng-click="login(username, passwd, rememberMe)">Login</button>
+
+      <!-- TappedOrClicked() function gets called when a click | a tap happens. showHelp is set to true in login.js
+      and ng-show shows the help message. Then the execution continues and opens email box.
+      routes.js connects login.html and login.js.
+      -->
+  		<div class=alignLogo ng-click="TappedOrClicked()">
+        <a href="mailto:admin@carewheels.org?subject=Please%20issue%20me%20new%20CareBank%20credentials"
           style="font-style:italic;color:rgb(0,0,0);text-decoration: underline">Forgot Credentials</a>
-        </div>
-      </ion-list>
-    </div>
-    <button class="button button-block button-calm" ng-click="login(username, password, rememberMe)">Login</button>
-  </ion-content>
-</ion-view>
+        <p ng-show="showHelp" style="font-style:italic;color:rgb(0,0,0);text-decoration: underline">You can also contact admin from here</p>
+      </div>
+    </ion-content>
+  </ion-view>
+</html>

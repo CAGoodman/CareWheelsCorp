@@ -5,6 +5,7 @@ REM Author: Ananda Vardhana Nov 22, 2016
 echo MAKE SURE YOU ARE AT THE HOME DIRECTORY EX: ....\CareWheelsCorp\CareWheels
 echo It is recommended to run ionic reset once every 10 builds
 echo This builds apk for ARMv7 processors only
+echo Ensure your MAILTO in Control Panel --> Programs --> Default Program --> Assocaited is configured correclty
 
 IF "%1"=="-?" goto HELP
 IF "%1"=="-p" goto PROPERTY
@@ -18,7 +19,9 @@ goto GET_DATE
 gulp getProperty
 goto END
 :RESET
+echo Please ensure platform folder is free for deletion. Command prompt or explorer should be out of it
 echo Please note the folder platform will be deleted and recreated so ensure that the folder is not being used
+echo You have to run BuildApk -a to add the platform.
 pause
 ionic state reset
 goto END
