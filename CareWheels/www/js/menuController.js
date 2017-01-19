@@ -96,7 +96,7 @@ angular.module('careWheels')
     };
 
 	$scope.clickOptions = function () {
-		$state.go('app.options');				// ABC mods. Introducing a new menu item Options during Devrlopmental phase
+		$state.go('app.options');
     };
 
     var openSense = function () {

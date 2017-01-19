@@ -1,4 +1,13 @@
-/** Call one of this service's functions to create credit the user for one of the types of transactions.
+/*++
+  CareWheels Corporation 2016
+  Filename: PaymentService.js
+  Description: Anything to do with Payments come here
+
+  Authors: Capstone students PSU Aug 2016
+  Revision: Ensured Selfview does not get credited - NXB/AV 01/17/2017
+       Implemented Refresh on pull up - NXB 01/09/2017
+
+  Call one of this service's functions to create credit the user for one of the types of transactions.
    Parameters
    username: username for login.
    password: password for login.
@@ -21,7 +30,12 @@ angular.module('careWheels')
 .factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API){
   var PaymentService = {};
 
-  //creates a calling transaction; endpoint will also debit the user passed in as userToDebtAsString same amount
+  //
+  // We come here when there is a meds alert and the "CAll" button has been enbaled and the user
+  // has pressed to make the call. That creates a calling transaction; endpoint will also debit
+  // the user passed in as userToDebtAsString same amount
+  //
+
   PaymentService.call = function(userToDebtAsString, creditsAsFloat, alertlevelAsString) {
     var myUser = User.credentials();    //get credentials
     if (myUser != undefined) {    //can't do anything without them
@@ -56,10 +70,15 @@ angular.module('careWheels')
         } else console.log('Success: ' + data);
       })
     } else console.error("Cannot make REST call for Call  Payment because user credentials are undefined.");
-  };
+  };    // PaymentService.call
 
-  //creates IndividualStatus Sensor View transaction; alertLevel is status of the user that is being viewed
-  PaymentService.sensorDataView = function(creditsAsFloat, alertlevelAsString/* targetUser*/) {
+  //
+  // When user taps on any individual we come here, including self.
+  // This creates IndividualStatus Sensor View transaction; alertLevel is status of the user that is being viewed
+  // A credit of 0.1T$ is credit for this except for self view.
+  //
+
+  PaymentService.sensorDataView = function(creditsAsFloat, alertlevelAsString, targetUser) {
     var myUser = User.credentials();
     if (myUser != undefined) {
       var status = null;
@@ -76,8 +95,8 @@ angular.module('careWheels')
           alertlevel: alertlevelAsString,
           callpayment: 'False',
           sensordataviewpayment: 'True',
-          membersummarypayment: 'False'
-          //sensorDataViwed: <targetUser>
+          membersummarypayment: 'False',
+          viweduser: targetUser           // Incase of self view creditng should be avoided hence this passed
         }),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
@@ -94,9 +113,14 @@ angular.module('careWheels')
         } else console.log('Success: ' + data);
       })
     } else console.error("Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
-  };
+  };  // PaymentService.sensorDataView
 
-  //creates home page transaction
+  //
+  // So there is three types of transactoion for which a user gets paid 0.1T$%. Call, individual status view and
+  // Group Status view. SO when ever the user views the Group status the control comes here to credit user 0.1T$
+  // This creates home page transaction
+  //
+
   PaymentService.memberSummary = function(creditsAsFloat) {
     var myUser = User.credentials();
     if (myUser != undefined) {
@@ -133,4 +157,4 @@ angular.module('careWheels')
     } else console.error("Cannot make REST call for memberSummary Payment because user credentials are undefined.");
   };
   return PaymentService;
-});
+}); // PaymentService.memberSummary

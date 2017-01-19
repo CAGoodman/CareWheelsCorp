@@ -26,12 +26,22 @@ angular.module('careWheels', [
 
 
 //contant definition for endpoint base url
-.constant('BASE_URL', 'https://CareBank.CareWheels.org:8443')
 
 .run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, $window, User) {
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
     console.log('state change');
+
+    //
+    // When ever there is a state change which  means we in and out of GroupStatus then
+    // we come here. We need reset the timer which flashes the red alert. Or else the
+    // timer value goes on accumalating.
+    //
+
+    if ($rootScope.redAlertIndex !== undefined) {
+      clearInterval($rootScope.redAlertIndex);
+      $rootScope.redAlertIndex = undefined;
+    }
 
     if (User.credentials() === null) {
       if (next.name !== 'login') {
@@ -61,16 +71,18 @@ angular.module('careWheels', [
 })
 
 // API factory for making all php endpoints globally accessible.
-.factory('API', function (BASE_URL) {
+.factory('API', function (careBankURL8443, careBankURL8080) {
   var api = {
-    userAndGroupInfo: BASE_URL + '/userandgroupmemberinfo.php',
-    userInfo: BASE_URL + '/userinfo.php',
-    updateUserReminders: BASE_URL + '/updateuserreminders.php',
-    groupMemberInfo: BASE_URL + '/groupmemberinfo.php',
-    updateLastOwnership: BASE_URL + '/updatelastownershiptakentime.php',
-    creditUser: BASE_URL + '/credituser.php',
-    updateSettings:BASE_URL + '/updatesettings.php',
-    refreshScreen:BASE_URL + '/refreshScreen.php'
+    userAndGroupInfo: careBankURL8443 + '/userandgroupmemberinfo.php',
+    userInfo: careBankURL8443 + '/userinfo.php',
+    updateUserReminders: careBankURL8443 + '/updateuserreminders.php',
+    groupMemberInfo: careBankURL8443 + '/groupmemberinfo.php',
+    updateLastOwnership: careBankURL8443 + '/updatelastownershiptakentime.php',
+    creditUser: careBankURL8443 + '/credituser.php',
+    updateSettings:careBankURL8443 + '/updatesettings.php',
+    refreshScreen:careBankURL8443 + '/refreshScreen.php',
+    sensorDownLoad:careBankURL8443 + '/analysis.php',
+    loggingServices:careBankURL8080 + '/logupload.php'
   };
   return api;
 });

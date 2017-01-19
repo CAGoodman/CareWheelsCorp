@@ -9,7 +9,7 @@
 --*/
 
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
-  .service('fileloggerService', function (BASE_URL, $fileLogger, $filter, $ionicPlatform, $cordovaFile, $cordovaFileTransfer) {
+  .service('fileloggerService', function ($fileLogger, $filter, $ionicPlatform, $cordovaFile, $cordovaFileTransfer, API) {
     var logFileName = "careWheelsLocalLogFile.log";
     //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
     var isAndroid = window.cordova!=undefined;
@@ -64,10 +64,8 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       // save the "parent process" = "this"
       var pp = this;
 
-      // var uri = encodeURI(BASE_URL + "/logupload.php");
-      var uri = encodeURI("http://CareBank.CareWheels.org:8080/logupload.php");			//ABCmods for final release
-	  //var uri = encodeURI("http://10.0.0.229:8080/logupload.php");					//ABCmods for local server usage during development
-      // var uri = encodeURI("https://carewheels.cecs.pdx.edu:8443/logupload.php");
+
+      var uri = encodeURI(API.loggingServices);
 
       $fileLogger.checkFile().then(function (d) {
         var cpp = pp;

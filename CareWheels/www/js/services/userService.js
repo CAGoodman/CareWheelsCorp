@@ -10,7 +10,7 @@
 
 angular.module('careWheels')
 // User factory
-.factory('User', function (GroupInfo, BASE_URL, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
+.factory('User', function (GroupInfo, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
 	var user = {};
 	var userService = {};
 	var failCount = 0;
@@ -57,22 +57,19 @@ angular.module('careWheels')
 			//
 			console.log(response.status);
 			console.log(response.data);
-			var alertPopup = $ionicPopup.alert({
-							title: 'Login failed!',
-							template: response.data
-						});
+
 			if (failCount >= 3) {
 				errorMsg = "Exceeding invalid login attempts. Please Contact admin";
 			} else {
 				switch(response.status) {
 					case 400:
-						errorMsg = "Please check your credentials!";
+						errorMsg = "Please check your credentials! ";
 						break;
 					case 401:
-						errorMsg = "The entered username is incorrect.";
+						errorMsg = "The entered username is incorrect. ";
 						break;
 					case 404:
-						errorMsg = "Unable to reach the server";
+						errorMsg = "Unable to reach the server ";
 						break;
 					default:
 						if (response.data === "Your access is blocked by exceeding invalid login attempts") {
@@ -81,11 +78,16 @@ angular.module('careWheels')
 						failCount++;
 						var alertPopup = $ionicPopup.alert({
 							title: 'Login failed!',
-							//template: errorMsg
+							template: errorMsg,
 							template: response.data
 						});
-				}
-			}
+						return;
+				} // switch
+				var alertPopup = $ionicPopup.alert({
+					title: 'Login failed!',
+					template: [errorMsg + response.data]
+				});
+			} // else
 		})
 	};	// userService.login
 
@@ -169,15 +171,6 @@ angular.module('careWheels')
 		})
 	};	// userService.setOnVacation
 
-/*
-    userService.RefreshScreen = function (uname, passwd) {
-		//var creds = userService.credentials();
-		//var currentUserObject = GroupInfo.getMember(creds.username);
-		// console.log("currentUserobject is: " + currentUserObject);
-		//Download.DownloadData(function(){
-		return false;
-    }; // userService.Refresh
-	*/
 	return userService;
 }); // factory
 

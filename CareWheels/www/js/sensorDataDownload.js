@@ -1,4 +1,4 @@
-// 
+//
 // CareWheels Corporation 2016
 // Filename: sensorDataDownload.js
 // Description: CareBank app calls the CareBank Server to download the sensor data to refresh user screen
@@ -9,7 +9,7 @@
 //
 
 angular.module('careWheels')
-  .factory('Download', function ($http, $httpParamSerializerJQLike, WorkerService, GroupInfo, User, notifications) {
+  .factory('Download', function ($http, $httpParamSerializerJQLike, WorkerService, GroupInfo, User, notifications, API) {
     var DownloadService = {};
 
     //this is the main function called after login
@@ -66,10 +66,9 @@ angular.module('careWheels')
 
 
         //http request to carebank /getfeeds/ endpoint
-		var dataUrl = "https://CareBank.CareWheels.org:8443/analysis.php";//get page of nodes for this user ABCMods for release
-        //var dataUrl = "https://10.0.0.229:8443/analysis.php";			  //get page of nodes for this user ABCMods for devleopement only
+
         return $http({
-          url: dataUrl,
+          url: API.sensorDownLoad,
           method: 'POST',
           data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
             usernametofind: usernametofind,

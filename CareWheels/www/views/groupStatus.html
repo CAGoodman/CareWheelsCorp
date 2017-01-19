@@ -57,16 +57,33 @@ The browser calls the index.html first and that loads this file.
 					<div id="careBankData" class="">
 						<div class="careBankDetail careBankBalance">
 							<div class="miniCardHeader center">
-								Balance: <b>{{group[0].balance}}</b>
+								<mark1>Balance:</mark1> <b>{{group[0].balance}}</b>
+								<mark2>Given:</mark2> <b>+{{group[0].credit}}</b>
+								<mark3>Received:</mark3> <b>-{{group[0].debit}}</b>
 							</div>
 						</div>
 					</div>
 				</div>
-
 			</ion-item>
 		</ion-list>
 		<div id="vacationMode" class="bar bar-footer bar-assertive">
 			<div class="title">Vacation Mode Enabled</div>
 		</div>
+		<head>
+			<style>
+			mark1 {
+			    background-color: yellow;
+			    color: black;
+			}
+			mark2 {
+			    background-color: green;
+			    color: white;
+			}
+			mark3 {
+			    background-color: red;
+			    color: white;
+			}
+			</style>
+		</head>
 	</ion-content>
 </ion-view>

@@ -66,7 +66,7 @@ angular.module('careWheels')
           }
         }
       })
-      .state('app.options', {							// ABCMods for adding a new menu item options
+      .state('app.options', {
         url: '/options',
         views: {
           'menuContent': {
