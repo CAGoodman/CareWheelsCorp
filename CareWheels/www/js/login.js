@@ -14,10 +14,16 @@ angular.module('careWheels')
   .controller('loginController',
 
     function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup,
-      GroupInfo, $interval, notifications, onlineStatus, apkVersion, Download, $fileLogger, fileloggerService){
+      GroupInfo, $interval, notifications, onlineStatus, apkVersion, Download, $fileLogger,
+      fileloggerService, downloadInterval, loginTimeoutPeriod, chkNetDayFreq, chkNetNightFreq,
+      checkNetworkInterval, beginNightTime, endNightTime){
 
-    var DOWNLOAD_INTERVAL = 1000 * 60 * 5; // constant interval for download, 5 mins
-    var LOGIN_TIMEOUT = 1000 * 60;         // timeout for login
+    // downloadInterval, loginTimeoutPeriod, chkNetDayFreq, chkNetNightFreq have all been declared
+    // as constants in package.json. downloadInterval = 1000 * 60 * 5 (5 mins)
+    // loginTimeoutPeriod = 1000 * 60 (1 min), chkNetDayFreq = 100, chkNetNightFreq = 10000
+    // checkNetworkInterval = 1000 * 60 * 5 (5 mins) and beginNightTime, endNightTime are set to 10 PM
+    // and 6PM. For the current setting please check package.json.
+
     var loginTimeout = false;
 
     var popupTemplate = '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>';
@@ -92,7 +98,7 @@ angular.module('careWheels')
 
           //
           // Here a time out is set and if the server does not come back in
-          // LOGIN_TIMEOUT time then we issue login failed message
+          // loginTimeoutPeriod time then we issue login failed message
           //
 
           var loginPromise = setTimeout(function(){
@@ -100,7 +106,7 @@ angular.module('careWheels')
             $ionicLoading.hide();               // kill the loading screen
             $state.reload();                    // reload the view (try again)
             displayError(0);                    // pop-up error
-          }, LOGIN_TIMEOUT);
+          }, loginTimeoutPeriod);
 
 
           // do the data download
@@ -112,21 +118,53 @@ angular.module('careWheels')
               $state.go('app.groupStatus');     // go to group view
             }
           });
-
+          scheduleNetWorkChecking();            // Check network connectivity
         }
       });
     };
 
+//
+//  scheduleNetWorkChecking() is scheduled for every 5 min. It is internally it does its job every 5 min.
+//  Depending on the  time of the day beginNightTime or endNightTime the frequencey at which network
+//  connectivity checking varies between chkNetDayFreq and chkNetNightFreq which are defined as constants
+//  in package.json. Everytime there is a switch the previous net work check timer is cleared.
+//
 
-    /**
-     * Interval to check for internet connection.
-     * */
-    $interval(function(){
-      if (!onlineStatus.isOnline() && !$scope.connectionError){
-        $scope.connectionError = true;
-        displayError(1);
-      }
-    }, 100);
+    var setDay = false;
+    var setNight = false;
+    var chkNetIndex = true;
+    var d, h;
+    function scheduleNetWorkChecking(){
+      $interval(function(){
+        d = new Date();
+        h = d.getHours();
+        if (h <= beginNightTime || h >= endNightTime) {           // Day time between 6AM and 10PM
+          if (setDay == false) {
+            setDay = true;
+            setNight = false;
+            clearInterval(chkNetIndex);
+            chkNetIndex = setInterval(function(){
+              if (!onlineStatus.isOnline() && !$scope.connectionError){
+                $scope.connectionError = true;
+                displayError(1);
+              }
+            }, chkNetDayFreq);                                      // Check more frequently
+          }
+        } else {                                                    // Night time between 10PM and 6AM
+          if (setNight == false) {
+            setNight = true;
+            setDay = false;
+            clearInterval(chkNetIndex);
+            chkNetIndex = setInterval(function(){
+              if (!onlineStatus.isOnline() && !$scope.connectionError){
+                $scope.connectionError = true;
+                displayError(1);
+              }
+            }, chkNetNightFreq);                                      // Check less frequently
+          }
+        } // else
+      }, checkNetworkInterval); // 5 min interval
+    }
 
     /**
      * Schedule a download every on an interval:
@@ -138,8 +176,8 @@ angular.module('careWheels')
         $interval(function(){
           Download.DownloadData(function(){
             console.log('download scheduler finished')
-          });
-        }, DOWNLOAD_INTERVAL ); // 5 min interval
+          }); // Download()
+        }, downloadInterval); // 5 min interval
 
     }
 

@@ -70,7 +70,7 @@ angular.module('careWheels')
             break;
           }
 
-          asterisks += "* ";
+          asterisks += "X";
         }
 
         stringArray[i] = asterisks;

@@ -17,7 +17,7 @@
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService, Download) {
+function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService, Download, redAlertFreq) {
 
 	//
 	// Any time the main screen i.e. group status screen is to be displayed this groupStatusController()
@@ -79,7 +79,7 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 				alertArray[i].fadeIn("slow");
 			}
 		}
-    }, 2000);
+    }, redAlertFreq);
 
 	// Alert index is saved which is cleared in app.js when there is a state change
 	$rootScope.redAlertIndex = redAlertIndex;
