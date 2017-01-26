@@ -1,7 +1,7 @@
 /*++
  CareWheels Corporation 2016
  Filename: loggingService.js
- Description: CareBank app calls this to log into the CareBank Server
+ Description: To provide logging services.
 
  Authors: Capstone students PSU Aug 2016
  Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16

@@ -135,11 +135,11 @@ gulp.task('resetDispVer', function(callback) {
 
 gulp.task('getProperty', function () {
   var data = require('./package.json')
-  console.log('Name = ' + data.apkName)
-  console.log('Company = ' + data.apkCompany)
-  console.log('Version = ' + data.apkVersion)
-  console.log('APK = ' + data.apkPackage)
-  console.log('Date = ' + data.apkDate);
+  console.log('Name = ' + data.apkDependencies.apkName)
+  console.log('Company = ' + data.apkDependencies.apkCompany)
+  console.log('Version = ' + data.apkDependencies.apkVersion)
+  console.log('APK = ' + data.apkDependencies.apkPackage)
+  console.log('Date = ' + data.apkDependencies.apkDate);
 });
 
 //
@@ -149,7 +149,7 @@ gulp.task('getProperty', function () {
 
 gulp.task('getVersion', function () {
   var data = require('./package.json')
-  console.log('Version = ' + data.apkVersion)
+  console.log('Version = ' + data.apkDependencies.apkVersion)
 });
 
 //
@@ -182,7 +182,7 @@ gulp.task('bumpDate', function () {
 
 gulp.task('bumpApk', function () {
   return gulp.src('./package.json')
-    .pipe(replace(/"apkPackage*.*/, "\"apkPackage\": "  + "\"" + argv.apk + "\","))
+    .pipe(replace(/"apkPackage*.*/, "\"apkPackage\": "  + "\"" + argv.apk + "\""))
     .pipe(gulp.dest('./'));
 });
 
@@ -197,9 +197,9 @@ gulp.task('bumpAll', function(callback) {
 });
 
 //
-// This will read package.json and update the file ngconstants.js. This will
+// This will read package.json and update the file ngConstants.js. This will
 // run as part of BuildApk.bat
-// Usage: gulp constants
+// Usage: gulp bumpNgConstants
 //
 
 gulp.task('bumpConstants', function() {
@@ -207,7 +207,7 @@ gulp.task('bumpConstants', function() {
   return ngConstant({
     constants: packageJSON,
     stream: true,
-    name: 'app.constants',
+    name: 'ng.constants',
     wrap: false
   })
   .pipe(debug())

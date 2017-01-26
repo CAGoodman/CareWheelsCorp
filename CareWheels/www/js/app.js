@@ -18,31 +18,32 @@ angular.module('careWheels', [
   'ionic',
   'ui.router',
   'ngCordova',
-  'FredrikSandell.worker-pool',
   'angularMoment',
   'careWheels.fileloggermodule',
+  'ng.constants',
   'app.constants'
 ])
 
 
-//contant definition for endpoint base url
-
 .run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, $window, User) {
+
+  //
+  // When ionic.serve is run this is the entry point to the application
+  //
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
     console.log('state change');
 
     //
-    // When ever there is a state change which  means we in and out of GroupStatus then
-    // we come here. We need reset the timer which flashes the red alert. Or else the
-    // timer value goes on accumalating.
+    // When ever there is a state change which  means we go in and out of GroupStatus then
+    // we come here. We need to reset the timer which flashes the red alert. Or else the
+    // timer occurrence goes on accumalating.
     //
 
-    if ($rootScope.redAlertIndex !== undefined) {
+    if ($rootScope.redAlertIndex !== angular.isundefined) {
       clearInterval($rootScope.redAlertIndex);
-      $rootScope.redAlertIndex = undefined;
+      $rootScope.redAlertIndex = angular.isundefined;
     }
-
     if (User.credentials() === null) {
       if (next.name !== 'login') {
         event.preventDefault();
@@ -71,18 +72,16 @@ angular.module('careWheels', [
 })
 
 // API factory for making all php endpoints globally accessible.
-.factory('API', function (careBankURL8443, careBankURL8080) {
+.factory('API', function (cbUrls) {
   var api = {
-    userAndGroupInfo: careBankURL8443 + '/userandgroupmemberinfo.php',
-    userInfo: careBankURL8443 + '/userinfo.php',
-    updateUserReminders: careBankURL8443 + '/updateuserreminders.php',
-    groupMemberInfo: careBankURL8443 + '/groupmemberinfo.php',
-    updateLastOwnership: careBankURL8443 + '/updatelastownershiptakentime.php',
-    creditUser: careBankURL8443 + '/credituser.php',
-    updateSettings:careBankURL8443 + '/updatesettings.php',
-    refreshScreen:careBankURL8443 + '/refreshScreen.php',
-    sensorDownLoad:careBankURL8443 + '/analysis.php',
-    loggingServices:careBankURL8080 + '/logupload.php'
+    userAndGroupInfo: cbUrls.careBankURL8443 + '/userandgroupmemberinfo.php',
+    updateUserReminders: cbUrls.careBankURL8443 + '/updateuserreminders.php',
+    // userInfo: cbUrls.careBankURL8443 + '/userinfo.php',
+    //groupMemberInfo: cbUrls.careBankURL8443 + '/groupmemberinfo.php',
+    creditUser: cbUrls.careBankURL8443 + '/credituser.php',
+    updateSettings:cbUrls.careBankURL8443 + '/updatesettings.php',
+    sensorDownLoad:cbUrls.careBankURL8443 + '/analysis.php',
+    loggingServices:cbUrls.careBankURL8443 + '/logupload.php'
   };
   return api;
 });

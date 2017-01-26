@@ -57,8 +57,8 @@ The browser calls the index.html first and that loads this file.
 					<div id="careBankData" class="">
 						<div class="careBankDetail careBankBalance">
 							<div class="miniCardHeader center">
-								<mark1>Balance = Given - Received</mark1>
-								<p><mark2><p1>{{group[0].balance}}+{{group[0].credit}}-{{group[0].debit}}</p1></mark2></p>
+								<mark1>Balance = Given - Recvd</mark1>
+								<p><mark2>[{{group[0].balance | number:1}}]   [{{group[0].credit | number:1}}]  [{{group[0].debit|number:1}}]</mark2></p>
 							</div>
 						</div>
 					</div>
@@ -78,9 +78,7 @@ The browser calls the index.html first and that loads this file.
 				font-weight: bold;
 			    color: black;
 			    font-size: large;
-			}
-			p1 {
-				word-spacing: 30px;
+			    word-spacing: 30px;
 			}
 			</style>
 		</head>

@@ -17,7 +17,7 @@
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService, Download, redAlertFreq) {
+function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService, Download, redAlertPromise) {
 
 	//
 	// Any time the main screen i.e. group status screen is to be displayed this groupStatusController()
@@ -79,7 +79,7 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 				alertArray[i].fadeIn("slow");
 			}
 		}
-    }, redAlertFreq);
+    }, redAlertPromise);		// This is the requencey at the rea alert will flash
 
 	// Alert index is saved which is cleared in app.js when there is a state change
 	$rootScope.redAlertIndex = redAlertIndex;
@@ -194,8 +194,9 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 		$scope.group[currentUser].image = groupArray[loggedInUserIndex].photoUrl;
 		$scope.group[currentUser].username = groupArray[loggedInUserIndex].username;
 		$scope.group[currentUser].name = groupArray[loggedInUserIndex].name;
-		$scope.group[currentUser].balance = trimZeros(groupArray[loggedInUserIndex].analysisData.balance);
-		$scope.group[currentUser].credit = 18.9; //trimZeros(groupArray[loggedInUserIndex].analysisData.credit);
+		$scope.group[currentUser].balance = groupArray[loggedInUserIndex].analysisData.balance;
+		var c = parseFloat($scope.group[currentUser].balance) + 5.3;
+		$scope.group[currentUser].credit = Number((c).toFixed(2)) ; //trimZeros(groupArray[loggedInUserIndex].analysisData.credit);
 		$scope.group[currentUser].debit = 5.3; //trimZeros(groupArray[loggedInUserIndex].analysisData.debit);
 		$scope.group[currentUser].vacationMode = groupArray[loggedInUserIndex].analysisData.vacationMode;
 		//$scope.group[currentUser].onVacation = User.getVacationValue();
@@ -231,19 +232,13 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 		}
     }	// setGroupArray();
 
-    //removes insignificant zeros
-    function trimZeros(input) {
-		var number = parseFloat(input);
-		return number.toString();
-    }
-
     //
     // The user has tapped on an individual at this point and immidiatley contorl passes for Payment
     //
 
     function clickUser(index) {
 		if (!$scope.group[index].error && !$scope.group[index].vacationMode) {
-			PaymentService.sensorDataView(0.1, $scope.group[index].alertLevelColor, $scope.group[index].name);
+			PaymentService.sensorDataView(0.1, $scope.group[index].alertLevelColor, $scope.group[index].username);
 			$scope.group[0].userSelected = $scope.group[index].name;
 			GroupInfo.setSelectedMemberIndex($scope.group[index].username);
 			$state.go('app.individualStatus');

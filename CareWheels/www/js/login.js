@@ -14,38 +14,32 @@ angular.module('careWheels')
   .controller('loginController',
 
     function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup,
-      GroupInfo, $interval, notifications, onlineStatus, apkVersion, Download, $fileLogger,
-      fileloggerService, downloadInterval, loginTimeoutPeriod, chkNetDayFreq, chkNetNightFreq,
-      checkNetworkInterval, beginNightTime, endNightTime){
+      GroupInfo, $interval, notifications, onlineStatus, Download, $fileLogger,
+      fileloggerService, apkDependencies, loginDependencies){
 
-    // downloadInterval, loginTimeoutPeriod, chkNetDayFreq, chkNetNightFreq have all been declared
-    // as constants in package.json. downloadInterval = 1000 * 60 * 5 (5 mins)
-    // loginTimeoutPeriod = 1000 * 60 (1 min), chkNetDayFreq = 100, chkNetNightFreq = 10000
-    // checkNetworkInterval = 1000 * 60 * 5 (5 mins) and beginNightTime, endNightTime are set to 10 PM
-    // and 6PM. For the current setting please check package.json.
-
-    var loginTimeout = false;
+    // apkDependencies has been declared in package.json --> ngConstatnts.js
+    // loginDependencies has been declared in appConstatnts.js
+    // downloadInterval = 1000 * 60 * 5 (5 mins)
+    // loginTimeoutPeriod = 1000 * 60 (1 min),
+    // For the current setting please check ngConstants.js or appConstants.js
 
     var popupTemplate = '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>';
+    var loginTimeout = false;
+    $scope.rememberMe = false;
 
-    // When we select remember this is where the login credentials are stored.
-    // Right here storage
+    // When we select "remember credentials" login credentials are stored in localStorage
     var credentials = angular.fromJson(window.localStorage['loginCredentials']);
 
     $ionicHistory.nextViewOptions({disableBack: true});
 
-    //$controller('DownloadCtrl', {$scope : dataDownload});
-    //$controller('AnalysisCtrl', {$scope : dataAnalysis});
-
-    $scope.rememberMe = false;
     $scope.showPassword = false;
     $scope.showHelp = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
     $scope.connectionError = false;
-    $scope.versionNumber = apkVersion;
+    $scope.versionNumber = apkDependencies.apkVersion;
 
     //
-    // If the remember me set then the credential is in the local memory so can be written
+    // If the rememberMe is set then the credentials are in the local memory so can be written
     // back on the login screen.
     //
 
@@ -77,11 +71,11 @@ angular.module('careWheels')
         if (User.credentials()) {
           //
           // do the log upload. This is where the app talks to the server for credentials authentication
-          // The credential remembering is within the app only the server is unaware of it
+          // The credentials remembering is within the app only the server is unaware of it
           //
           fileloggerService.initLogComponent();
           fileloggerService.logUpload(uname, passwd);
-          console.log("Done uploading login credentials to the server for authentication!");
+          console.log("Done uploading log file!");
 
           //
           // Pull up loading overlay so user knows App hasn't frozen
@@ -106,7 +100,7 @@ angular.module('careWheels')
             $ionicLoading.hide();               // kill the loading screen
             $state.reload();                    // reload the view (try again)
             displayError(0);                    // pop-up error
-          }, loginTimeoutPeriod);
+          }, loginDependencies.loginTimeoutPeriod);
 
 
           // do the data download
@@ -118,53 +112,9 @@ angular.module('careWheels')
               $state.go('app.groupStatus');     // go to group view
             }
           });
-          scheduleNetWorkChecking();            // Check network connectivity
         }
       });
     };
-
-//
-//  scheduleNetWorkChecking() is scheduled for every 5 min. It is internally it does its job every 5 min.
-//  Depending on the  time of the day beginNightTime or endNightTime the frequencey at which network
-//  connectivity checking varies between chkNetDayFreq and chkNetNightFreq which are defined as constants
-//  in package.json. Everytime there is a switch the previous net work check timer is cleared.
-//
-
-    var setDay = false;
-    var setNight = false;
-    var chkNetIndex = true;
-    var d, h;
-    function scheduleNetWorkChecking(){
-      $interval(function(){
-        d = new Date();
-        h = d.getHours();
-        if (h <= beginNightTime || h >= endNightTime) {           // Day time between 6AM and 10PM
-          if (setDay == false) {
-            setDay = true;
-            setNight = false;
-            clearInterval(chkNetIndex);
-            chkNetIndex = setInterval(function(){
-              if (!onlineStatus.isOnline() && !$scope.connectionError){
-                $scope.connectionError = true;
-                displayError(1);
-              }
-            }, chkNetDayFreq);                                      // Check more frequently
-          }
-        } else {                                                    // Night time between 10PM and 6AM
-          if (setNight == false) {
-            setNight = true;
-            setDay = false;
-            clearInterval(chkNetIndex);
-            chkNetIndex = setInterval(function(){
-              if (!onlineStatus.isOnline() && !$scope.connectionError){
-                $scope.connectionError = true;
-                displayError(1);
-              }
-            }, chkNetNightFreq);                                      // Check less frequently
-          }
-        } // else
-      }, checkNetworkInterval); // 5 min interval
-    }
 
     /**
      * Schedule a download every on an interval:
@@ -177,7 +127,7 @@ angular.module('careWheels')
           Download.DownloadData(function(){
             console.log('download scheduler finished')
           }); // Download()
-        }, downloadInterval); // 5 min interval
+        }, loginDependencies.downloadInterval); // 5 min interval
 
     }
 

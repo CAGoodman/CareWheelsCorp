@@ -9,7 +9,7 @@
 //
 angular.module('careWheels')
 .controller('OptionsController', function ($scope, $state, $controller, $ionicPopup, GroupInfo, User,
-	Download, apkName, apkCompany, apkVersion, apkDate, apkPackage) {
+	Download, apkDependencies) {
 
   $scope.ScreenRefresh = function () {
     Download.DownloadData(function () {
@@ -18,17 +18,17 @@ angular.module('careWheels')
   }
 
   $scope.About = function () {
-  	console.log('Name: ' + apkName)
-    console.log('Company: ' + apkCompany)
-    console.log('Version: ' + apkVersion)
-    console.log('Apk: ' + apkPackage)
-    console.log('Date: ' + apkDate)
+  	console.log('Name: ' + apkDependencies.apkName)
+    console.log('Company: ' + apkDependencies.apkCompany)
+    console.log('Version: ' + apkDependencies.apkVersion)
+    console.log('Apk: ' + apkDependencies.apkPackage)
+    console.log('Date: ' + apkDependencies.apkDate)
   	var aboutEntries = [
-  		{ label: 'Name', value: apkName },
-  		{ label: 'Company', value: apkCompany },
-  		{ label: 'Version', value: apkVersion },
-  		{ label: 'Apk', value: apkPackage },
-  		{ label: 'Date', value: apkDate }
+  		{ label: 'Name', value: apkDependencies.apkName },
+  		{ label: 'Company', value: apkDependencies.apkCompany },
+  		{ label: 'Version', value: apkDependencies.apkVersion },
+  		{ label: 'Apk', value: apkDependencies.apkPackage },
+  		{ label: 'Date', value: apkDependencies.apkDate }
   	]
 
   	var template = ''

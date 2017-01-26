@@ -9,7 +9,7 @@
 //
 
 angular.module('careWheels')
-  .factory('Download', function ($http, $httpParamSerializerJQLike, WorkerService, GroupInfo, User, notifications, API) {
+  .factory('Download', function ($http, $httpParamSerializerJQLike, GroupInfo, User, notifications, API) {
     var DownloadService = {};
 
     //this is the main function called after login
@@ -30,42 +30,7 @@ angular.module('careWheels')
         var password = user.password;//credentials of logged in user, from USER service
         var username = user.username;
 
-        //get variable values from groupinfo
-        var medsInterval2 = GroupInfo.getMedsInterval2(usernametofind);
-        var medsInterval3 = GroupInfo.getMedsInterval3(usernametofind);
-        var medsInterval4 = GroupInfo.getMedsInterval4(usernametofind);
-        var onVacation = GroupInfo.getOnVacation(usernametofind);
-
-        if (medsInterval2) {
-          medsInterval2 = 'True';
-        }
-        else {
-          medsInterval2 = 'False';
-        }
-
-        if (medsInterval3) {
-          medsInterval3 = 'True';
-        }
-        else {
-          medsInterval3 = 'False';
-        }
-
-        if (medsInterval4) {
-          medsInterval4 = 'True';
-        }
-        else {
-          medsInterval4 = 'False';
-        }
-
-        if (onVacation) {
-          onVacation = 'True';
-        }
-        else {
-          onVacation = 'False';
-        }
-
-
-        //http request to carebank /getfeeds/ endpoint
+           //http request to carebank /getfeeds/ endpoint
 
         return $http({
           url: API.sensorDownLoad,
@@ -73,19 +38,15 @@ angular.module('careWheels')
           data: $httpParamSerializerJQLike({    //serialize the parameters in the way PHP expects
             usernametofind: usernametofind,
             username: username,
-            password: password,
-            medsinterval2: medsInterval2,
-            medsinterval3: medsInterval3,
-            medsinterval4: medsInterval4,
-            onvacation: onVacation
-          }),
+            password: password
+             }),
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
           }
         // success
         }).then(function (response) {
 
-          console.log("cecs data server", response);
+          console.log("Sensor response: ", response);
 
           GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
 

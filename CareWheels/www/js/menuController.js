@@ -10,9 +10,9 @@
 //
 angular.module('careWheels')
 
-.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkVersion) {
+.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkDependencies) {
 
-    $scope.versionNumber = apkVersion;
+    $scope.versionNumber = apkDependencies.apkVersion;
 
     $scope.navHistory = function() {
       if($ionicHistory.backView() != null) {

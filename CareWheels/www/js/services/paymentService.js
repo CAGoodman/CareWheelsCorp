@@ -49,7 +49,6 @@ angular.module('careWheels')
           password: myUser.password,
           usernametodebt: userToDebtAsString,
           usernametocredit: myUser.username,
-          credits: creditsAsFloat,
           alertlevel: alertlevelAsString,
           callpayment: 'True',    //all three of these fields are needed
           sensordataviewpayment: 'False',
@@ -91,12 +90,11 @@ angular.module('careWheels')
           password: myUser.password,
           usernametodebt: '',
           usernametocredit: myUser.username,
-          credits: creditsAsFloat,
           alertlevel: alertlevelAsString,
           callpayment: 'False',
           sensordataviewpayment: 'True',
           membersummarypayment: 'False',
-          viweduser: targetUser           // Incase of self view creditng should be avoided hence this passed
+          vieweduser: targetUser           // Incase of self view creditng should be avoided hence this passed
         }),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
@@ -134,7 +132,6 @@ angular.module('careWheels')
           password: myUser.password,
           usernametodebt: '',
           usernametocredit: myUser.username,
-          credits: creditsAsFloat,
           alertlevel: 'na',   //field needs to have something in it
           callpayment: 'False',
           sensordataviewpayment: 'False',

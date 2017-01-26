@@ -87,8 +87,12 @@ angular.module('careWheels')
 					title: 'Login failed!',
 					template: [errorMsg + response.data]
 				});
+				GroupInfo.loginError = response.status;
+				$state.go('login');
+				return user;
 			} // else
 		})
+		return user;
 	};	// userService.login
 
     userService.credentials = function () {

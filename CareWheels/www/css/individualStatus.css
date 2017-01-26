@@ -3,13 +3,16 @@
   border: solid 1px grey;
   text-align: center;
   color: white;
+  font-weight: bold;
 }
 .blackFont{
   color: black;
+  font-weight: bold;
 }
 
 .col.no_border {
   border: none;
+  font-weight: bold;
 }
 
 #callArea {
