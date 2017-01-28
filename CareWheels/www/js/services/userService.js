@@ -14,7 +14,11 @@ angular.module('careWheels')
 	var user = {};
 	var userService = {};
 	var failCount = 0;
-	//window.localStorage['loginCredentials'] = null; // This is where credentials are saved
+	user.errorCode = 0;
+	//
+	// login.js/User.login() calls into here for authenticating the creds
+	// Window.localStorage['loginCredentials'] = null; // This is where credentials are saved
+	//
 
 	userService.login = function (uname, passwd, rmbr) {
 		$ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
@@ -87,18 +91,30 @@ angular.module('careWheels')
 					title: 'Login failed!',
 					template: [errorMsg + response.data]
 				});
-				GroupInfo.loginError = response.status;
-				$state.go('login');
-				return user;
 			} // else
+			user.errorCode = response.status;
 		})
-		return user;
 	};	// userService.login
 
+	//
+	// If error code is set we return null. All User.credentials() call end up here.
+	//
+
     userService.credentials = function () {
-		if (!user.username)
+		if (user.errorCode || !user.username) {
 			return null;
+		}
 		return user;
+    };
+
+    //
+    // This gets called from Logout() we just clear local cache. Local storage
+    // is untouched so if the user has remembered creds it will continue as usual
+    //
+
+	userService.ClearCredentials = function () {
+		user.username = null;
+		user.passwd = null;
     };
 
     userService.getVacationValue = function () {

@@ -4,7 +4,7 @@
  Description: This routes the Clickable menu to a new HTML page
 
  Authors: Capstone students PSU Aug 2016
- Revision: Added Options menu item  - AV 11/28/2016
+ Revision: Added Advanced menu item  - AV 11/28/2016
 
 --*/
 angular.module('careWheels')
@@ -66,12 +66,12 @@ angular.module('careWheels')
           }
         }
       })
-      .state('app.options', {
-        url: '/options',
+      .state('app.advanced', {
+        url: '/advanced',
         views: {
           'menuContent': {
-            templateUrl: 'views/options.html',
-            controller: 'OptionsController'
+            templateUrl: 'views/advanced.html',
+            controller: 'AdvancedController'
           }
         }
       });

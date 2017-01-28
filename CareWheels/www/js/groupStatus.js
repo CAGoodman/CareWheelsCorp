@@ -64,7 +64,7 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
     // and out. (flashing effect)
     //
 
-	var redAlertIndex = setInterval(function () {
+	var redAlertPromise = setInterval(function () {
 		/* jQuery element to fade in and out */
 		var alertArray = [
 			$('#centerAlert'),
@@ -79,10 +79,10 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 				alertArray[i].fadeIn("slow");
 			}
 		}
-    }, redAlertPromise);		// This is the requencey at the rea alert will flash
+    }, redAlertPromise);		// This is the frequencey at which the red alert will flash
 
-	// Alert index is saved which is cleared in app.js when there is a state change
-	$rootScope.redAlertIndex = redAlertIndex;
+	// Alert promise is saved which is cleared in app.js when there is a state change
+	$rootScope.redAlertPromise = redAlertPromise;
 
 	//
 	// Here we have discrete 5 group onr for each of the 5 users. I feel there is some repetition

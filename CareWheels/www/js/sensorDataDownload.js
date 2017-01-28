@@ -12,7 +12,11 @@ angular.module('careWheels')
   .factory('Download', function ($http, $httpParamSerializerJQLike, GroupInfo, User, notifications, API) {
     var DownloadService = {};
 
-    //this is the main function called after login
+    //
+    // This is the last function called after login as part of download scheduling
+    // Currently this gets called from groupStatus.js, IndividualStatus.js when the user pulls for a refresh.
+    // This also gets called by Advanced.js when user clicks ScreenRefresh.
+    //
     DownloadService.DownloadData = function (finalCallback) {
 
       var getData = function (member, callback) {

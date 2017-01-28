@@ -8,6 +8,12 @@
  Authors: Capstone students PSU Aug 2016
  Revision: Added logout, remember, forgot credentials - AV 0108/2017
 
+apkDependencies has been declared in package.json --> ngConstatnts.js
+loginDependencies has been declared in appConstatnts.js
+downloadInterval = 1000 * 60 * 5 (5 mins)
+loginTimeoutPeriod = 1000 * 60 (1 min),
+For the current setting please check ngConstants.js or appConstants.js
+
 --*/
 
 angular.module('careWheels')
@@ -17,11 +23,10 @@ angular.module('careWheels')
       GroupInfo, $interval, notifications, onlineStatus, Download, $fileLogger,
       fileloggerService, apkDependencies, loginDependencies){
 
-    // apkDependencies has been declared in package.json --> ngConstatnts.js
-    // loginDependencies has been declared in appConstatnts.js
-    // downloadInterval = 1000 * 60 * 5 (5 mins)
-    // loginTimeoutPeriod = 1000 * 60 (1 min),
-    // For the current setting please check ngConstants.js or appConstants.js
+    //
+    // When the app starts it enrters via app.js and then execution comes here.
+    // The login screen is still not painted at this point. It is painted as we move down
+    //
 
     var popupTemplate = '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>';
     var loginTimeout = false;
@@ -66,6 +71,10 @@ angular.module('careWheels')
      *         (user will have to manually input credentials at this point)
      * */
     $scope.login = function(uname, passwd, rmbr) {
+      //
+      // The control passes from here to userService.js/userService.login()
+      // It checks with the server and returns the creds or errors out
+      //
       User.login(uname, passwd, rmbr).then(function(response) {
 
         if (User.credentials()) {
@@ -102,8 +111,8 @@ angular.module('careWheels')
             displayError(0);                    // pop-up error
           }, loginDependencies.loginTimeoutPeriod);
 
-
           // do the data download
+
           Download.DownloadData(function(){
             clearTimeout(loginPromise);       // resolve timeout promise
             if (!loginTimeout){
@@ -117,11 +126,14 @@ angular.module('careWheels')
     };
 
     /**
-     * Schedule a download every on an interval:
-     *      1. download data
-     *      2. wait
-     *      3. analyze data
-     * */
+      * This gets scheduled as the last operation of the login process
+      * Before exiting this app the download scheduling has to be killed
+      * Schedule a download on an interval:
+      *      1. download data
+      *      2. wait
+      *      3. analyze data
+      *
+    */
     function scheduleDownload(){
         $interval(function(){
           Download.DownloadData(function(){

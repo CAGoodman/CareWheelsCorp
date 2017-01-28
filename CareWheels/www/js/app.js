@@ -40,10 +40,11 @@ angular.module('careWheels', [
     // timer occurrence goes on accumalating.
     //
 
-    if ($rootScope.redAlertIndex !== angular.isundefined) {
-      clearInterval($rootScope.redAlertIndex);
-      $rootScope.redAlertIndex = angular.isundefined;
+    if ($rootScope.redAlertPromise !== angular.isundefined) {
+      clearInterval($rootScope.redAlertPromise);
+      $rootScope.redAlertPromise = angular.isundefined;
     }
+
     if (User.credentials() === null) {
       if (next.name !== 'login') {
         event.preventDefault();

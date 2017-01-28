@@ -4,13 +4,13 @@
 // Description: When the menu items are clicked the control comes here
 //
 // Authors: Capstone students PSU Aug 2016
-// Revision: Added a nedw menu item called Options - AV 11/28/16
+// Revision: Added a new menu item called Advanced - AV 11/28/16
 //           Pull up implementation - NXB 01/08/2017
 //
 //
 angular.module('careWheels')
 
-.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkDependencies) {
+.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkDependencies, User) {
 
     $scope.versionNumber = apkDependencies.apkVersion;
 
@@ -95,8 +95,42 @@ angular.module('careWheels')
             openCyclos();
     };
 
-	$scope.clickOptions = function () {
-		$state.go('app.options');
+    //
+    // When the user clicks on the Advanced option under the meny control comes here.
+    //
+
+	$scope.clickAdvanced = function () {
+		$state.go('app.advanced');
+    };
+
+    $scope.clickAbout = function () {
+
+        console.log('Name: ' + apkDependencies.apkName)
+        console.log('Company: ' + apkDependencies.apkCompany)
+        console.log('Version: ' + apkDependencies.apkVersion)
+        console.log('Apk: ' + apkDependencies.apkPackage)
+        console.log('Date: ' + apkDependencies.apkDate)
+        var aboutEntries = [
+            { label: 'Name', value: apkDependencies.apkName },
+            { label: 'Company', value: apkDependencies.apkCompany },
+            { label: 'Version', value: apkDependencies.apkVersion },
+            { label: 'Apk', value: apkDependencies.apkPackage },
+            { label: 'Date', value: apkDependencies.apkDate }
+        ]
+
+        var template = ''
+        aboutEntries.forEach(function (item) {
+          template += '<ion-item>' +
+            '<ion-label item-left>' + item.label + '</ion-label>' +
+            '<ion-note item-right>' + item.value + '</ion-note>' +
+          '</ion-item>'
+        })
+
+        template = '<ion-list>' + template + '</ion-list>'
+        var alertPopup = $ionicPopup.alert({
+          title: 'About CareBank Application',
+          template: template
+        });
     };
 
     var openSense = function () {

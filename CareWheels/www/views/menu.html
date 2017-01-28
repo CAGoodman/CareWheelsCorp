@@ -4,7 +4,7 @@ Filename: menu.html
 Description: This displays the menu item inside hamburger
 
 Authors: Capstone students PSU Aug 2016
-Revision: Added new menu item Options. This is a place holder during devleopement phase - AV 11/28/16
+Revision: Added new menu item Advanced. This is a place holder during devleopement phase - AV 11/28/16
 -->
 <ion-side-menus>
  <ion-side-menu-content>
@@ -45,8 +45,12 @@ Revision: Added new menu item Options. This is a place holder during devleopemen
     <ion-item menu-close ng-click="clickCyclos()">
       Cyclos
     </ion-item>
-	    <ion-item menu-close ng-click="clickOptions()">
-      Options
+	    <ion-item menu-close ng-click="clickAdvanced()">
+      Advanced
+    </ion-item>
+    </ion-item>
+      <ion-item menu-close ng-click="clickAbout()">
+      About
     </ion-item>
    </ion-list>
     <div class="version">{{versionNumber}}</div>
