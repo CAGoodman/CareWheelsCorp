@@ -1,4 +1,23 @@
-/* For individualStatus */
+/*++
+ CareWheels Corporation 2017
+ Filename: individualStatus.css
+ Description: This provides the layout, style and formatting of the individual status screen
+
+ Authors: Capstone students PSU Aug 2016
+ Revision: DIsabled Call button for center user - AV 01/30/2017
+ Notes: This is a general notes on CSS for the uninitated
+ Anything starting with a # means ID. The name following # has to be unique per page. html counterpart
+ calls ID by name to set the style of the page.
+ Anything staring with a "." is a class meaning a group od values/attributes. ID is also a class but unique
+ Both of them what the style will be when HTML code calls them.
+ We identify 2  ID's which get called by HTML and some other smalled ID's too
+ 1. #callArea  --> This is for the call button
+ 2. #buttonOverlay
+
+The HTML file will call the ID or the Class by "string name" explicitly and CSS will define the style of the display
+Note: In html do not use // for comments they mess up the format
+--*/
+
 .col {
   border: solid 1px grey;
   text-align: center;

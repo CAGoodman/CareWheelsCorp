@@ -20,7 +20,8 @@ The browser calls the index.html first and that loads this file.
 			<ion-item>
 				<ul id="userGroup">
 					<!--this could be implemented using ng-repeat-->
-
+					<!-- ng-class directive dynamically binds one more class to an HTML element
+					The value of ng-class can be a string, object or array. -->
 					<!--ng-class conditionally adds a css class. ex: {className: Bool} -->
 					<!--for example, if group[1].vacationMode === True, then userSquare topLeft will also get class of vacationMode -->
 					<li class="userSquare topLeft" ng-class="{vacationMode: group[1].vacationMode}" ng-click="clickTopLeft()">
@@ -48,7 +49,6 @@ The browser calls the index.html first and that loads this file.
 							ng-class="group[0].status"></div>
 						<img class="userImage center" ng-src="{{group[0].image}}">
 					</li>
-
 				</ul>
 			</ion-item>
 			<ion-item>
@@ -57,16 +57,28 @@ The browser calls the index.html first and that loads this file.
 					<div id="careBankData" class="">
 						<div class="careBankDetail careBankBalance">
 							<div class="miniCardHeader center">
-								<mark1>Balance = Given - Recvd</mark1>
-								<p><mark2>[{{group[0].balance | number:1}}]   [{{group[0].credit | number:1}}]  [{{group[0].debit|number:1}}]</mark2></p>
+                				<table width="100%">
+                        			<tr>
+                                		<td align="center">Balance</td>
+                                		<td rowspan="2" width="10%" align="center" style="vertical-align: middle;"> = </td>
+                                		<td align="center">Donated</td>
+                                		<td rowspan="2" width="10%" align="center" style="vertical-align: middle;"> - </td>
+                                		<td align="center">Received</td>
+                        			</tr>
+                        			<tr>
+                                		<td align="center">{{group[0].balance | number:1}}</td>
+                                		<td align="center">{{group[0].balance * 1.1 | number:1}}</td>
+                                		<td align="center">{{group[0].balance * 0.1 | number:1}}</td>
+                        			</tr>
+                				</table>
 							</div>
 						</div>
 					</div>
 				</div>
 			</ion-item>
 		</ion-list>
-		<div id="vacationMode" class="bar bar-footer bar-assertive">
-			<div class="title">Vacation Mode Enabled</div>
+		<div id="vacationMode" class="bar bar-footer" ng-class=barClass ng-show=showBar>
+			<div class="title">{{barLegend}}</div>
 		</div>
 		<head>
 			<style>

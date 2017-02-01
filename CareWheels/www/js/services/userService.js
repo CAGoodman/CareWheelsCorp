@@ -93,6 +93,7 @@ angular.module('careWheels')
 				});
 			} // else
 			user.errorCode = response.status;
+			$state.go($state.current, {}, {reload:true})
 		})
 	};	// userService.login
 
@@ -107,16 +108,6 @@ angular.module('careWheels')
 		return user;
     };
 
-    //
-    // This gets called from Logout() we just clear local cache. Local storage
-    // is untouched so if the user has remembered creds it will continue as usual
-    //
-
-	userService.ClearCredentials = function () {
-		user.username = null;
-		user.passwd = null;
-    };
-
     userService.getVacationValue = function () {
 		var creds = userService.credentials();
 		var currentUserObject = GroupInfo.getMember(creds.username);
@@ -126,7 +117,7 @@ angular.module('careWheels')
 
 			if (currentUserObject.customValues[i].field.internalName == "onVacation") {
 				// console.log("Found custom field onVacation!");
-				//console.log("Setting value to: " + currentUserObject.customValues[i].booleanValue);
+				//console.log("Vacation value to: " + currentUserObject.customValues[i].booleanValue);
 				return currentUserObject.customValues[i].booleanValue;
 			}
 		} // for
@@ -137,13 +128,9 @@ angular.module('careWheels')
     userService.setVacationValue = function (newValue) {
 		var creds = userService.credentials();
 		var currentUserObject = GroupInfo.getMember(creds.username);
-		// console.log("currentUserobject is: " + currentUserObject);
 		for(var i = 0; i < currentUserObject.customValues.length; i++) {
 			if (currentUserObject.customValues[i].field.internalName == "onVacation") {
-				// console.log("Found custom field onVacation!");
-				// console.log("Setting local value to: " + currentUserObject.customValues[i].booleanValue);
 				currentUserObject.customValues[i].booleanValue = newValue;
-				//console.log("Local value is now: " + currentUserObject.customValues[i].booleanValue);
 			}
 		}
     };

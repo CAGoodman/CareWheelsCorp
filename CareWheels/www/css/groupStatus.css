@@ -6,63 +6,56 @@
  Authors: Capstone students PSU Aug 2016
  Revision: Enabled center user - AV 12/18/2016
  Notes: This is a general notes on CSS for the uninitated
- Anything starting with a # means ID. The name folliwng # has to be unique per page. html counterpart
+ Anything starting with a # means ID. The name following # has to be unique per page. html counterpart
  calls ID by name to set the style of the page.
  Anything staring with a "." is a class meaning a group od values/attributes. ID is also a class but unique
  Both of them what the style will be when HTML code calls them.
  We identify 4 major ID's which get called by HTML and some other smalled ID's too
- 1. careBankBlock	--> This is the main block located at the very top
- 2. careBankHeader	--> This provides the space for the name CareWheels Group
- 3. careBankData
- 4. userGroup
+ 1. #careBankBlock	--> This is the main block located at the very top
+ 2. #careBankHeader	--> This provides the space for the name CareWheels Group
+ 3. #careBankData
+ 4. #userGroup
 The HTML file will call the ID or the Class by "string name" explicitly and CSS will define the style of the display
+Note: In html do not use // for comments they mess up the format
 --*/
+
+/*
+ First we define the style of the CareBank header and its contents
+*/
+
 ul {
 	list-style: none;
 }
 #careBankBlock{
 	margin-top:0;
-/*  position: relative;
-	!*background-color: #4cd964;*!
-	left: 0;
-	padding-left: 0;
-	width: 100%;*/
 }
+
 #careBankHeader {
 	text-align: center;
 	font-size: 26px;
 }
+
 .careBankDetail{
 	display: inline-block;
 	position: inherit;
 	text-align: center;
-	width: 80%;
-	margin-left: 10%;
+	width: 100%;
+	margin-left: 0%;
 	padding: 10px;
 	margin-top: 10px;
 	margin-bottom: 10px;
 
 }
+
 /* All this provides is a blank box. Html file fills in the wordings and data */
 .careBankBalance{
 }
 
-
-.smallBorder{
-	border-radius: 2px 2px 2px 2px;
-	-moz-border-radius: 2px 2px 2px 2px;
-	-webkit-border-radius: 2px 2px 2px 2px;
-	border: 2px solid #000000;
-}
-.boxShadow {
-	-webkit-box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.75);
-	-moz-box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.75);
-	box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.75);
-}
 #careBankData {
 
 
 }
+
 #userGroup {
 	position: relative;
 	left: 0;
@@ -73,19 +66,18 @@ ul {
 	-moz-box-shadow: 0px 3px 10px 0px rgba(0,0,0,0.75);
 	box-shadow: 0px 3px 10px 0px rgba(0,0,0,0.75);
 	border: 1px solid #737373;
-
 }
+
+/*
+ This is the general userSqaure applicable to all users. Increase or decrease
+ the width and height to make the sqaures big or small. 50% is normal 40% is smaller
+*/
+
 .userSquare {
 	position: absolute;
 	background-color: none;
-
-	/*background-color: dimgrey;
-	background-color: none;*/
 	width: 50%;
 	height: 50%;
-	/*-webkit-box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.75);
-	-moz-box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.75);
-	box-shadow: inset 0 0 2px 0 rgba(0, 0, 0, 0.75);*/
 	border: none;
 }
 
@@ -99,9 +91,10 @@ WOULD NOT BE TARGETED
 
 any images within a div with userSquare AND vacationMode classes, will get opacity 0.5,
 classes without spaces indicate AND */
-.userSquare.vacationMode img {
+/*.userSquare.vacationMode img {
 	opacity:0.5;
-}
+}*/
+
 
 /* This determines the size of the user image */
 .userImage {
@@ -131,6 +124,7 @@ classes without spaces indicate AND */
 	right: 0;
 	bottom: 0;
 }
+
 .centerUser {
 	left: 28%;
 	top: 28%;
@@ -138,12 +132,15 @@ classes without spaces indicate AND */
 	height: 40%;
 	background: none;
 }
-/* This determines the position of the "center" user image
-The main class userImage is defined above  */
+/*
+ This determines the position of the "center" user image
+The main class userImage is defined above
+*/
 .userImage.center {
 	left: 10%;
 	top: 10%;
 }
+
 .alertOverlay {
 	position: absolute;
 	width: 100%;

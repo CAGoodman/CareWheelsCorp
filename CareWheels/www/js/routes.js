@@ -15,6 +15,7 @@ angular.module('careWheels')
     $stateProvider
 
       .state('login', {
+        cache: false,
         url: '/login',
         templateUrl: 'views/login.html',
         controller: 'loginController'
@@ -57,12 +58,12 @@ angular.module('careWheels')
           }
         }
       })
-      .state('app.settings', {
-        url: '/settings',
+      .state('app.vacation', {
+        url: '/vacation',
         views: {
           'menuContent': {
-            templateUrl: 'views/settings.html',
-            controller: 'settingsController'
+            templateUrl: 'views/vacation.html',
+            controller: 'vacationController'
           }
         }
       })

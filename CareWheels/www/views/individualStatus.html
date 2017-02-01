@@ -1,3 +1,14 @@
+<!--
+CareWheels Corporation 2017
+Filename: groupStatus.html
+Description: This creates the individual data status screen
+
+Authors: Capstone students PSU Aug 2016
+Revision: Disabled center user call button - AV 01/27/2017
+Notes for the unintiated:
+The browser calls the index.html first and that loads this file.
+-->
+
 <ion-view view-title="app.individualStatus" class="overflow-scroll">
   <ion-nav-title>Status: {{name}}
     <a href="{{getPhoneNumber()}}" class="blue" ng-show="showCallButton">
@@ -9,7 +20,6 @@
     </a>
     <div id="buttonOverlay" ng-click="checkPhoneError()"></div>
   </ion-nav-title>
-
 
   <!-- individual status content -->
   <ion-content class="moveDown">

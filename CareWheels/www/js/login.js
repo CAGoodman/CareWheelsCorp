@@ -78,6 +78,7 @@ angular.module('careWheels')
       User.login(uname, passwd, rmbr).then(function(response) {
 
         if (User.credentials()) {
+
           //
           // do the log upload. This is where the app talks to the server for credentials authentication
           // The credentials remembering is within the app only the server is unaware of it
@@ -123,11 +124,24 @@ angular.module('careWheels')
           });
         }
       });
+
+      //
+      // For some reason "this" is not bound to $scope. So the ng-model username
+      // and ng-model passwd are bound to "this" and not to $scope. We clear it
+      // if they are not to be remembered. This helps when we logout
+      //
+
+      if (!rmbr) {
+        this.username = null;
+        this.passwd = null;
+      }
+
     };
 
     /**
       * This gets scheduled as the last operation of the login process
       * Before exiting this app the download scheduling has to be killed
+      * User.stopDownload is the Promise returned that is saved away for later killing
       * Schedule a download on an interval:
       *      1. download data
       *      2. wait
@@ -135,15 +149,12 @@ angular.module('careWheels')
       *
     */
     function scheduleDownload(){
-        $interval(function(){
-          Download.DownloadData(function(){
-            console.log('download scheduler finished')
-          }); // Download()
-        }, loginDependencies.downloadInterval); // 5 min interval
-
+      User.stopDownloadPromise = $interval(function(){
+        Download.DownloadData(function(){
+              console.log('download scheduler finished')
+        });
+      }, loginDependencies.downloadInterval); // 5 min interval
     }
-
-
 
     // An error popup dialog
     function displayError(index) {

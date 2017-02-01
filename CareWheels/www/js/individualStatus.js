@@ -3,7 +3,7 @@
  *
  */
 angular.module('careWheels')
-  .controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService, $fileLogger, fileloggerService, Download) {
+  .controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService, $fileLogger, fileloggerService, Download, User) {
 
     fileloggerService.initLogComponent();
 
@@ -175,6 +175,14 @@ angular.module('careWheels')
       //console.log("getCallButtonColor();", analysis);
 
       $scope.showCallButton = true;
+
+      // We disable Call button for logged in user
+
+      var user = User.credentials();
+      if (user.username == analysis.username) {
+         $scope.showCallButton = false;
+        return 'disableCallButton';
+      }
 
       // check for null params
       if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)

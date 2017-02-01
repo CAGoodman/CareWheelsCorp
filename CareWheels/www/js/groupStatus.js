@@ -17,12 +17,15 @@
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService, Download, redAlertPromise) {
+function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService, Download, loginDependencies) {
 
 	//
 	// Any time the main screen i.e. group status screen is to be displayed this groupStatusController()
 	// will be called and that calls runOnStateChange().
 	//
+
+	$scope.showBar = false;
+	$scope.barLegend = "";
 
 	runOnStateChange();
 
@@ -30,7 +33,6 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 	//
 	//  this function is invoked with each state change to this view.
 	//
-
 	function runOnStateChange() {
 		console.log('crediting user for group summary view.');
 		PaymentService.memberSummary(0.1);
@@ -46,43 +48,106 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 				clearInterval(initGroupInfo);		// Clear the timer
 				getLoggedInUser(groupArray);
 				setGroupArray(groupArray);			// This is a critical call which sets the group of 5
-				checkVacationMode();
+				checkCenterUserAlertLevel();
 			}
 		}, 50); 	// 50 mili sec delay to allow the download to happen
 	}	//runOnStateChange(). From here the control just drops down to the first code executing inside the controller
 
+	//
+	// Vacation mode gets higher priority. If that is set no point in flashing red alert
+	//
+
 	function checkVacationMode() {
-		if (User.getVacationValue())
-			$('#vacationMode').fadeIn(0);
-		else
-			$('#vacationMode').fadeOut(0);
+		if (User.getVacationValue()) {
+			$scope.showBar = true;
+			$scope.barLegend = "Vacation Mode On";
+		}
+		else {
+			if (checkCenterUserAlertLevel()){
+				$('#centerAlertMode').fadeIn(0);
+				$('#vacationMode').fadeOut(0);
+			} else {
+				$('#centerAlertMode').fadeOut(0);
+			}
+		}
 	}
 
+	// For center user we are not flashing alert but putting a red bar hence need to be discovered
+	// groupArray[1] technically is always center user but that is a hardcoded value. In case in the future
+	// that were to change then the code would break hence go by pure logic
+
+	function checkCenterUserAlertLevel() {
+		var creds = User.credentials();
+		var groupArray = GroupInfo.groupInfo();
+		var x = User.getVacationValue();
+		for (i = 0; i < 5; i++) {
+			if (groupArray[i].username == creds.username) {
+				var status;
+				status = $scope.getAlertColor(groupArray[i].analysisData.fridgeAlertLevel,
+					groupArray[i].analysisData.medsAlertLevel, User.getVacationValue(), i);
+				switch (status) {
+					case "grey":
+						$scope.showBar = true;
+						$scope.barLegend = "Vacation Mode On";
+						$scope.barClass = "bar-positive";
+						break;
+					case "red":
+						$scope.showBar = true;
+						$scope.barLegend = "Check Your Alert!";
+						$scope.barClass = "bar-assertive";
+						break;
+					case "yellow":
+						$scope.showBar = true;
+						$scope.barLegend = "Check Your Alert!";
+						$scope.barClass = "bar-energized";
+						break;
+					case "blue":
+						$scope.showBar = false;
+						break;
+					default:
+						console.log('Bad alert status');
+						$scope.showBar = false;
+
+				}
+			}
+		}
+		console.log("Oh! Oh! username is missing contact server admin");
+	}
 	//
-	// From runOnStateChange() the control comes down here to
-    // automatically go through each user square, and find each 'red' alert, and fade that element in
-    // and out. (flashing effect)
+	// From runOnStateChange() the control comes down here to automatically go through each id(#),
+	// and enable in the object fadeIn and FadeOut. Please note the id objects are just being
+	// initialized at this point what action to take i.e., flash or not to flash decision is taken later
+    // RedAlert is set for all users expcept center user.Center user we are just going to put a red bar
+    // #centerAlert is not part of the alertArray[]
     //
 
 	var redAlertPromise = setInterval(function () {
 		/* jQuery element to fade in and out */
-		var alertArray = [
-			$('#centerAlert'),
+		var alertArray = [				// alertArray is initailized with id from the html here
 			$('#topLeftAlert'),
 			$('#topRightAlert'),
 			$('#bottomLeftAlert'),
 			$('#bottomRightAlert')
-		];
+			];
+
+		//
+		// The id's in the alertArray is connected to the CSS file definition of background-color
+		// The id's support fadeOut and fadeIn methods which are initialized. Whether to actually
+		// do the action is decided if the alert is set. Here the html is just made ready, no action.
+		// centerUser, index 0 is also initialized although it takes different  action then flashing.
+		//
+
 		for (var i = 0; i < alertArray.length; i++) {
 			if (alertArray[i].css('background-color') === 'rgb(239, 71, 58)') {		// 239, 71, 58
 				alertArray[i].fadeOut("slow");
 				alertArray[i].fadeIn("slow");
 			}
 		}
-    }, redAlertPromise);		// This is the frequencey at which the red alert will flash
+    }, loginDependencies.redAlertFreq);		// This is the frequencey at which the red alert will flash
 
 	// Alert promise is saved which is cleared in app.js when there is a state change
 	$rootScope.redAlertPromise = redAlertPromise;
+
 
 	//
 	// Here we have discrete 5 group onr for each of the 5 users. I feel there is some repetition
@@ -180,6 +245,7 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
     //
     // Now let us set the scope variables for the group view. group[] is populated here
     // User creds, special settings and alerts are saved here in the group[]
+    // Logged in user that is the center user is not ignored and is considered for all initialization.
     //
 
     function setGroupArray(groupArray) {
@@ -195,16 +261,14 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 		$scope.group[currentUser].username = groupArray[loggedInUserIndex].username;
 		$scope.group[currentUser].name = groupArray[loggedInUserIndex].name;
 		$scope.group[currentUser].balance = groupArray[loggedInUserIndex].analysisData.balance;
-		var c = parseFloat($scope.group[currentUser].balance) + 5.3;
+		var c = parseFloat($scope.group[currentUser].balance) + 5.3;		//bugbug hard coded
 		$scope.group[currentUser].credit = Number((c).toFixed(2)) ; //trimZeros(groupArray[loggedInUserIndex].analysisData.credit);
 		$scope.group[currentUser].debit = 5.3; //trimZeros(groupArray[loggedInUserIndex].analysisData.debit);
 		$scope.group[currentUser].vacationMode = groupArray[loggedInUserIndex].analysisData.vacationMode;
-		//$scope.group[currentUser].onVacation = User.getVacationValue();
 
 		currentUser++; // = 1 at this point
 		// put everyone else into the array
 		for (var i = 0; i < 5; i++) {
-			// skip the user who logged in
 			if (i != $scope.group[0].selfUserIndex) {
 				$scope.group[currentUser].image = groupArray[i].photoUrl;
 				$scope.group[currentUser].username = groupArray[i].username;
@@ -214,8 +278,8 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 				try {
 					fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
 					medsAlert = groupArray[i].analysisData.medsAlertLevel;
- 					vacationMode = groupArray[i].analysisData.vacationMode;
- 					$scope.group[currentUser].status = $scope.getAlertColor(fridgeAlert, medsAlert, vacationMode, i);
+					vacationMode = groupArray[i].analysisData.vacationMode;
+					$scope.group[currentUser].status = $scope.getAlertColor(fridgeAlert, medsAlert, vacationMode, i);
 				}
 				catch (Exception) {
 					$scope.group[currentUser].status = 'grey';
@@ -228,12 +292,12 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 				if (!GroupInfo.getSensorError())
 					$scope.checkGroupHealth();
 			}
-
 		}
     }	// setGroupArray();
 
     //
     // The user has tapped on an individual at this point and immidiatley contorl passes for Payment
+    // In case the user is on vacation the click is ignored
     //
 
     function clickUser(index) {
@@ -267,15 +331,13 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
      * append the color class onto the div
      * */
     $scope.getAlertColor = function (fridgeAlert, medsAlert, vacationMode, index) {
-		// check for null params
-		if (fridgeAlert == null || medsAlert == null) {
-			return '';
-		} else if (vacationMode) {
+		if (vacationMode) {
  			alertString = 'grey';
+ 			return alertString;
 		}
 		var fridge = parseInt(fridgeAlert);
 		var meds = parseInt(medsAlert);
-		var alertString = '';
+		// var alertString = '';
 
 		// check for acceptable bounds
 		if (meds < 0 || fridge < 0)

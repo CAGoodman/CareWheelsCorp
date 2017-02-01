@@ -8,7 +8,7 @@
 //
 //
 angular.module('careWheels')
-.controller('AdvancedController', function ($scope, $state, Download, User) {
+.controller('AdvancedController', function ($scope, $state, $interval, Download, User) {
 
   $scope.ScreenRefresh = function () {
     Download.DownloadData(function () {
@@ -17,11 +17,11 @@ angular.module('careWheels')
   }
 
   //
-  // This clears the creds and logout the app
+  // This clears the creds, stops the download scheduler and logsout the app
   //
 
   $scope.Logout = function () {
-  	User.ClearCredentials();
-    $state.go('login');
+    $interval.cancel(User.stopDownloadPromise);
+    $state.go('login', {}, {reload:true});
   }
 })

@@ -36,8 +36,8 @@ angular.module('careWheels')
       $state.go('app.reminders');
     };
 
-    $scope.clickSettings = function () {
-      $state.go('app.settings');
+    $scope.clickVacation = function () {
+      $state.go('app.vacation');
     };
 
     $scope.clickTests = function () {
