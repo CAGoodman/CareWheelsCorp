@@ -53,6 +53,20 @@ angular.module('careWheels')
           console.log("Sensor response: ", response);
 
           GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
+// bugbug
+          if(usernametofind == "testalice"){
+            var d, h;
+            d = new Date();
+            h = d.getHours();
+            var i1 = Math.floor((Math.random() * h) + 0);
+            var i2 = Math.floor((Math.random() * h) + 0);
+            var i3 = Math.floor((Math.random() * h) + 0);
+            response.data.fridgeHitsByHour[i1] = 1;
+            response.data.fridgeHitsByHour[i2] = 2;
+            response.data.fridgeHitsByHour[i3] = 3;
+            console.log("Indices are:" + i1 + " " + i2 + " " + i3);
+          }
+//bugbug
           if(response.data.medsAlertLevel >= 2) { //handle red alert notifications
             notifications.Create_Notif(0, 0, 0, false, 0);
             console.log("Meds notification created!");
@@ -89,22 +103,6 @@ angular.module('careWheels')
           });
         });
       });
-
-
-
-/*      for (var i = 0; i < theseMembers.length; i++) {//this is where we loop over each group member, check for keys, and download data
-        theseMembers[i].index = i;
-        if (theseMembers[i].customValues[1].stringValue == "000" || theseMembers[i].customValues[1].stringValue == "" ||
-          theseMembers[i].customValues[2].stringValue == "000" || theseMembers[i].customValues[2].stringValue == "") {
-          //theseMembers[i].sensorData = null;
-          console.log("error, please obtain valid sen.se keys!");
-        }
-        else {
-          getData(theseMembers[i]);
-        }
-      }*/
     };
     return DownloadService;
   });
-
-

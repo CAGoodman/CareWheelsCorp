@@ -3,7 +3,9 @@
  *
  */
 angular.module('careWheels')
-  .controller('individualStatusController', function ($scope, $ionicPopup, GroupInfo, PaymentService, $fileLogger, fileloggerService, Download, User) {
+  .controller('individualStatusController',
+      function ($scope, $state, $ionicLoading, GroupInfo, PaymentService, $fileLogger,
+                  fileloggerService, Download, User) {
 
     fileloggerService.initLogComponent();
 
@@ -103,71 +105,6 @@ angular.module('careWheels')
 
     };
 
-
-    // console.log("Calling Call Payment:");
-    // PaymentService.call(analysis.name, 1.0, 'Red');
-    // console.log("Calling sensorDataView Payment:");
-    // PaymentService.sensorDataView(1.0, 'Blue');
-
-    /**
-     * The following several functions are used to display text on the
-     * individualStatus page. This is so that you can check if the page
-     * is populating as expected based on the data that was analyzed.
-     * To use them paste the following in indiviualStatus.html within
-     * the ion-content tag:
-     *  <p>{{showMacguffin()}}</p>
-     *  <p>{{showName()}}</p>
-     *  <p>{{showPhoneNumber()}}</p>
-     *  <p>{{showPresence()}}</p>
-     *  <p>{{showMeals()}}</p>
-     *  <p>{{showMeds()}}</p>
-     *  <p>{{showFridgeHits()}}</p>
-     *  <p>{{showMedsHits()}}</p>
-     *  <p>{{showTime()}}</p>
-     */
-    $scope.showMacguffin = function () {
-      return analysis;
-    };
-
-    $scope.showName = function () {
-      var test = analysis.name;
-      return test;
-    };
-
-    $scope.showPhoneNumber = function () {
-      var test = analysis.phoneNumber;
-      return test;
-    };
-
-    $scope.showPresence = function () {
-      var test = analysis.analysisData.presenceByHour;
-      return test;
-    };
-
-    $scope.showMeals = function () {
-      var test = analysis.analysisData.fridgeRollingAlertLevel;
-      return test;
-    };
-
-    $scope.showMeds = function () {
-      var test = analysis.analysisData.medsRollingAlertLevel;
-      return test;
-    };
-
-    $scope.showFridgeHits = function () {
-      var test = analysis.analysisData.fridgeHitsByHour;
-      return test;
-    };
-
-    $scope.showMedsHits = function () {
-      var test = analysis.analysisData.medsHitsByHour;
-      return test;
-    };
-
-    $scope.showTime = function () {
-      return timeNow;
-    };
-
     /**
      * This function returns the color for the call button.
      */
@@ -263,10 +200,12 @@ angular.module('careWheels')
 
     // pulldown refresh event
     $scope.doRefresh = function () {
+      User.waitForDataDownload();  // Blocking the user till the data download is done
       Download.DownloadData(function(){
-        console.log('Pull down refresh done!')
-        console.log('Sending refresh complete');
+        $ionicLoading.hide();               // kill the data download screen
         $scope.$broadcast('scroll.refreshComplete');
+        console.log('Pull down refresh done!');
+        $state.go($state.current, {}, {reload: true});
       });
 
     };

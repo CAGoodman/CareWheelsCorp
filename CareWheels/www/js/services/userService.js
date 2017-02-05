@@ -21,11 +21,7 @@ angular.module('careWheels')
 	//
 
 	userService.login = function (uname, passwd, rmbr) {
-		$ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
-		  template: '<ion-spinner></ion-spinner>' +
-		  '<p>Contacting Server...</p>'
-		});
-
+		userService.waitForDataDownload();	// Blocking the user till the data download is done
 		return $http({
 			url: API.userAndGroupInfo,
 			method: 'POST',
@@ -97,6 +93,13 @@ angular.module('careWheels')
 		})
 	};	// userService.login
 
+    userService.waitForDataDownload = function() {
+        $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
+          template: '<ion-spinner></ion-spinner>' +
+          '<p>Contacting Server...</p>'
+        });
+    }
+
 	//
 	// If error code is set we return null. All User.credentials() call end up here.
 	//
@@ -136,11 +139,7 @@ angular.module('careWheels')
     };
 
     userService.setOnVacation = function (uname, passwd, onVacationSetting) {
-		$ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
-			template: '<ion-spinner></ion-spinner>' +
-			'<p>Contacting Server...</p>'
-		});
-
+		userService.waitForDataDownload();	// Blocking the user till the data download is done
 		return $http({
 			url: API.updateSettings,
 			method: 'POST',
@@ -158,7 +157,6 @@ angular.module('careWheels')
 			$ionicLoading.hide();
 			return true;
 		},function (response) {
-
 			$ionicLoading.hide();
 			var errorMsg = "Unknown error.";
 			//

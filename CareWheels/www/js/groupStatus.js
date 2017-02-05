@@ -17,7 +17,8 @@
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, PaymentService, Download, loginDependencies) {
+function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
+			PaymentService, Download, loginDependencies) {
 
 	//
 	// Any time the main screen i.e. group status screen is to be displayed this groupStatusController()
@@ -33,44 +34,33 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 	//
 	//  this function is invoked with each state change to this view.
 	//
+
 	function runOnStateChange() {
-		console.log('crediting user for group summary view.');
-		PaymentService.memberSummary(0.1);
+
+		if ($rootScope.autoRefresh) {
+			console.log('Skipping crediting user for group summary view because of auto-refresh');
+			$rootScope.autoRefresh = false;
+		}
+		else {
+			console.log('Crediting user for group summary view');
+			PaymentService.memberSummary(0.1);
+		}
 
 		// The groupInfo object is not available immediately, spin until available
 		// It is happening in back ground with the server hence wait for 50 mili seconds
 		// toDo: remove this once the callbacks for downland and analysis are set up
 		// Note: Any call enclosed between setInterval() does not just fall through when stepping.
 
-		var initGroupInfo = setInterval(function () {
+		var initGroupInfoPromise = $interval(function () {
 			var groupArray = GroupInfo.groupInfo();
 			if (groupArray[0] != null) {			// [0] has to be filled in so its full indicates work is done
-				clearInterval(initGroupInfo);		// Clear the timer
+				$interval.cancel(initGroupInfoPromise);		// Clear the timer
 				getLoggedInUser(groupArray);
 				setGroupArray(groupArray);			// This is a critical call which sets the group of 5
 				checkCenterUserAlertLevel();
 			}
 		}, 50); 	// 50 mili sec delay to allow the download to happen
 	}	//runOnStateChange(). From here the control just drops down to the first code executing inside the controller
-
-	//
-	// Vacation mode gets higher priority. If that is set no point in flashing red alert
-	//
-
-	function checkVacationMode() {
-		if (User.getVacationValue()) {
-			$scope.showBar = true;
-			$scope.barLegend = "Vacation Mode On";
-		}
-		else {
-			if (checkCenterUserAlertLevel()){
-				$('#centerAlertMode').fadeIn(0);
-				$('#vacationMode').fadeOut(0);
-			} else {
-				$('#centerAlertMode').fadeOut(0);
-			}
-		}
-	}
 
 	// For center user we are not flashing alert but putting a red bar hence need to be discovered
 	// groupArray[1] technically is always center user but that is a hardcoded value. In case in the future
@@ -79,7 +69,6 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 	function checkCenterUserAlertLevel() {
 		var creds = User.credentials();
 		var groupArray = GroupInfo.groupInfo();
-		var x = User.getVacationValue();
 		for (i = 0; i < 5; i++) {
 			if (groupArray[i].username == creds.username) {
 				var status;
@@ -108,11 +97,13 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 						console.log('Bad alert status');
 						$scope.showBar = false;
 
-				}
-			}
-		}
+				}	// switch()
+			}	// if()
+		}	//for()
+		return;
 		console.log("Oh! Oh! username is missing contact server admin");
 	}
+
 	//
 	// From runOnStateChange() the control comes down here to automatically go through each id(#),
 	// and enable in the object fadeIn and FadeOut. Please note the id objects are just being
@@ -147,7 +138,6 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 
 	// Alert promise is saved which is cleared in app.js when there is a state change
 	$rootScope.redAlertPromise = redAlertPromise;
-
 
 	//
 	// Here we have discrete 5 group onr for each of the 5 users. I feel there is some repetition
@@ -197,7 +187,6 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 		}
     ];
 
-
     /* click/press events */
     $scope.clickCenter = function () {
 		clickUser(0);
@@ -217,10 +206,12 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 
    	// pulldown refresh event
     $scope.doRefresh = function () {
+    	User.waitForDataDownload();  // Blocking the user till the data download is done
         Download.DownloadData(function(){
-            console.log('Pull down refresh done!')
-            console.log('Sending refresh complete');
+        	$ionicLoading.hide();               // kill the data download screen
             $scope.$broadcast('scroll.refreshComplete');
+            console.log('Pull down refresh done!');
+            $state.go($state.current, {}, {reload: true});
         });
      };	// doRefresh()
 
@@ -392,5 +383,4 @@ function ($rootScope, $scope, $interval, $state, $ionicPopup, GroupInfo, User, P
 			}
 		}
     };	// checkGroupHealth();
-
  });

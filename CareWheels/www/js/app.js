@@ -25,11 +25,13 @@ angular.module('careWheels', [
 ])
 
 
-.run(function ($rootScope, $ionicPlatform, $ionicHistory, $state, $window, User) {
+.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, $window, User) {
 
   //
   // When ionic.serve is run this is the entry point to the application
   //
+
+  $rootScope.autoRefresh = false;
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
     console.log('state change');
@@ -41,7 +43,7 @@ angular.module('careWheels', [
     //
 
     if ($rootScope.redAlertPromise !== angular.isundefined) {
-      clearInterval($rootScope.redAlertPromise);
+      $interval.cancel($rootScope.redAlertPromise);
       $rootScope.redAlertPromise = angular.isundefined;
     }
 

@@ -19,7 +19,7 @@ For the current setting please check ngConstants.js or appConstants.js
 angular.module('careWheels')
   .controller('loginController',
 
-    function($scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup,
+    function($rootScope, $scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup,
       GroupInfo, $interval, notifications, onlineStatus, Download, $fileLogger,
       fileloggerService, apkDependencies, loginDependencies){
 
@@ -28,7 +28,6 @@ angular.module('careWheels')
     // The login screen is still not painted at this point. It is painted as we move down
     //
 
-    var popupTemplate = '<ion-spinner></ion-spinner>' + '<p>Contacting Server...</p>';
     var loginTimeout = false;
     $scope.rememberMe = false;
 
@@ -91,7 +90,9 @@ angular.module('careWheels')
           // Pull up loading overlay so user knows App hasn't frozen
           // This is the twirling icon which says "Contacting Server..."
           //
-          $ionicLoading.show({ template: popupTemplate });
+
+          User.waitForDataDownload();  // Blocking the user till the data download is done
+
 
           //
           // Notification of user reminder is intialized here. That is if they
@@ -124,18 +125,6 @@ angular.module('careWheels')
           });
         }
       });
-
-      //
-      // For some reason "this" is not bound to $scope. So the ng-model username
-      // and ng-model passwd are bound to "this" and not to $scope. We clear it
-      // if they are not to be remembered. This helps when we logout
-      //
-
-      if (!rmbr) {
-        this.username = null;
-        this.passwd = null;
-      }
-
     };
 
     /**
@@ -148,10 +137,15 @@ angular.module('careWheels')
       *      3. analyze data
       *
     */
+
     function scheduleDownload(){
       User.stopDownloadPromise = $interval(function(){
         Download.DownloadData(function(){
-              console.log('download scheduler finished')
+          console.log('download scheduler finished');
+          if ($state.current.name == "app.groupStatus") {
+            $rootScope.autoRefresh = true;
+          }
+          $state.go($state.current, {}, {reload:true});
         });
       }, loginDependencies.downloadInterval); // 5 min interval
     }
@@ -181,13 +175,4 @@ angular.module('careWheels')
           $scope.connectionError = false;
       });
     }
-
-    //
-    // Here if credentials are true meaning it has been saved in the Locoal Storage
-    // then the login screen is not even poped. It just logs you in. Autologin
-    // was done during developement has been commented out for actual product.
-
- //   if (credentials)
- //     $scope.login(credentials.username, credentials.password, false);
-
-  });
+});
