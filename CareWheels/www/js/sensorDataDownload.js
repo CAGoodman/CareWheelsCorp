@@ -52,8 +52,7 @@ angular.module('careWheels')
 
           console.log("Sensor response: ", response);
 
-          GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
-// bugbug
+/* bugbug
           if(usernametofind == "testalice"){
             var d, h;
             d = new Date();
@@ -64,9 +63,12 @@ angular.module('careWheels')
             response.data.fridgeHitsByHour[i1] = 1;
             response.data.fridgeHitsByHour[i2] = 2;
             response.data.fridgeHitsByHour[i3] = 3;
+            response.data.balance *= i3;
             console.log("Indices are:" + i1 + " " + i2 + " " + i3);
           }
-//bugbug
+*/
+          GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
+
           if(response.data.medsAlertLevel >= 2) { //handle red alert notifications
             notifications.Create_Notif(0, 0, 0, false, 0);
             console.log("Meds notification created!");

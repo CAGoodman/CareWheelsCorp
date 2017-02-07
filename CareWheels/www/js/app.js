@@ -33,6 +33,18 @@ angular.module('careWheels', [
 
   $rootScope.autoRefresh = false;
 
+  //
+  // The following code gets executed on all page change and previous and current is
+  // remembered, it becomes easier to go back from any page to previous page
+  //
+
+  $rootScope.previousState;
+  $rootScope.currentState;
+  $rootScope.$on('$stateChangeSuccess', function(event, to, toParams, from, fromParams) {
+      $rootScope.previousState = from.name;
+      $rootScope.currentState = to.name;
+  });
+
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
     console.log('state change');
 

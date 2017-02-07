@@ -11,9 +11,9 @@
  dictated by the CSS file and JS files takes care of the action part. Like what happens
  when the user clicks.
  In JavaScript, scope is the set of variables, objects, and functions you have access to.
- $scope is defined as part of the function call. Any variales including function names included as
- the part of argument becomes accessible globally. Anything defined inside the function remains local
- Ex: The function Download in login.js has been declared globally and hence could be called by option.js
+ $scope is defined as part of the function call is applicable to this controller only.
+ Any variales including function names included as the part of argument becomes accessible globally.
+ Anything defined inside the function remains local
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
@@ -51,7 +51,7 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 		// toDo: remove this once the callbacks for downland and analysis are set up
 		// Note: Any call enclosed between setInterval() does not just fall through when stepping.
 
-		var initGroupInfoPromise = $interval(function () {
+			var initGroupInfoPromise = $interval(function () {
 			var groupArray = GroupInfo.groupInfo();
 			if (groupArray[0] != null) {			// [0] has to be filled in so its full indicates work is done
 				$interval.cancel(initGroupInfoPromise);		// Clear the timer
@@ -71,7 +71,10 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 		var groupArray = GroupInfo.groupInfo();
 		for (i = 0; i < 5; i++) {
 			if (groupArray[i].username == creds.username) {
-				var status;
+				if (groupArray[i].analysisData.vacationMode == true) {
+					groupArray[i].customValues[10].booleanValue = true;
+				}
+				var status;	// Precdence is set as - Vacation, grey, red, yellow, blue
 				status = $scope.getAlertColor(groupArray[i].analysisData.fridgeAlertLevel,
 					groupArray[i].analysisData.medsAlertLevel, User.getVacationValue(), i);
 				switch (status) {

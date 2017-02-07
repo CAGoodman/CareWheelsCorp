@@ -8,14 +8,15 @@
 //
 //
 angular.module('careWheels')
-.controller('AdvancedController', function ($scope, $state, $interval, $ionicLoading, Download, User) {
+.controller('AdvancedController', function ($rootScope, $scope, $state, $interval, $ionicLoading, Download, User) {
 
   $scope.ScreenRefresh = function () {
     User.waitForDataDownload();  // Blocking the user till the data download is done
     Download.DownloadData(function () {
       $ionicLoading.hide();               // kill the data download screen
       console.log('Forced Screen Refresh finished');
-    })
+      $state.go($rootScope.previousState, {}, {reload:true});
+    });
   }
 
   //

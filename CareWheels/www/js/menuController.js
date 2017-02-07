@@ -95,12 +95,15 @@ angular.module('careWheels')
             openCyclos();
     };
 
-    //
-    // When the user clicks on the Advanced option under the meny control comes here.
-    //
-
 	$scope.clickAdvanced = function () {
 		$state.go('app.advanced');
+    };
+
+    $scope.clickHelp = function () {
+        $ionicPopup.alert({
+            title: 'Help',
+            subTitle: "Help menu in the works"
+        });
     };
 
     $scope.clickAbout = function () {

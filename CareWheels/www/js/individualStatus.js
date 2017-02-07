@@ -1,7 +1,19 @@
-/**
- * CareWheels - Individual Status Controller
- *
- */
+/*++
+ CareWheels Corporation 2016
+ Filename: individualStatus.js
+ Description: Individual Status Controller
+
+ Authors: Capstone students PSU Aug 2016
+ Revision:
+ Notes: The control enters via the HTML displays the page in accordance to the style
+ dictated by the CSS file and JS files takes care of the action part. Like what happens
+ when the user clicks.
+ In JavaScript, scope is the set of variables, objects, and functions you have access to.
+ $scope is defined as part of the function call is applicable to this controller only.
+ Any variales including function names included as the part of argument becomes accessible globally.
+ Anything defined inside the function remains local
+ --*/
+
 angular.module('careWheels')
   .controller('individualStatusController',
       function ($scope, $state, $ionicLoading, GroupInfo, PaymentService, $fileLogger,
@@ -13,7 +25,6 @@ angular.module('careWheels')
      * grabs the analysis of the member selected on the previous view
      */
     var analysis = GroupInfo.getSelectedMemberIndex();
-    //console.log(analysis); ////////////testing
     $scope.GroupInfo = GroupInfo;
     var timeNow = new Date().getHours();
     var phoneNumberError = false;
