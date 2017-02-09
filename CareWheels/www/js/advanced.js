@@ -13,7 +13,7 @@ angular.module('careWheels')
   $scope.ScreenRefresh = function () {
     User.waitForDataDownload();  // Blocking the user till the data download is done
     Download.DownloadData(function () {
-      $ionicLoading.hide();               // kill the data download screen
+      User.completedDataDownload();       // DataDownload completed
       console.log('Forced Screen Refresh finished');
       $state.go($rootScope.previousState, {}, {reload:true});
     });

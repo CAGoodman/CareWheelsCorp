@@ -108,7 +108,7 @@ angular.module('careWheels')
 
           var loginPromise = setTimeout(function(){
             loginTimeout = true;
-            $ionicLoading.hide();               // kill the loading screen
+            User.completedDataDownload();       // DataDownload completed
             $state.reload();                    // reload the view (try again)
             displayError(0);                    // pop-up error
           }, loginDependencies.loginTimeoutPeriod);
@@ -119,7 +119,7 @@ angular.module('careWheels')
             clearTimeout(loginPromise);       // resolve timeout promise
             if (!loginTimeout){
               scheduleDownload();               // spin up a download/analyze scheduler
-              $ionicLoading.hide();             // hide loading screen
+              User.completedDataDownload();       // DataDownload completed
               $state.go('app.groupStatus');     // go to group view
             }
           });

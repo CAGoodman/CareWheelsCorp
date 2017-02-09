@@ -45,10 +45,10 @@ angular.module('careWheels')
 				user = {username: uname, password: passwd};
 
 				GroupInfo.initGroupInfo(response.data);
-				$ionicLoading.hide();   //make sure to hide loading screen
+				userService.completedDataDownload();       // DataDownload completed
 			}, function (response) {
 			//present login failed
-			$ionicLoading.hide();
+			userService.completedDataDownload();       // DataDownload completed
 			var errorMsg = "Unknown error.";
 
 			//CHECKING TO FOR 404 ERRROR
@@ -100,6 +100,10 @@ angular.module('careWheels')
         });
     }
 
+	userService.completedDataDownload = function() {
+  		$ionicLoading.hide();               // kill the loading screen
+    }
+
 	//
 	// If error code is set we return null. All User.credentials() call end up here.
 	//
@@ -114,28 +118,7 @@ angular.module('careWheels')
     userService.getVacationValue = function () {
 		var creds = userService.credentials();
 		var currentUserObject = GroupInfo.getMember(creds.username);
-		// console.log("currentUserobject is: " + currentUserObject);
-
-		for(var i = 0; i < currentUserObject.customValues.length; i++) {
-
-			if (currentUserObject.customValues[i].field.internalName == "onVacation") {
-				// console.log("Found custom field onVacation!");
-				//console.log("Vacation value to: " + currentUserObject.customValues[i].booleanValue);
-				return currentUserObject.customValues[i].booleanValue;
-			}
-		} // for
-
-		return null;
-    };
-
-    userService.setVacationValue = function (newValue) {
-		var creds = userService.credentials();
-		var currentUserObject = GroupInfo.getMember(creds.username);
-		for(var i = 0; i < currentUserObject.customValues.length; i++) {
-			if (currentUserObject.customValues[i].field.internalName == "onVacation") {
-				currentUserObject.customValues[i].booleanValue = newValue;
-			}
-		}
+		return (currentUserObject.analysisData.vacationMode);
     };
 
     userService.setOnVacation = function (uname, passwd, onVacationSetting) {
@@ -154,10 +137,10 @@ angular.module('careWheels')
 			}
 		}).then(function (response) {
 			console.log("Successfully updated setting!");
-			$ionicLoading.hide();
+			userService.completedDataDownload();       // DataDownload completed
 			return true;
 		},function (response) {
-			$ionicLoading.hide();
+			userService.completedDataDownload();       // DataDownload completed
 			var errorMsg = "Unknown error.";
 			//
 			console.log(response.status);

@@ -11,14 +11,13 @@
  dictated by the CSS file and JS files takes care of the action part. Like what happens
  when the user clicks.
  In JavaScript, scope is the set of variables, objects, and functions you have access to.
- $scope is defined as part of the function call is applicable to this controller only.
+ $scope is defined as part of the function call is applicable to this controller only. $scope ties variables to html.
  Any variales including function names included as the part of argument becomes accessible globally.
  Anything defined inside the function remains local
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
-			PaymentService, Download, loginDependencies) {
+function ($rootScope, $scope, $interval, $state, GroupInfo, User, PaymentService, Download, loginDependencies) {
 
 	//
 	// Any time the main screen i.e. group status screen is to be displayed this groupStatusController()
@@ -43,7 +42,7 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 		}
 		else {
 			console.log('Crediting user for group summary view');
-			PaymentService.memberSummary(0.1);
+			PaymentService.memberSummary();
 		}
 
 		// The groupInfo object is not available immediately, spin until available
@@ -59,8 +58,14 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 				setGroupArray(groupArray);			// This is a critical call which sets the group of 5
 				checkCenterUserAlertLevel();
 			}
-		}, 50); 	// 50 mili sec delay to allow the download to happen
-	}	//runOnStateChange(). From here the control just drops down to the first code executing inside the controller
+		}, loginDependencies.downloadTime); 	// 50 mili sec delay to allow the download to happen
+
+		//
+		// From here the control just drops down to the first code executing inside the controller.
+		// There it  displays the GroupStatus screen and then drops down to alertArry[] to take care of the alerts
+		//
+
+	}	//runOnStateChange().
 
 	// For center user we are not flashing alert but putting a red bar hence need to be discovered
 	// groupArray[1] technically is always center user but that is a hardcoded value. In case in the future
@@ -69,13 +74,10 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 	function checkCenterUserAlertLevel() {
 		var creds = User.credentials();
 		var groupArray = GroupInfo.groupInfo();
-		for (i = 0; i < 5; i++) {
+		for (i = 0; i < loginDependencies.userCount; i++) {
 			if (groupArray[i].username == creds.username) {
-				if (groupArray[i].analysisData.vacationMode == true) {
-					groupArray[i].customValues[10].booleanValue = true;
-				}
 				var status;	// Precdence is set as - Vacation, grey, red, yellow, blue
-				status = $scope.getAlertColor(groupArray[i].analysisData.fridgeAlertLevel,
+				status = getAlertColor(groupArray[i].analysisData.fridgeAlertLevel,
 					groupArray[i].analysisData.medsAlertLevel, User.getVacationValue(), i);
 				switch (status) {
 					case "grey":
@@ -143,8 +145,7 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 	$rootScope.redAlertPromise = redAlertPromise;
 
 	//
-	// Here we have discrete 5 group onr for each of the 5 users. I feel there is some repetition
-	// but will not fix it if it ain't broken. Just added group 0 for the center user
+	// Here we have discrete 5 group onr for each of the 5 users.
 	//
 
     $scope.group = [
@@ -209,16 +210,19 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 
    	// pulldown refresh event
     $scope.doRefresh = function () {
-    	User.waitForDataDownload();  // Blocking the user till the data download is done
         Download.DownloadData(function(){
-        	$ionicLoading.hide();               // kill the data download screen
             $scope.$broadcast('scroll.refreshComplete');
             console.log('Pull down refresh done!');
             $state.go($state.current, {}, {reload: true});
         });
      };	// doRefresh()
 
-    // lets figure out which user logged in at this point
+    //
+    // lets figure out which user logged in at this point. The data from the server always comes
+    // in the order of user assigned Index. The user indices are LeftTop = 0, Center = 1, RightTop = 2
+    // LeftBottom = 3 and RightBottom = 4
+    //
+
     function getLoggedInUser(groupInfo) {
 		var user = User.credentials();
 		// error unable to load user object;
@@ -237,9 +241,11 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
     }	// getLoggedInUser()
 
     //
+    // $scope.group[] isa tied to the html screen and groupArray[] is the data coming from the server
     // Now let us set the scope variables for the group view. group[] is populated here
     // User creds, special settings and alerts are saved here in the group[]
-    // Logged in user that is the center user is not ignored and is considered for all initialization.
+    // Logged in user data is directed to the center user i.e., $scope.group[0] . Index 0 is reserved for the center user
+    // So if you were to login 5 times as different users you would see users occupying different parts of the screen
     //
 
     function setGroupArray(groupArray) {
@@ -255,14 +261,13 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 		$scope.group[currentUser].username = groupArray[loggedInUserIndex].username;
 		$scope.group[currentUser].name = groupArray[loggedInUserIndex].name;
 		$scope.group[currentUser].balance = groupArray[loggedInUserIndex].analysisData.balance;
-		var c = parseFloat($scope.group[currentUser].balance) + 5.3;		//bugbug hard coded
-		$scope.group[currentUser].credit = Number((c).toFixed(2)) ; //trimZeros(groupArray[loggedInUserIndex].analysisData.credit);
-		$scope.group[currentUser].debit = 5.3; //trimZeros(groupArray[loggedInUserIndex].analysisData.debit);
+		$scope.group[currentUser].credit = groupArray[loggedInUserIndex].analysisData.credit;
+		$scope.group[currentUser].debit = groupArray[loggedInUserIndex].analysisData.debit;
 		$scope.group[currentUser].vacationMode = groupArray[loggedInUserIndex].analysisData.vacationMode;
 
 		currentUser++; // = 1 at this point
 		// put everyone else into the array
-		for (var i = 0; i < 5; i++) {
+		for (var i = 0; i < loginDependencies.userCount; i++) {
 			if (i != $scope.group[0].selfUserIndex) {
 				$scope.group[currentUser].image = groupArray[i].photoUrl;
 				$scope.group[currentUser].username = groupArray[i].username;
@@ -273,7 +278,7 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 					fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
 					medsAlert = groupArray[i].analysisData.medsAlertLevel;
 					vacationMode = groupArray[i].analysisData.vacationMode;
-					$scope.group[currentUser].status = $scope.getAlertColor(fridgeAlert, medsAlert, vacationMode, i);
+					$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode, i);
 				}
 				catch (Exception) {
 					$scope.group[currentUser].status = 'grey';
@@ -282,9 +287,9 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 				currentUser++;
 			}
 			// on the last element of the loop, now check health
-			if (i == 4) {
+			if (i == loginDependencies.userCount - 1) {
 				if (!GroupInfo.getSensorError())
-					$scope.checkGroupHealth();
+					checkGroupHealth();
 			}
 		}
     }	// setGroupArray();
@@ -296,7 +301,7 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 
     function clickUser(index) {
 		if (!$scope.group[index].error && !$scope.group[index].vacationMode) {
-			PaymentService.sensorDataView(0.1, $scope.group[index].alertLevelColor, $scope.group[index].username);
+			PaymentService.sensorDataView($scope.group[index].alertLevelColor, $scope.group[index].username);
 			$scope.group[0].userSelected = $scope.group[index].name;
 			GroupInfo.setSelectedMemberIndex($scope.group[index].username);
 			$state.go('app.individualStatus');
@@ -324,7 +329,7 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
      * alert level. This string is used with ng-class, to
      * append the color class onto the div
      * */
-    $scope.getAlertColor = function (fridgeAlert, medsAlert, vacationMode, index) {
+    getAlertColor = function (fridgeAlert, medsAlert, vacationMode, index) {
 		if (vacationMode) {
  			alertString = 'grey';
  			return alertString;
@@ -347,7 +352,7 @@ function ($rootScope, $scope, $interval, $state, $ionicLoading, GroupInfo, User,
 		return alertString;
     };	// getAlertColor();
 
-    $scope.checkGroupHealth = function () {
+    checkGroupHealth = function () {
 		//create a template string
 		var errorList = [];
 		var errorCount = 0;

@@ -16,8 +16,8 @@
 
 angular.module('careWheels')
   .controller('individualStatusController',
-      function ($scope, $state, $ionicLoading, GroupInfo, PaymentService, $fileLogger,
-                  fileloggerService, Download, User) {
+      function ($scope, $state, GroupInfo, PaymentService, $fileLogger,
+                  fileloggerService, Download, User, loginDependencies) {
 
     fileloggerService.initLogComponent();
 
@@ -74,20 +74,20 @@ angular.module('careWheels')
     function convertHitsToString(hitsArray) {
 
       var stringArray = [];
-      var asterisks = "";
+      var hitIndicator = "";
 
       for (var i = 0; i < hitsArray.length; i++) {
 
         for (var j = 0; j < hitsArray[i]; j++) {
-          if (j > 5) {
+          if (j > loginDependencies.maxHitIndicator) {    // 5
             break;
           }
 
-          asterisks += "X";
+          hitIndicator += "X";
         }
 
-        stringArray[i] = asterisks;
-        asterisks = "";
+        stringArray[i] = hitIndicator;
+        hitIndicator = "";
       }
 
       return stringArray;
@@ -205,15 +205,13 @@ angular.module('careWheels')
         $fileLogger.log('error', 'There is no phone number for ' + analysis.name);
       }
       else if ($scope.alertLevel != '') {
-        PaymentService.call(analysis.name, 0.1, $scope.alertLevel);
+        PaymentService.call(analysis.name, $scope.alertLevel);
       }
     };
 
     // pulldown refresh event
     $scope.doRefresh = function () {
-      User.waitForDataDownload();  // Blocking the user till the data download is done
       Download.DownloadData(function(){
-        $ionicLoading.hide();               // kill the data download screen
         $scope.$broadcast('scroll.refreshComplete');
         console.log('Pull down refresh done!');
         $state.go($state.current, {}, {reload: true});

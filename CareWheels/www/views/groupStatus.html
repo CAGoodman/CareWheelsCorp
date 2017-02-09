@@ -24,6 +24,10 @@ The browser calls the index.html first and that loads this file.
 					The value of ng-class can be a string, object or array. -->
 					<!--ng-class conditionally adds a css class. ex: {className: Bool} -->
 					<!--for example, if group[1].vacationMode === True, then userSquare topLeft will also get class of vacationMode -->
+					<!-- The physical coding order in which we postion the following users matters
+					The center user group[0] entry has to be the last one as it get superimposed
+					on the the 4 squares
+					-->
 					<li class="userSquare topLeft" ng-class="{vacationMode: group[1].vacationMode}" ng-click="clickTopLeft()">
 						<div id="topLeftAlert" class="alertOverlay"
 							ng-class="group[1].status"></div>
@@ -68,8 +72,8 @@ The browser calls the index.html first and that loads this file.
                         			</tr>
                         			<tr>
                                 		<td align="center">{{group[0].balance | number:1}}</td>
-                                		<td align="center">{{group[0].balance * 1.1 | number:1}}</td>
-                                		<td align="center">{{group[0].balance * 0.1 | number:1}}</td>
+                                		<td align="center">{{group[0].credit | number:1}}</td>
+                                		<td align="center">{{group[0].debit  | number:1}}</td>
                         			</tr>
                 				</table>
 							</div>
@@ -81,19 +85,5 @@ The browser calls the index.html first and that loads this file.
 		<div id="vacationMode" class="bar bar-footer" ng-class=barClass ng-show=showBar>
 			<div class="title">{{barLegend}}</div>
 		</div>
-		<head>
-			<style>
-			mark1 {
-				font-weight: bold;
-			    color: black;
-			}
-			mark2 {
-				font-weight: bold;
-			    color: black;
-			    font-size: large;
-			    word-spacing: 30px;
-			}
-			</style>
-		</head>
 	</ion-content>
 </ion-view>

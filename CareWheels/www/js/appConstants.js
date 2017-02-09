@@ -3,5 +3,8 @@ angular.module("app.constants", [])
 .constant("loginDependencies", {
 	"downloadInterval": "300000",
 	"loginTimeoutPeriod": "60000",
-	"redAlertFreq": "2000"
+	"redAlertFreq": "2000",
+	"downloadTime": "50",
+	"userCount": "5",
+	"maxHitIndicator":"5"
 })

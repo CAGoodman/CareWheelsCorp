@@ -21,14 +21,6 @@ angular.module('careWheels')
 
       var getData = function (member, callback) {
 
-        // initial check for sense keys
-        if (member.customValues[1].stringValue == "000" || member.customValues[1].stringValue == "" ||
-          member.customValues[2].stringValue == "000" || member.customValues[2].stringValue == "") {
-          //theseMembers[i].sensorData = null;
-          console.log("error, please obtain valid sen.se keys!");
-          return callback();
-        }
-
         var usernametofind = member.username; //.toLowerCase();//for each group member
         var user = User.credentials();//from login
         var password = user.password;//credentials of logged in user, from USER service
@@ -52,7 +44,7 @@ angular.module('careWheels')
 
           console.log("Sensor response: ", response);
 
-/* bugbug
+// bugbug
           if(usernametofind == "testalice"){
             var d, h;
             d = new Date();
@@ -66,7 +58,7 @@ angular.module('careWheels')
             response.data.balance *= i3;
             console.log("Indices are:" + i1 + " " + i2 + " " + i3);
           }
-*/
+//
           GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
 
           if(response.data.medsAlertLevel >= 2) { //handle red alert notifications

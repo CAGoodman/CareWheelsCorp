@@ -36,7 +36,7 @@ angular.module('careWheels')
   // the user passed in as userToDebtAsString same amount
   //
 
-  PaymentService.call = function(userToDebtAsString, creditsAsFloat, alertlevelAsString) {
+  PaymentService.call = function(userToDebtAsString, alertlevelAsString) {
     var myUser = User.credentials();    //get credentials
     if (myUser != undefined) {    //can't do anything without them
       var status = null;
@@ -77,7 +77,7 @@ angular.module('careWheels')
   // A credit of 0.1T$ is credit for this except for self view.
   //
 
-  PaymentService.sensorDataView = function(creditsAsFloat, alertlevelAsString, targetUser) {
+  PaymentService.sensorDataView = function(alertlevelAsString, targetUser) {
     var myUser = User.credentials();
     if (myUser != undefined) {
       var status = null;
@@ -119,7 +119,7 @@ angular.module('careWheels')
   // This creates home page transaction
   //
 
-  PaymentService.memberSummary = function(creditsAsFloat) {
+  PaymentService.memberSummary = function() {
     var myUser = User.credentials();
     if (myUser != undefined) {
       var status = null;
