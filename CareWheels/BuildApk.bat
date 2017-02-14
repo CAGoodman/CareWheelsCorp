@@ -6,7 +6,8 @@ echo MAKE SURE YOU ARE AT THE HOME DIRECTORY EX: ....\CareWheelsCorp\CareWheels
 echo It is recommended to run ionic reset once every 10 builds
 echo This builds apk for ARMv7 processors only
 echo Ensure your MAILTO in Control Panel --> Programs --> Default Program --> Assocaited is configured correclty
-
+echo Did you remove all the instrumented code and set all time out to normal ...???
+pause
 IF "%1"=="-?" goto HELP
 IF "%1"=="-p" goto PROPERTY
 IF "%1"=="-r" goto RESET

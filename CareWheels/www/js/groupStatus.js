@@ -17,7 +17,7 @@
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, GroupInfo, User, PaymentService, Download, loginDependencies) {
+function ($rootScope, $scope, $interval, $state, fileloggerService, GroupInfo, User, PaymentService, Download, loginDependencies) {
 
 	//
 	// Any time the main screen i.e. group status screen is to be displayed this groupStatusController()
@@ -35,15 +35,21 @@ function ($rootScope, $scope, $interval, $state, GroupInfo, User, PaymentService
 	//
 
 	function runOnStateChange() {
-
+		var creds = User.credentials();
 		if ($rootScope.autoRefresh) {
-			console.log('Skipping crediting user for group summary view because of auto-refresh');
+			var msg = "Skipping crediting user for group summary view because of auto-refresh ";
+			$(msg,
+				msg + "Previous State : " + $rootScope.previousState + "Current State: " + $rootScope.currentState,
+				msg + "Previous State : " + $rootScope.previousState + "Current State: " +
+				$rootScope.currentState + "Username: " + creds.username);
 			$rootScope.autoRefresh = false;
 		}
 		else {
-			console.log('Crediting user for group summary view');
+			var msg = "Crediting user for group summary view "
+			fileloggerService.execTrace(msg, msg + "Username: " + creds.username);
 			PaymentService.memberSummary();
 		}
+
 
 		// The groupInfo object is not available immediately, spin until available
 		// It is happening in back ground with the server hence wait for 50 mili seconds
@@ -99,14 +105,14 @@ function ($rootScope, $scope, $interval, $state, GroupInfo, User, PaymentService
 						$scope.showBar = false;
 						break;
 					default:
-						console.log('Bad alert status');
+						fileloggerService.execTrace("", "", "", "Bad alert status: " + status + "Username: ", groupArray[i].username);
 						$scope.showBar = false;
 
 				}	// switch()
 			}	// if()
 		}	//for()
 		return;
-		console.log("Oh! Oh! username is missing contact server admin");
+		fileloggerService.execTrace("", "", "", "Oh! Oh! username: " + groupArray[i].username + " is missing contact server admin");
 	}
 
 	//
@@ -212,7 +218,7 @@ function ($rootScope, $scope, $interval, $state, GroupInfo, User, PaymentService
     $scope.doRefresh = function () {
         Download.DownloadData(function(){
             $scope.$broadcast('scroll.refreshComplete');
-            console.log('Pull down refresh done!');
+            fileloggerService.execTrace('Pull down refresh done!');
             $state.go($state.current, {}, {reload: true});
         });
      };	// doRefresh()

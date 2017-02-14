@@ -44,7 +44,7 @@ angular.module('careWheels')
 
           console.log("Sensor response: ", response);
 
-// bugbug
+/* bugbug
           if(usernametofind == "testalice"){
             var d, h;
             d = new Date();
@@ -55,10 +55,12 @@ angular.module('careWheels')
             response.data.fridgeHitsByHour[i1] = 1;
             response.data.fridgeHitsByHour[i2] = 2;
             response.data.fridgeHitsByHour[i3] = 3;
+            response.data.credit *= i1;
+            response.data.debit *= i2;
             response.data.balance *= i3;
             console.log("Indices are:" + i1 + " " + i2 + " " + i3);
           }
-//
+*/
           GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
 
           if(response.data.medsAlertLevel >= 2) { //handle red alert notifications

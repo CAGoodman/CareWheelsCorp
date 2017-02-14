@@ -20,8 +20,8 @@ angular.module('careWheels')
   .controller('loginController',
 
     function($rootScope, $scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup,
-      GroupInfo, $interval, notifications, onlineStatus, Download, $fileLogger,
-      fileloggerService, apkDependencies, loginDependencies){
+      GroupInfo, $interval, notifications, Download, $fileLogger, fileloggerService, apkDependencies,
+      loginDependencies, traceControls){
 
     //
     // When the app starts it enrters via app.js and then execution comes here.
@@ -31,7 +31,27 @@ angular.module('careWheels')
     var loginTimeout = false;
     $scope.rememberMe = false;
 
-    // When we select "remember credentials" login credentials are stored in localStorage
+    //
+    // $fileLogger.traceLevel is initialized and stored values is initialized to NULL, default value so
+    // that run of the app is back to normal trace level. This sepcial traceLevel set by the user for this
+    // debug run only.
+    //
+
+    var traceLevel = angular.fromJson(window.localStorage['execTraceLevel']);
+    if (traceLevel == angular.isundefined) {
+      $fileLogger.traceLevel = traceControls.info;
+    }
+    else {
+      $fileLogger.traceLevel = traceLevel.traceFilter;
+    }
+
+    window.localStorage['execTraceLevel'] = angular.toJson({"traceFilter": traceControls.info}); // Stored value is set to Info - 0
+
+    //
+    // If "remember credentials" is selected login credentials are stored in localStorage - userService.js
+    // Else it is removed. Here we unconditionally retrive the creds. We either get valid creds or null.
+    //
+
     var credentials = angular.fromJson(window.localStorage['loginCredentials']);
 
     $ionicHistory.nextViewOptions({disableBack: true});
@@ -54,7 +74,8 @@ angular.module('careWheels')
     }
 
     $scope.TappedOrClicked = function() {
-      console.log("TappedOrClicked");
+      fileloggerService.execTrace("TappedOrClicked",
+        "TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
       $scope.showHelp = true;
     }
 
@@ -84,7 +105,8 @@ angular.module('careWheels')
           //
           fileloggerService.initLogComponent();
           fileloggerService.logUpload(uname, passwd);
-          console.log("Done uploading log file!");
+          fileloggerService.execTrace("Done uploading log file!",
+            "Done uploading log file!. username: " + $scope.username + " password: " + $scope.passwd);
 
           //
           // Pull up loading overlay so user knows App hasn't frozen
@@ -141,7 +163,7 @@ angular.module('careWheels')
     function scheduleDownload(){
       User.stopDownloadPromise = $interval(function(){
         Download.DownloadData(function(){
-          console.log('download scheduler finished');
+          fileloggerService.execTrace("download scheduler finished");
           if ($state.current.name == "app.groupStatus") {
             $rootScope.autoRefresh = true;
           }

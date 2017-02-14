@@ -25,7 +25,8 @@ angular.module('careWheels', [
 ])
 
 
-.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, $window, User) {
+.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, $window, $fileLogger,
+              User, fileloggerService, loginDependencies) {
 
   //
   // When ionic.serve is run this is the entry point to the application
@@ -33,20 +34,21 @@ angular.module('careWheels', [
 
   $rootScope.autoRefresh = false;
 
-  //
-  // The following code gets executed on all page change and previous and current is
-  // remembered, it becomes easier to go back from any page to previous page
-  //
+   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+    $fileLogger.log("state change");
 
-  $rootScope.previousState;
-  $rootScope.currentState;
-  $rootScope.$on('$stateChangeSuccess', function(event, to, toParams, from, fromParams) {
-      $rootScope.previousState = from.name;
-      $rootScope.currentState = to.name;
-  });
+    //
+    // The following code gets executed on all page change and previous and current state is
+    // remembered, it becomes easier to switch back from any page to the previous page. for example you can run
+    // $state.go($rootScope.previousState, {}, {reload:true}); on any page to go back to the previous page.
+    //
 
-  $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
-    console.log('state change');
+    $rootScope.previousState;
+    $rootScope.currentState;
+    $rootScope.$on('$stateChangeSuccess', function(event, to, toParams, from, fromParams) {
+        $rootScope.previousState = from.name;
+        $rootScope.currentState = to.name;
+    });
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then
@@ -69,10 +71,10 @@ angular.module('careWheels', [
 
 
   $ionicPlatform.registerBackButtonAction(function (event) {
-    console.log("in registerbackbutton");
-    console.log($ionicHistory.backTitle());
+    $fileLogger.log("in registerbackbutton");
+    $fileLogger.log($ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
-  }, 100);
+  }, loginDependencies.backbuttomTimeout);
 
   $ionicPlatform.ready(function () {
     if (window.cordova && window.cordova.plugins.Keyboard) {

@@ -102,7 +102,7 @@ angular.module('careWheels')
     $scope.clickHelp = function () {
         $ionicPopup.alert({
             title: 'Help',
-            subTitle: "Help menu in the works"
+            subTitle: "Help menu under construction!!"
         });
     };
 

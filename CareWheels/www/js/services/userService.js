@@ -34,7 +34,7 @@ angular.module('careWheels')
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		}).then(function (response) {
-			if (rmbr) {					// In case of Android we need to figure out how to cler memory
+			if (rmbr) {		// credentials are saved in local storage. In login.js it is retrived
 				window.localStorage['loginCredentials'] = angular.toJson({"username": uname, "password": passwd});
 			} else {
 				window.localStorage.removeItem('loginCredentials');

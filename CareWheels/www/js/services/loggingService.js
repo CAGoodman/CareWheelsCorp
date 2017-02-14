@@ -99,7 +99,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
               cpp.deleteLogFile();
               cpp.initLogComponent();
               $fileLogger.info('-----New log file is created!');
-            }, function (error) {
+            }, function (error) {                                         // $cordovaFileTransfer.upload()
               $fileLogger.log('info', "ERROR: " + JSON.stringify(error));
               // $scope.data = JSON.stringify(error);
 
@@ -110,16 +110,68 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
             }, function (progress) {
               // PROGRESS HANDLING GOES HERE
             });
-          });
-        }
-      });
-    };
+          }); // $ionicPlatform.ready()
+        } // if(isAndroid)
+      }); // $fileLogger.checkFile()
+    };  // logUpload()
+
+    //
+    // The user sets the debug level which is saved in the local storage. Normally the traceLevel is set to 0 - Info
+    // If there is a need to debug then we bump it up to 1 - Verbose, 2 - Warnings, 3 - Error. In login.js the value
+    // is read off local storage and initialized to null.
+    // Maximum flexiblity is given for the format of the 4 traces. If nothing else trace0 gets printed.
+    //
+
+    this.execTrace = function(trace0, trace1, trace2, trace3){
+      switch($fileLogger.traceLevel) {
+        case '0':
+          $fileLogger.log('info', trace0);
+          break;
+        case '1':
+          if (trace1 != angular.isundefined ) {
+            $fileLogger.log('verbose', trace1);
+          } else {
+            $fileLogger.log('info', trace0);          // If trace 1 undefined print trace 0
+          }
+          break;
+        case '2':
+          if (trace2 != angular.isundefined ) {
+            $fileLogger.log('warnings', trace2);
+          } else {
+            if (trace1 != angular.isundefined ) {
+              $fileLogger.log('verbose', trace1);       // If trace 2 is undefined print trace 1
+            } else {
+              $fileLogger.log('info', trace0);          // If trace 1 is also undefined then just print trace 0
+            }
+          }
+          break;
+        case '3':
+          if (trace3 != angular.isundefined ) {
+            $fileLogger.log('error', trace3);
+          } else {
+            if (trace2 != angular.isundefined ) {
+              $fileLogger.log('warnings', trace2);        // If trace 3 is undefined print trace 2
+            } else {
+              if (trace1 != angular.isundefined ) {
+                $fileLogger.log('verbose', trace1);       // If trace 2 is undefined print trace 1
+              } else {
+                $fileLogger.log('info', trace0);          // If trace 2 is also undefined then just print trace 0
+              }
+            }
+          }
+          break;
+        default:
+          $fileLogger.log('error', "Unsupported execution trace level " + $fileLogger.traceLevel);
+      }
+    }; // execTrace()
   })
 
   .controller('fileloggerCtrl', ['$scope', '$fileLogger', 'fileloggerService', function ($scope, $fileLogger, fileloggerService) {
     $scope.inputDate = {text: ""};
 
     fileloggerService.initLogComponent();
+
+    fileloggerService.execTrace();
 
     $scope.initLogCurrentDate = function () {
       var currentDate = fileloggerService.getCurrentDate();

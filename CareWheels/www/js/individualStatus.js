@@ -16,7 +16,7 @@
 
 angular.module('careWheels')
   .controller('individualStatusController',
-      function ($scope, $state, GroupInfo, PaymentService, $fileLogger,
+      function ($scope, $state, GroupInfo, PaymentService,
                   fileloggerService, Download, User, loginDependencies) {
 
     fileloggerService.initLogComponent();
@@ -120,7 +120,7 @@ angular.module('careWheels')
      * This function returns the color for the call button.
      */
     $scope.getCallButtonColor = function () {
-      //console.log("getCallButtonColor();", analysis);
+      //fileloggerService.execTrace("getCallButtonColor();", analysis);
 
       $scope.showCallButton = true;
 
@@ -170,8 +170,7 @@ angular.module('careWheels')
      * that the number needs to be placed in the system.
      */
     $scope.getPhoneNumber = function () {
-      //console.log('hit getPhoneNumber()');
-      //console.log(analysis);
+      //fileloggerService.execTrace("GetPhoneNumber() hit", "GetPhoneNumber() hit" + analysis);
       var cyclosPhoneNumber = analysis.phoneNumber;
 
       if (cyclosPhoneNumber == null) {
@@ -179,10 +178,10 @@ angular.module('careWheels')
         phoneNumberError = true;             // this will trigger popup when phone button is pressed
       }
 
-      //console.log(cyclosPhoneNumber);
       var callString = "tel:";
       callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) + "-" + cyclosPhoneNumber.substring(8);
-      //console.log(callString);
+     //fileloggerService.execTrace("Cyclos Phone number : " + cyclosPhoneNumber + "CallString: " + callString,
+     //   "Cyclos Phone number : " + cyclosPhoneNumber + "CallString: " + callString + analysis);
       var alertNum = analysis.analysisData.fridgeAlertLevel;
       if (analysis.analysisData.medsAlertLevel > alertNum) {
         alertNum = analysis.analysisData.medsAlertLevel;
@@ -202,7 +201,7 @@ angular.module('careWheels')
     $scope.checkPhoneError = function () {
       if (phoneNumberError) {
         displayError();
-        $fileLogger.log('error', 'There is no phone number for ' + analysis.name);
+        fileloggerService.execTrace("", "", "", "There is no phone number for " + analysis.name);
       }
       else if ($scope.alertLevel != '') {
         PaymentService.call(analysis.name, $scope.alertLevel);
@@ -213,7 +212,7 @@ angular.module('careWheels')
     $scope.doRefresh = function () {
       Download.DownloadData(function(){
         $scope.$broadcast('scroll.refreshComplete');
-        console.log('Pull down refresh done!');
+        fileloggerService.execTrace("Pull down refresh done!");
         $state.go($state.current, {}, {reload: true});
       });
 

@@ -6,5 +6,12 @@ angular.module("app.constants", [])
 	"redAlertFreq": "2000",
 	"downloadTime": "50",
 	"userCount": "5",
-	"maxHitIndicator":"5"
+	"maxHitIndicator":"5",
+	"backbuttomTimeout": "100"
+})
+.constant("traceControls", {
+	"info": "0",
+	"verbose": "1",
+	"warnings": "2",
+	"errors": "3"
 })
