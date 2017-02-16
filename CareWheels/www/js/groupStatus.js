@@ -17,7 +17,8 @@
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, fileloggerService, GroupInfo, User, PaymentService, Download, loginDependencies) {
+function ($rootScope, $scope, $interval, $state, $fileLogger, fileloggerService,
+	GroupInfo, User, PaymentService, Download, loginDependencies) {
 
 	//
 	// Any time the main screen i.e. group status screen is to be displayed this groupStatusController()
@@ -38,8 +39,7 @@ function ($rootScope, $scope, $interval, $state, fileloggerService, GroupInfo, U
 		var creds = User.credentials();
 		if ($rootScope.autoRefresh) {
 			var msg = "Skipping crediting user for group summary view because of auto-refresh ";
-			$(msg,
-				msg + "Previous State : " + $rootScope.previousState + "Current State: " + $rootScope.currentState,
+			fileloggerService.execTrace(msg,
 				msg + "Previous State : " + $rootScope.previousState + "Current State: " +
 				$rootScope.currentState + "Username: " + creds.username);
 			$rootScope.autoRefresh = false;
@@ -105,14 +105,16 @@ function ($rootScope, $scope, $interval, $state, fileloggerService, GroupInfo, U
 						$scope.showBar = false;
 						break;
 					default:
-						fileloggerService.execTrace("", "", "", "Bad alert status: " + status + "Username: ", groupArray[i].username);
+						$fileLogger.log("error", "Bad alert status: " + status + "Username: " + creds.username);
 						$scope.showBar = false;
 
 				}	// switch()
 			}	// if()
 		}	//for()
+		if (i > loginDependencies.userCount) {
+			$fileLogger.log("error", "Oh! Oh! username: " + creds.username + " is missing contact server admin");
+		}
 		return;
-		fileloggerService.execTrace("", "", "", "Oh! Oh! username: " + groupArray[i].username + " is missing contact server admin");
 	}
 
 	//
@@ -218,7 +220,7 @@ function ($rootScope, $scope, $interval, $state, fileloggerService, GroupInfo, U
     $scope.doRefresh = function () {
         Download.DownloadData(function(){
             $scope.$broadcast('scroll.refreshComplete');
-            fileloggerService.execTrace('Pull down refresh done!');
+            fileloggerService.execTrace("Pull down refresh done!");
             $state.go($state.current, {}, {reload: true});
         });
      };	// doRefresh()

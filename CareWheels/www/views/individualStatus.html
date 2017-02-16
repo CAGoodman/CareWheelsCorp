@@ -7,14 +7,18 @@ Authors: Capstone students PSU Aug 2016
 Revision: Disabled center user call button - AV 01/27/2017
 Notes for the unintiated:
 The browser calls the index.html first and that loads this file.
+getPhoneNumber() and  getCallButtonColor() are two functions which can get called
+and then there might have to be made change in the display. In which case $digest
+is live and checking. However we do know no one is goign to call these two functions
+So to indicate that
 -->
 
 <ion-view view-title="app.individualStatus" class="overflow-scroll">
   <ion-nav-title>Status: {{name}}
-    <a href="{{getPhoneNumber()}}" class="blue" ng-show="showCallButton">
+    <a href="{{::getPhoneNumber()}}" class="blue" ng-show="::showCallButton">
       <div id="callArea"
            class="button"
-           ng-class="getCallButtonColor()">
+           ng-class="::getCallButtonColor()">
           Call
       </div>
     </a>

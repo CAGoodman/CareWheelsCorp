@@ -16,7 +16,7 @@
 
 angular.module('careWheels')
   .controller('individualStatusController',
-      function ($scope, $state, GroupInfo, PaymentService,
+      function ($scope, $state, GroupInfo, PaymentService, $fileLogger,
                   fileloggerService, Download, User, loginDependencies) {
 
     fileloggerService.initLogComponent();
@@ -120,7 +120,7 @@ angular.module('careWheels')
      * This function returns the color for the call button.
      */
     $scope.getCallButtonColor = function () {
-      //fileloggerService.execTrace("getCallButtonColor();", analysis);
+      fileloggerService.execTrace("getCallButtonColor();", analysis);
 
       $scope.showCallButton = true;
 
@@ -170,7 +170,7 @@ angular.module('careWheels')
      * that the number needs to be placed in the system.
      */
     $scope.getPhoneNumber = function () {
-      //fileloggerService.execTrace("GetPhoneNumber() hit", "GetPhoneNumber() hit" + analysis);
+      fileloggerService.execTrace("GetPhoneNumber() hit", "GetPhoneNumber() hit" + analysis);
       var cyclosPhoneNumber = analysis.phoneNumber;
 
       if (cyclosPhoneNumber == null) {
@@ -180,8 +180,8 @@ angular.module('careWheels')
 
       var callString = "tel:";
       callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) + "-" + cyclosPhoneNumber.substring(8);
-     //fileloggerService.execTrace("Cyclos Phone number : " + cyclosPhoneNumber + "CallString: " + callString,
-     //   "Cyclos Phone number : " + cyclosPhoneNumber + "CallString: " + callString + analysis);
+      fileloggerService.execTrace("Cyclos Phone number : " + cyclosPhoneNumber + "CallString: " + callString,
+        "Cyclos Phone number : " + cyclosPhoneNumber + "CallString: " + callString + analysis);
       var alertNum = analysis.analysisData.fridgeAlertLevel;
       if (analysis.analysisData.medsAlertLevel > alertNum) {
         alertNum = analysis.analysisData.medsAlertLevel;
@@ -201,7 +201,7 @@ angular.module('careWheels')
     $scope.checkPhoneError = function () {
       if (phoneNumberError) {
         displayError();
-        fileloggerService.execTrace("", "", "", "There is no phone number for " + analysis.name);
+        $fileLogger.log("error", "There is no phone number for " + analysis.name);
       }
       else if ($scope.alertLevel != '') {
         PaymentService.call(analysis.name, $scope.alertLevel);

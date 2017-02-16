@@ -11,6 +11,8 @@ angular.module('careWheels')
 .controller('AdvancedController', function ($rootScope, $scope, $state, $interval, $ionicLoading,
             $ionicPopup, Download, User, traceControls) {
 
+  $scope.traceLevel = 0;
+
   $scope.ScreenRefresh = function () {
     User.waitForDataDownload();  // Blocking the user till the data download is done
     Download.DownloadData(function () {
@@ -41,33 +43,19 @@ angular.module('careWheels')
   }
 
   //
-  // When there are issues the user will enable debug and select a suitable level and reboot.
-  // The selected level is remembered and on the reboot will produce detaile error log.
+  // When there are issues the user will enable debug. Debug enabled is remembered and on restart
+  // will produce detailed error log.
   // In case the app does not even display the login screen and dies during login then we have to
   // ask the user to uninstall the APK and we need to provide debug version of the APK in
   // which the traceLevel is set to "error"
   //
 
   $scope.EnableDebug = function (traceLevel) {
-    // execTraceLevel is the key, traceFilter is the tag and tracelevel is the value
-
-    var traceLevel = prompt("Please enter Execution Trace Level 0 - Info, 1 - Verbose, 2 - Warnings, 3 - Errors", 0);
-
-    switch(traceLevel){
-      case "1":
-      case "2":
-      case "3":
-        window.localStorage['execTraceLevel'] = angular.toJson({"traceFilter": traceLevel});
-        $ionicPopup.alert({
-          title: "Execution trace log Enabled!!",
-          subTitle: ""
-        });
-        break;
-      default:          // The user has hit cancel or did not change and just hit ok or typed garbage so just ignore
-        $ionicPopup.alert({
-          title: "Execution trace log was NOT Enabled!!",
-          subTitle: "Valid inputs are 1, 2 or 3. Please try again"
-        });
-    }
+    traceLevel = "1";                             // For now we have only one level - 1.
+    window.localStorage['execTraceLevel'] = angular.toJson({"traceFilter": traceLevel});
+    $ionicPopup.alert({
+      title: "Debug Enabled. Logout/login to capture debug log!!",
+      subTitle: "After the debug run logout/login once more to disable debug"
+    });
   }
 })

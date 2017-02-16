@@ -74,7 +74,7 @@ angular.module('careWheels', [
     $fileLogger.log("in registerbackbutton");
     $fileLogger.log($ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
-  }, loginDependencies.backbuttomTimeout);
+  }, loginDependencies.backbuttonTimeout);
 
   $ionicPlatform.ready(function () {
     if (window.cordova && window.cordova.plugins.Keyboard) {
@@ -98,7 +98,7 @@ angular.module('careWheels', [
     creditUser: cbUrls.careBankURL8443 + '/credituser.php',
     updateSettings:cbUrls.careBankURL8443 + '/updatesettings.php',
     sensorDownLoad:cbUrls.careBankURL8443 + '/analysis.php',
-    loggingServices:cbUrls.careBankURL8443 + '/logupload.php'
+    loggingServices:cbUrls.careBankURL8080 + '/logupload.php'
   };
   return api;
 });

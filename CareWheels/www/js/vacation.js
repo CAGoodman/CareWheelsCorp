@@ -7,7 +7,6 @@
 // Revision: Data download has to happen for the user to become unclickable or clickable - AV 02/04/2017
 //           Cleanup and fix vacation related issue - NXB 02/07/2017
 //
-//
 
 
 angular.module('careWheels')
@@ -15,13 +14,25 @@ angular.module('careWheels')
 .controller('vacationController',
 	function($scope, $state, $controller, $ionicLoading, GroupInfo, User, Download) {
 
-    $scope.currentVacationMode = User.getVacationValue();
+	//
+	// From menu.html the control comes here and the pbject $scope.data.currentVacationMode gets initialized
+	// $scope makes it possible for this value to be visible in the vacation.html too
+	//
 
-    $scope.toggleVacationMode = function () {
+    $scope.data = {'currentVacationMode' :User.getVacationValue()};
+
+    //
+    // After the above line execution the control goes back to menu.html and the Vaction Mode button is visible. When the user
+    // clicks it and toggles the switch $scope.data.currentVacationMode value also toggles. Then control comes dow to
+    // $scope.toggleVacationMode() and things happen. Important thing is $scope sees both side the binding varaible
+    // between the HTML and JS
+    //
+
+
+    $scope.toggleVacationMode = function (currentVacationMode) {
 
 		var creds = User.credentials();
-
-		User.setOnVacation(creds.username, creds.password, !$scope.currentVacationMode).then(function(resultValue){
+		User.setOnVacation(creds.username, creds.password, $scope.data.currentVacationMode).then(function(resultValue){
 			User.waitForDataDownload();  // Blocking the user till the data download is done
 	        Download.DownloadData(function(){
 	        	User.completedDataDownload();       // DataDownload completed

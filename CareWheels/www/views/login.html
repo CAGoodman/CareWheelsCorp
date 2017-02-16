@@ -35,8 +35,9 @@ Revision: Ananda Vardhana  11/28/16
         </ion-list>
       </div>
               <!-- User clicks on Remember Credentials and rememberMe is set which
-              is passed down below along with uname & passwd    -->
-      <button class="button button-block button-calm" ng-click="login(username, passwd, rememberMe)" ng-disabled="!username">Login</button>
+              is passed down below along with uname & passwd. ng-disabled will prompt the user where to     -->
+      <button class="button button-block button-calm" ng-click="login(username, passwd, rememberMe)"
+      ng-disabled="!username">Login</button>
 
       <!-- TappedOrClicked() function gets called when a click | a tap happens. showHelp is set to true in login.js
       and ng-show shows the help message. Then the execution continues and opens email box.

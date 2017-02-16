@@ -1,3 +1,12 @@
+<!--
+CareWheels Corporation 2016
+Filename: vacation.html
+Description: This controls the vacation mode by Enabling and Disbaling vacation mode.
+
+Authors:  Capstone Students PSU Aug 2016
+Revision: Bhasker Narjala  02/15/17 - Made it lean & clean.
+-->
+
 <ion-view view-title="app.vacation">
   <ion-nav-title>Vacation Mode</ion-nav-title>
   <!-- user group block: holds the -->
@@ -6,11 +15,11 @@
     <ion-list>
 
       <ion-item>
-              <div class="item item-light miniCardHeader center">
-                <ion-toggle ng-model="currentVacationMode" ng-checked="currentVacationMode"
-                ng-change="toggleVacationMode()" toggle-class=("toggle", "toggle-balanced",
-                "onOffToggle")>Vacation Mode</ion-toggle>
-              </div>
+        <div class="item item-light miniCardHeader center">
+          <ion-toggle ng-model="data.currentVacationMode"
+            ng-change="toggleVacationMode()" toggle-class=("toggle", "toggle-balanced","onOffToggle")>Vacation Mode
+           </ion-toggle>
+        </div>
       </ion-item>
 
     </ion-list>
