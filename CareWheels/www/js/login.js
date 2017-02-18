@@ -103,7 +103,7 @@ angular.module('careWheels')
           // do the log upload. This is where the app talks to the server for credentials authentication
           // The credentials remembering is within the app only the server is unaware of it
           //
-          fileloggerService.initLogComponent();
+
           fileloggerService.logUpload(uname, passwd);
           fileloggerService.execTrace("Done uploading log file!",
             "Done uploading log file!. username: " + $scope.username + " password: " + $scope.passwd);

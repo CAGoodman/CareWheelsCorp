@@ -27,7 +27,7 @@
 */
 
 angular.module('careWheels')
-.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API){
+.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API, $fileLogger, fileloggerService){
   var PaymentService = {};
 
   //
@@ -60,15 +60,16 @@ angular.module('careWheels')
       }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
         status = response.status;
         data = response.data;
-        console.log('Rest Status = ' + status);
+        fileloggerService.execTrace('Rest Status = ' + status);
       }, function (response) {
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
-          console.error(data);
-        } else console.log('Success: ' + data);
+          $fileLogger.log("error", "CreditPoseted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+        } else fileloggerService.execTrace('Success: ' + "CreditPoseted: " + data.creditPosted +
+                "ReasonCode: " + data.reasonCode);
       })
-    } else console.error("Cannot make REST call for Call  Payment because user credentials are undefined.");
+    } else $fileLogger.log("error", "Cannot make REST call for Call  Payment because user credentials are undefined.");
   };    // PaymentService.call
 
   //
@@ -102,15 +103,16 @@ angular.module('careWheels')
       }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
         status = response.status;
         data = response.data;
-        console.log('Rest Status = ' + status);
+        fileloggerService.execTrace('Rest Status = ' + status);
       }, function (response) {
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
-          console.error(data);
-        } else console.log('Success: ' + data);
+          $fileLogger.log("error", "CreditPoseted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+        } else fileloggerService.execTrace('Success: ' + "CreditPoseted: " + data.creditPosted +
+                "ReasonCode: " + data.reasonCode);
       })
-    } else console.error("Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
+    } else $fileLogger.log("error", "Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
   };  // PaymentService.sensorDataView
 
   //
@@ -143,15 +145,16 @@ angular.module('careWheels')
       }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
         status = response.status;
         data = response.data;
-        console.log('Rest Status = ' + status);
+        fileloggerService.execTrace('Rest Status = ' + status);
       }, function (response) {
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
-          console.error(data);
-        } else console.log('Success: ' + data);
+          $fileLogger.log("error", "CreditPoseted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+        } else fileloggerService.execTrace('Success: ' + "CreditPoseted: " + data.creditPosted +
+                "ReasonCode: " + data.reasonCode);
       })
-    } else console.error("Cannot make REST call for memberSummary Payment because user credentials are undefined.");
+    } else $fileLogger.log("error", "Cannot make REST call for memberSummary Payment because user credentials are undefined.");
   };
   return PaymentService;
 }); // PaymentService.memberSummary

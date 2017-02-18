@@ -17,7 +17,7 @@
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, $fileLogger, fileloggerService,
+function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fileloggerService,
 	GroupInfo, User, PaymentService, Download, loginDependencies) {
 
 	//
@@ -27,7 +27,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, fileloggerService,
 
 	$scope.showBar = false;
 	$scope.barLegend = "";
-
+    $ionicHistory.clearHistory();
 	runOnStateChange();
 
 
@@ -38,15 +38,14 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, fileloggerService,
 	function runOnStateChange() {
 		var creds = User.credentials();
 		if ($rootScope.autoRefresh) {
-			var msg = "Skipping crediting user for group summary view because of auto-refresh ";
-			fileloggerService.execTrace(msg,
-				msg + "Previous State : " + $rootScope.previousState + "Current State: " +
-				$rootScope.currentState + "Username: " + creds.username);
+			var msg = "GroupStatus: Skipping crediting user for group summary view because of auto-refresh ";
+			fileloggerService.execTrace(msg + "Username: " + creds.username + " Previous State : " +
+				$rootScope.previousState + " Current State: " +  $rootScope.currentState);
 			$rootScope.autoRefresh = false;
 		}
 		else {
-			var msg = "Crediting user for group summary view "
-			fileloggerService.execTrace(msg, msg + "Username: " + creds.username);
+			var msg =
+			fileloggerService.execTrace("GroupStatus: Crediting user for group summary view " + "Username: " + creds.username);
 			PaymentService.memberSummary();
 		}
 
@@ -220,7 +219,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, fileloggerService,
     $scope.doRefresh = function () {
         Download.DownloadData(function(){
             $scope.$broadcast('scroll.refreshComplete');
-            fileloggerService.execTrace("Pull down refresh done!");
+            fileloggerService.execTrace("GroupStatus: Pull down refresh done!");
             $state.go($state.current, {}, {reload: true});
         });
      };	// doRefresh()

@@ -12,6 +12,7 @@
  angular.module is a global place for creating, registering and retrieving Angular modules
  'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
  the 2nd parameter is an array of 'requires'
+ Before the login screen all the services excpeting paymentServices gets called including app.js
 --*/
 
 angular.module('careWheels', [
@@ -25,8 +26,8 @@ angular.module('careWheels', [
 ])
 
 
-.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, $window, $fileLogger,
-              User, fileloggerService, loginDependencies) {
+.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, $fileLogger, fileloggerService,
+              User, loginDependencies) {
 
   //
   // When ionic.serve is run this is the entry point to the application
@@ -35,20 +36,8 @@ angular.module('careWheels', [
   $rootScope.autoRefresh = false;
 
    $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
-    $fileLogger.log("state change");
 
-    //
-    // The following code gets executed on all page change and previous and current state is
-    // remembered, it becomes easier to switch back from any page to the previous page. for example you can run
-    // $state.go($rootScope.previousState, {}, {reload:true}); on any page to go back to the previous page.
-    //
-
-    $rootScope.previousState;
-    $rootScope.currentState;
-    $rootScope.$on('$stateChangeSuccess', function(event, to, toParams, from, fromParams) {
-        $rootScope.previousState = from.name;
-        $rootScope.currentState = to.name;
-    });
+    $fileLogger.log("info", "StateChangeStart: State change Start " + "From: " + fromState.name + " Next: " + next.name);
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then
@@ -67,12 +56,24 @@ angular.module('careWheels', [
         $state.go('login');
       }
     }
+  }); //$rootScope.$on()
+
+
+  //
+  // The following code gets executed on all page change and previous and current state is
+  // remembered, it becomes easier to switch back from any page to the previous page. for example you can run
+  // $state.go($rootScope.previousState, {}, {reload:true}); on any page to go back to the previous page.
+  //
+
+  $rootScope.$on('$stateChangeSuccess', function(event, next, toParams, from, fromState) {
+      $rootScope.previousState = from.name;
+      $rootScope.currentState = next.name;
+       $fileLogger.log("info", "StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
+
   });
 
-
   $ionicPlatform.registerBackButtonAction(function (event) {
-    $fileLogger.log("in registerbackbutton");
-    $fileLogger.log($ionicHistory.backTitle());
+    $fileLogger.log("info", "In Registerbackbutton" + $ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
   }, loginDependencies.backbuttonTimeout);
 

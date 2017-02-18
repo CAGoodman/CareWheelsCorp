@@ -10,7 +10,8 @@
 
 angular.module('careWheels')
 // User factory
-.factory('User', function (GroupInfo, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading) {
+.factory('User', function (GroupInfo, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading,
+	$fileLogger, fileloggerService) {
 	var user = {};
 	var userService = {};
 	var failCount = 0;
@@ -55,8 +56,10 @@ angular.module('careWheels')
 			//response.status = 404;
 			//response.data = "nothing";
 			//
-			console.log(response.status);
-			console.log(response.data);
+			fileloggerService.execTrace("Status: " + response.status);
+			for (var i = 0; i < response.data.length; i++) {
+				fileloggerService.execTrace("Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
+			}
 
 			if (failCount >= 3) {
 				errorMsg = "Exceeding invalid login attempts. Please Contact admin";
@@ -136,15 +139,17 @@ angular.module('careWheels')
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		}).then(function (response) {
-			console.log("Successfully updated setting!");
+			fileloggerService.execTrace("Successfully updated setting!");
 			userService.completedDataDownload();       // DataDownload completed
 			return true;
 		},function (response) {
 			userService.completedDataDownload();       // DataDownload completed
 			var errorMsg = "Unknown error.";
 			//
-			console.log(response.status);
-			console.log(response.data);
+			fileloggerService.execTrace("Status: " + response.status);
+			for (var i = 0; i < response.data.length; i++) {
+				fileloggerService.execTrace("Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
+			}
 
 			if (response.status != 200) {
 			  errorMsg = "Unable to update settings on server!";

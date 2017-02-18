@@ -19,8 +19,6 @@ angular.module('careWheels')
       function ($scope, $state, GroupInfo, PaymentService, $fileLogger,
                   fileloggerService, Download, User, loginDependencies) {
 
-    fileloggerService.initLogComponent();
-
     /**
      * grabs the analysis of the member selected on the previous view
      */
@@ -120,7 +118,8 @@ angular.module('careWheels')
      * This function returns the color for the call button.
      */
     $scope.getCallButtonColor = function () {
-      fileloggerService.execTrace("getCallButtonColor();", analysis);
+      var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
+      fileloggerService.execTrace("IndividualStatus: GetCallButtonColor()" + msg);
 
       $scope.showCallButton = true;
 
@@ -170,7 +169,8 @@ angular.module('careWheels')
      * that the number needs to be placed in the system.
      */
     $scope.getPhoneNumber = function () {
-      fileloggerService.execTrace("GetPhoneNumber() hit", "GetPhoneNumber() hit" + analysis);
+      var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
+      fileloggerService.execTrace("IndividualStatus: GetPhoneNumber() hit" + msg);
       var cyclosPhoneNumber = analysis.phoneNumber;
 
       if (cyclosPhoneNumber == null) {
@@ -179,9 +179,11 @@ angular.module('careWheels')
       }
 
       var callString = "tel:";
-      callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) + "-" + cyclosPhoneNumber.substring(8);
-      fileloggerService.execTrace("Cyclos Phone number : " + cyclosPhoneNumber + "CallString: " + callString,
-        "Cyclos Phone number : " + cyclosPhoneNumber + "CallString: " + callString + analysis);
+      callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) +
+       "-" + cyclosPhoneNumber.substring(8);
+      var msg = "Username: " + analysis.username + " Balance: " + analysis.balance;
+      fileloggerService.execTrace("IndividualStatus: " + msg + " Cyclos Phone number : " +
+        cyclosPhoneNumber + " CallString: " + callString);
       var alertNum = analysis.analysisData.fridgeAlertLevel;
       if (analysis.analysisData.medsAlertLevel > alertNum) {
         alertNum = analysis.analysisData.medsAlertLevel;
@@ -212,7 +214,7 @@ angular.module('careWheels')
     $scope.doRefresh = function () {
       Download.DownloadData(function(){
         $scope.$broadcast('scroll.refreshComplete');
-        fileloggerService.execTrace("Pull down refresh done!");
+        fileloggerService.execTrace("IndividualStatus: Pull down refresh done!");
         $state.go($state.current, {}, {reload: true});
       });
 

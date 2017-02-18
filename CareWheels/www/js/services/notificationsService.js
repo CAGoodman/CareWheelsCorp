@@ -1,6 +1,6 @@
 angular.module('careWheels')
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
-.factory("notifications", function($log, $cordovaLocalNotification){
+.factory("notifications", function($log, $cordovaLocalNotification, $fileLogger, fileloggerService){
   var isAndroid = window.cordova!=undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
   var data;   //needs to be called outside the functions so it persists for all of them
 
@@ -8,9 +8,9 @@ angular.module('careWheels')
 
 
   notifications.getData = function(){
-    //console.log('hit getData');
-    //data = angular.fromJson(window.localStorage['Reminders']);
-    //console.log('data:', data);
+    fileloggerService.execTrace('hit getData');
+    data = angular.fromJson(window.localStorage['Reminders']);
+    fileloggerService.execTrace('data:', data);
     return angular.fromJson(window.localStorage['Reminders']);
   };
 
@@ -22,12 +22,12 @@ angular.module('careWheels')
   //and calls Create_Notif for each of them
   notifications.Init_Notifs = function() {
 
-    console.log('init notifs');
+    fileloggerService.execTrace('init notifs');
 
     data = angular.fromJson(window.localStorage['Reminders']);
-    console.log(data);
+    fileloggerService.execTrace(data);
     if(data==null){   //have notifications been initialized before?
-      //console.log("Initializing Notifications from default");
+      fileloggerService.execTrace("Initializing Notifications from default");
       data = [];    //data param needs to be initialized before indices can be added
       data[0] = new notifications.Time();
       data[1] = new notifications.Time();
@@ -36,7 +36,7 @@ angular.module('careWheels')
       notifications.Create_Notif(14,0,0,true,2);
       notifications.Create_Notif(19,0,0,true,3);
     } else {    //need to check if each reminder, as any/all of them could be deleted by user
-      //console.log("Initializing Notifications from memory");
+      fileloggerService.execTrace("Initializing Notifications from memory");
       notifications.Create_Notif(data[0].hours,data[0].minutes,data[0].seconds,data[0].on,1);
       notifications.Create_Notif(data[1].hours,data[1].minutes,data[1].seconds,data[1].on,2);
       notifications.Create_Notif(data[2].hours,data[2].minutes,data[2].seconds,data[2].on,3);
@@ -56,7 +56,7 @@ angular.module('careWheels')
         }).then(function() {
           $log.log("Alert notification has been set");
         });
-      } else $log.warn("Plugin disabled");
+      } else $fileLogger.log("warning", "Plugin disabled");
     } if(reminderNum>0 && reminderNum <4){    //is notif a user reminder?
       var time = new Date();    //defaults to current date/time
       time.setHours(hours);     //update
@@ -79,28 +79,28 @@ angular.module('careWheels')
               }).then(function() {
                 $log.log("Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");
               });
-          } else console.warn("Plugin disabled");
+          } else $fileLogger.log("warning", "Plugin disabled");
         } else {    //need to deschedule notification if it has been turned off
           if(isAndroid){
             $cordovaLocalNotification.cancel(reminderNum, function() {
-              console.log("Reminder" + reminderNum + " has been descheduled.");
+              fileloggerService.execTrace("Reminder" + reminderNum + " has been descheduled.");
             });
           }
         }
-    } else if(reminderNum >=4) $log.warn("Incorrect attempt to create notification for id #" + reminderNum);
+    } else if(reminderNum >=4) $fileLogger.log("warning", "Incorrect attempt to create notification for id #" + reminderNum);
   };
 
   //Unschedules all local reminders; clears its index if it is a user reminder (id 1-3).
   notifications.Delete_Reminders = function(){   //NOTE: id corresponds to data array indices so it is off by one
     //data = angular.fromJson(window.localStorage['Reminders']);
-    //console.log('hit delete reminders');
+    fileloggerService.execTrace('hit delete reminders');
     if(isAndroid){
       for(i=1; i<4; ++i){
         $cordovaLocalNotification.clear(i, function() {
-          console.log(i + " is cleared");
+          fileloggerService.execTrace(i + " is cleared");
         });
       }
-    } else console.warn("Plugin disabled");
+    } else $fileLogger.log("warning", "Plugin disabled");
 
     window.localStorage['Reminders'] = null;   //and delete Reminders array
     data = null;
@@ -112,7 +112,7 @@ angular.module('careWheels')
    */
   notifications.Reminder_As_String = function(id){
     if(id>2){
-      $log.error("Attempted to print Reminder id " + id + ", but there are only 3 reminders!");
+      $fileLogger.log("error", "Attempted to print Reminder id " + id + ", but there are only 3 reminders!");
     } else {
       var hour = data[id].hours;
       if(hour<10) hour = 0 + String(hour);

@@ -5,14 +5,22 @@
 
  Authors: Capstone students PSU Aug 2016
  Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
-
+ When the application is launched in logfileNme set to careWheelsLocalLogFile.log and
+ isAndroid is initialized to true if mobile else false. Control goes to app.js
+ and all other services excpeting paymentservice is initialized and login screen is splashed.
+ Login.js calls initLogComponent() --> setLogLocation(careWheelsLocalLogFile.log) --> FileLogger gets started
+ Upload happens only on login. So if we want uplaod logfile in the middle we have to manually induce
+ Chrome internally stores it at "C:\Users\<Your Username>\AppData\Local\Google\Chrome\User Data\Default\Local Storage"
 --*/
 
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
-  .service('fileloggerService', function ($fileLogger, $filter, $ionicPlatform, $cordovaFile, $cordovaFileTransfer, API) {
+  .service('fileloggerService', function ($fileLogger, $filter, $ionicPlatform, $cordovaFile,
+    $cordovaFileTransfer, API, apkDependencies) {
     var logFileName = "careWheelsLocalLogFile.log";
     //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
     var isAndroid = window.cordova!=undefined;
+
+    var username, password;
 
     this.setLogLocation = function (fileName) {
       $fileLogger.setStorageFilename(fileName);
@@ -37,16 +45,20 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       return logFileName;
     };
 
-    this.initLogComponent = function () {
-      this.setLogLocation(logFileName);
-      // $fileLogger.setTimestampFormat('medium');
+    // gets all possible info of the hardware, software and executing context to help in debug
+    this.getUserInfo = function () {
+      var userInfoPkg = "Username: " + username + "; Password: " + password;
+      var apkPkg ="Version: " + apkDependencies.apkVersion + "; Apk: " + apkDependencies.apkPackage +
+      "; Date: " + apkDependencies.apkDate;
+      var osPkg = "Android Version 4.0.8.1";
+      var hardwarePkg = "Samsung Galaxy Note 3";
+      fullPkg = userInfoPkg + apkPkg + osPkg + hardwarePkg;
+      return(fullPkg);
     };
 
-    this.someLog = function () {
-      $fileLogger.log('debug', 'log from cybertron');
-      $fileLogger.log('info', 'log from cybertron');
-      $fileLogger.log('warn', 'log from cybertron');
-      $fileLogger.log('error', 'log from cybertron');
+    this.initLogComponent = function () {
+      this.setLogLocation(logFileName);
+      $fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
     };
 
     this.deleteLogFile = function () {
@@ -56,10 +68,12 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     };
 
     this.logUpload = function (usernameIn, passwordIn) {
-      var user = usernameIn;
-      var pass = passwordIn;
+      username = usernameIn;
+      password = passwordIn;
+      var fullPkg;
 
       this.initLogComponent();
+      fullPkg = this.getUserInfo();
 
       // save the "parent process" = "this"
       var pp = this;
@@ -76,13 +90,13 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
 
         // generate file name for uploading base on current date and time
         var currentDateTime = cpp.getCurrentDateTime();
-        var fileNameUp = user + '-' + currentDateTime + '.log';
+        var fileNameUp = username + '-' + currentDateTime + '.log';
         if(isAndroid){
           var options = {
             fileKey: "filetoupload",
             fileName: fileNameUp,
             mimeType: "text/plain",
-            params: {'username': user, 'password': pass, 'fileName': fileNameUp}
+            params: {'username': username, 'password': password, 'fileName': fileNameUp}
           };
           options.headers = {'headerParam': 'headerValue'};
 
@@ -127,7 +141,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         case '0':
           $fileLogger.log('info', trace0);
           break;
-        case '1':
+        case '1':                                   // This is a placeholder for now
           if (trace1 != angular.isundefined ) {
             $fileLogger.log('verbose', trace1);
           } else {
@@ -139,56 +153,3 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       }
     }; // execTrace()
   })
-
-  .controller('fileloggerCtrl', ['$scope', '$fileLogger', 'fileloggerService', function ($scope, $fileLogger, fileloggerService) {
-    $scope.inputDate = {text: ""};
-
-    fileloggerService.initLogComponent();
-
-    fileloggerService.execTrace();
-
-    $scope.initLogCurrentDate = function () {
-      var currentDate = fileloggerService.getCurrentDate();
-      fileloggerService.setLogLocation(currentDate + '.log');
-    };
-
-    $scope.initLogCustomDate = function () {
-      fileloggerService.setLogLocation($scope.inputDate.text + '.log');
-    };
-
-    $scope.someLog = function () {
-      fileloggerService.someLog();
-    };
-
-    $scope.viewLog = function () {
-      $fileLogger.getLogfile().then(function (l) {
-        console.log('debug', '--------------------------------------------------');
-        console.log('debug', 'Begin content of the Log file:');
-        console.log('debug', '--------------------------------------------------');
-        console.log('debug', l);
-        console.log('debug', '--------------------------------------------------');
-        console.log('debug', 'End content of the Log file:');
-        console.log('debug', '--------------------------------------------------');
-        $scope.viewLogStatus = l;
-      });
-    };
-
-    $scope.logFileInfo = function () {
-      $fileLogger.checkFile().then(function (d) {
-        $fileLogger.log('debug', '--------------------------------------------------');
-        $fileLogger.log('debug', 'Detail information of Log file:');
-        $fileLogger.log('debug', '--------------------------------------------------');
-        $fileLogger.log('debug', JSON.stringify(d));
-        $fileLogger.log('debug', '--------------------------------------------------');
-        $scope.logFileInfoStatus = JSON.stringify(d.localURL);
-      });
-    };
-
-    $scope.deleteLogFile = function () {
-      fileloggerService.deleteLogFile();
-    };
-
-    $scope.logUpload = function (usernameIn, passwordIn) {
-      fileloggerService.logUpload(usernameIn, passwordIn);
-    };
-  }]);

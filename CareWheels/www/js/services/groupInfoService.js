@@ -11,7 +11,7 @@
 
 // GroupInfo factory for global GroupInfo
 angular.module('careWheels')
-.factory('GroupInfo', function () {
+.factory('GroupInfo', function ($fileLogger, fileloggerService) {
   var groupInfoService = {};
   var groupInfo = [];
   var memberSelected;
@@ -370,13 +370,13 @@ angular.module('careWheels')
   groupInfoService.getMember = function (Username) {       // Returns the groupInfo member array index object that contains the same username as the username parameter.
     for (i = 0; i < groupInfo.length; ++i) {
       if (groupInfo[i].username == Username) {
-        console.log("Found " + Username + "==" + groupInfo[i].username);
+        fileloggerService.execTrace("GetMember(): Found " + Username + "==" + groupInfo[i].username);
         return groupInfo[i];
       }
 
     }
 
-    console.error("In getMember(): Could not find username " + Username);
+    $fileLogger.log("error", "GetMember(): Could not find username " + Username);
   };
 
   groupInfoService.setMember = function (groupInfoMember) {     // Sets the groupInfo array index that contains the same username as the username parameter to the value of the groupInfoMember paramemter.
@@ -388,7 +388,7 @@ angular.module('careWheels')
 
     }
 
-    console.error("In setMember(): Could not find username " + Username);
+    $fileLogger.log("error", "SetMember(): Could not find username " + Username);
     return false;
   };
 

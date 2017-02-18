@@ -1,6 +1,6 @@
 //
 // CareWheels Corporation 2016
-// Filename: sensorDataDownload.js
+// Filename: dataDownloadServices.js
 // Description: CareBank app calls the CareBank Server to download the sensor data to refresh user screen
 //
 // Authors: Capstone students PSU Aug 2016
@@ -9,7 +9,8 @@
 //
 
 angular.module('careWheels')
-  .factory('Download', function ($http, $httpParamSerializerJQLike, GroupInfo, User, notifications, API) {
+  .factory('Download', function ($http, $httpParamSerializerJQLike, GroupInfo, User, notifications, API,
+    $fileLogger, fileloggerService) {
     var DownloadService = {};
 
     //
@@ -41,8 +42,7 @@ angular.module('careWheels')
           }
         // success
         }).then(function (response) {
-
-          console.log("Sensor response: ", response);
+          fileloggerService.execTrace("Sensor response: ", response);
 
 /* bugbug
           if(usernametofind == "testalice"){
@@ -58,25 +58,24 @@ angular.module('careWheels')
             response.data.credit *= i1;
             response.data.debit *= i2;
             response.data.balance *= i3;
-            console.log("Indices are:" + i1 + " " + i2 + " " + i3);
+            fileloggerService.execTrace("Indices are:" + i1 + " " + i2 + " " + i3);
           }
 */
           GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
 
           if(response.data.medsAlertLevel >= 2) { //handle red alert notifications
             notifications.Create_Notif(0, 0, 0, false, 0);
-            console.log("Meds notification created!");
+            fileloggerService.execTrace("Meds notification created!");
           }
           if(response.data.fridgeAlertLevel >= 2) {  //handle *red alert* notifications
             notifications.Create_Notif(0, 0, 0, false, 0);
-            console.log("Fridge notification created!")
+            fileloggerService.execTrace("Fridge notification created!")
           }
 
-          console.log("Group after downloading sensor data: ", GroupInfo.groupInfo());
+          fileloggerService.execTrace("Group after downloading sensor data: ", GroupInfo.groupInfo());
 
         }, function error(response) {
-          console.log("request failed ", response);
-          //log appropriate error
+          $fileLogger.log("error","request failed ", response);
         }).then(function(){
           // were done with this member
           return callback();

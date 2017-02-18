@@ -10,7 +10,7 @@
 //
 angular.module('careWheels')
 
-.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkDependencies, User) {
+.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkDependencies, User, fileloggerService) {
 
     $scope.versionNumber = apkDependencies.apkVersion;
 
@@ -108,11 +108,11 @@ angular.module('careWheels')
 
     $scope.clickAbout = function () {
 
-        console.log('Name: ' + apkDependencies.apkName)
-        console.log('Company: ' + apkDependencies.apkCompany)
-        console.log('Version: ' + apkDependencies.apkVersion)
-        console.log('Apk: ' + apkDependencies.apkPackage)
-        console.log('Date: ' + apkDependencies.apkDate)
+        fileloggerService.execTrace('Name: ' + apkDependencies.apkName);
+        fileloggerService.execTrace('Company: ' + apkDependencies.apkCompany);
+        fileloggerService.execTrace('Version: ' + apkDependencies.apkVersion);
+        fileloggerService.execTrace('Apk: ' + apkDependencies.apkPackage);
+        fileloggerService.execTrace('Date: ' + apkDependencies.apkDate);
         var aboutEntries = [
             { label: 'Name', value: apkDependencies.apkName },
             { label: 'Company', value: apkDependencies.apkCompany },
@@ -147,8 +147,7 @@ angular.module('careWheels')
                 "intentstart": "startActivity"
             })
             .start(function() {
-                console.log("OK");
-            }, function(error) {
+;            }, function(error) {
                 $ionicPopup.alert({
                     title: 'Error',
                     subTitle: "Sen.se application not available"
@@ -169,8 +168,7 @@ angular.module('careWheels')
                 "intentstart": "startActivity"
             })
             .start(function() {
-                console.log("OK");
-            }, function(error) {
+;            }, function(error) {
                 $ionicPopup.alert({
                     title: 'Error',
                     subTitle: "Cyclos application not available"

@@ -9,7 +9,7 @@
 //
 angular.module('careWheels')
 .controller('AdvancedController', function ($rootScope, $scope, $state, $interval, $ionicLoading,
-            $ionicPopup, Download, User, traceControls) {
+            $ionicPopup, Download, User, traceControls, fileloggerService) {
 
   $scope.traceLevel = 0;
 
@@ -17,7 +17,7 @@ angular.module('careWheels')
     User.waitForDataDownload();  // Blocking the user till the data download is done
     Download.DownloadData(function () {
       User.completedDataDownload();       // DataDownload completed
-      console.log('Forced Screen Refresh finished');
+      fileloggerService.execTrace("ScreenRefresh: Forced Screen Refresh finished");
       $state.go($rootScope.previousState, {}, {reload:true});
     });
   }
@@ -28,6 +28,7 @@ angular.module('careWheels')
 
   $scope.Logout = function () {
     $interval.cancel(User.stopDownloadPromise);
+    fileloggerService.execTrace("Logout: Logged out");
     $state.go('login', {}, {reload:true});
   }
 
@@ -35,6 +36,7 @@ angular.module('careWheels')
     window.applicationCache.abort();
     window.caches.delete(100);
     window.localStorage.clear();
+    fileloggerService.execTrace("ClearMemory: Local memory cleared");
     $ionicPopup.alert({
        title: "Data and cache memory cleared!!",
        subTitle: ""
@@ -43,19 +45,17 @@ angular.module('careWheels')
   }
 
   //
-  // When there are issues the user will enable debug. Debug enabled is remembered and on restart
-  // will produce detailed error log.
-  // In case the app does not even display the login screen and dies during login then we have to
-  // ask the user to uninstall the APK and we need to provide debug version of the APK in
-  // which the traceLevel is set to "error"
+  // Logfile is created and updated continuously as the app runs. Daily at the end of the day 00:00Hrs
+  // the log file is cleared and new one generated to keep the size small and manageable. When there is
+  // an issue all the user needs to do is send it off to the server. The file is located in
+  // localStorage://localhost/careWheelsLocalLogFile.log
   //
 
-  $scope.EnableDebug = function (traceLevel) {
-    traceLevel = "1";                             // For now we have only one level - 1.
-    window.localStorage['execTraceLevel'] = angular.toJson({"traceFilter": traceLevel});
+  $scope.EmailLogfile= function (traceLevel) {
+    fileloggerService.execTrace("EmailLogfile: Logfile dispathed to server");
     $ionicPopup.alert({
-      title: "Debug Enabled. Logout/login to capture debug log!!",
-      subTitle: "After the debug run logout/login once more to disable debug"
+      title: "Logfile has been emailed to CareWheels Customer Service!!",
+      subTitle: "A friendly customer service professional will get back to you soon"
     });
   }
 })
