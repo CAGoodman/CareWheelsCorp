@@ -26,8 +26,7 @@ angular.module('careWheels', [
 ])
 
 
-.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, $fileLogger, fileloggerService,
-              User, loginDependencies) {
+.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, User, loginDependencies) {
 
   //
   // When ionic.serve is run this is the entry point to the application
@@ -37,7 +36,7 @@ angular.module('careWheels', [
 
    $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
 
-    $fileLogger.log("info", "StateChangeStart: State change Start " + "From: " + fromState.name + " Next: " + next.name);
+    console.log("StateChangeStart: State change Start " + "From: " + fromState.name + " Next: " + next.name);
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then
@@ -68,12 +67,12 @@ angular.module('careWheels', [
   $rootScope.$on('$stateChangeSuccess', function(event, next, toParams, from, fromState) {
       $rootScope.previousState = from.name;
       $rootScope.currentState = next.name;
-       $fileLogger.log("info", "StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
+      console.log("StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
 
   });
 
   $ionicPlatform.registerBackButtonAction(function (event) {
-    $fileLogger.log("info", "In Registerbackbutton" + $ionicHistory.backTitle());
+    console.log("In Back button handler" + $ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
   }, loginDependencies.backbuttonTimeout);
 
@@ -99,7 +98,8 @@ angular.module('careWheels', [
     creditUser: cbUrls.careBankURL8443 + '/credituser.php',
     updateSettings:cbUrls.careBankURL8443 + '/updatesettings.php',
     sensorDownLoad:cbUrls.careBankURL8443 + '/analysis.php',
-    loggingServices:cbUrls.careBankURL8080 + '/logupload.php'
+    loggingServices8080:cbUrls.careBankURL8080 + '/logupload.php',
+    loggingServices8443:cbUrls.careBankURL8443 + '/logupload.php'
   };
   return api;
 });

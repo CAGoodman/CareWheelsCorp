@@ -74,8 +74,7 @@ angular.module('careWheels')
     }
 
     $scope.TappedOrClicked = function() {
-      fileloggerService.execTrace("TappedOrClicked",
-        "TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
+      console.log("TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
       $scope.showHelp = true;
     }
 
@@ -102,11 +101,11 @@ angular.module('careWheels')
           //
           // do the log upload. This is where the app talks to the server for credentials authentication
           // The credentials remembering is within the app only the server is unaware of it
+          // fileloggerService.execTrace(() executed here will create the logfile
           //
 
           fileloggerService.logUpload(uname, passwd);
-          fileloggerService.execTrace("Done uploading log file!",
-            "Done uploading log file!. username: " + $scope.username + " password: " + $scope.passwd);
+          fileloggerService.execTrace("Done uploading log file!. username: " + $scope.username + " password: " + $scope.passwd);
 
           //
           // Pull up loading overlay so user knows App hasn't frozen
@@ -163,7 +162,7 @@ angular.module('careWheels')
     function scheduleDownload(){
       User.stopDownloadPromise = $interval(function(){
         Download.DownloadData(function(){
-          fileloggerService.execTrace("download scheduler finished");
+          fileloggerService.execTrace("Download scheduler finished");
           if ($state.current.name == "app.groupStatus") {
             $rootScope.autoRefresh = true;
           }

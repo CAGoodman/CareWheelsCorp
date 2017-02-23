@@ -42,8 +42,16 @@ angular.module('careWheels')
           }
         // success
         }).then(function (response) {
-          fileloggerService.execTrace("Sensor response: ", response);
-
+          fileloggerService.execTrace("Logged in user collecting Sensor Data for: " + response.config.data );
+          fileloggerService.execTrace("Balance: " + response.data.balance + " Credit: " + response.data.credit +
+            " Debit: " + response.data.debit + " FridgeAlertLevel " + response.data.fridgeAlertLevel +
+            " MedsAlertLevel: " + response.data.medsAlertLevel + " VacationMode: " + response.data.vacationMode);
+          fileloggerService.execTrace("FridgeHitsByHour: " + "[" + response.data.fridgeHitsByHour + "]");
+          fileloggerService.execTrace("FridgeRollingAlertLevel: " + "[" + response.data.fridgeRollingAlertLevel + "]");
+          fileloggerService.execTrace("MedsHitsByHour: " + "[" + response.data.medsHitsByHour + "]");
+          fileloggerService.execTrace("MedsRollingAlertLevel: " + "[" + response.data.medsRollingAlertLevel + "]");
+          fileloggerService.execTrace("PresenceByHour: " + "[" + response.data.presenceByHour + "]");
+          fileloggerService.execTrace("Status: " + response.status + " StatusText: " + response.statusText);
 /* bugbug
           if(usernametofind == "testalice"){
             var d, h;
@@ -72,8 +80,6 @@ angular.module('careWheels')
             fileloggerService.execTrace("Fridge notification created!")
           }
 
-          fileloggerService.execTrace("Group after downloading sensor data: ", GroupInfo.groupInfo());
-
         }, function error(response) {
           $fileLogger.log("error","request failed ", response);
         }).then(function(){
@@ -92,6 +98,7 @@ angular.module('careWheels')
           getData(theseMembers[2], function(){
             getData(theseMembers[3], function(){
               getData(theseMembers[4], function(){
+                fileloggerService.execTrace("Data download completed!!");
                 return finalCallback();
               });
             });

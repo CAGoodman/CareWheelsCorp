@@ -11,32 +11,28 @@
   <ion-content class="moveDownMore">
     <ion-list>
       <!-- Reminder 0 -->
-      <ion-item>
+      <ion-item ng-repeat="r in reminders">
         <ul class="list">
           <li class="item item-toggle">
             <label class="toggle toggle-balanced  onOffToggle">
               OFF
-              <input type="checkbox"
-                     ng-model=reminders[0].isOn
-                     ng-change="toggleOnOff(0)" >
+              <input type="checkbox" ng-model=reminders[0].isOn>
               <div class="track">
                 <div class="handle onOffHandle"></div>
               </div>
               ON
             </label>
             <div class="reminderTime">
-              {{padZero(reminders[0].hour)}}:{{padZero(reminders[0].min)}} {{reminders[0].amOrPm}}
+              {{padZero(r.hour)}}:{{padZero(r.min)}} {{r.isPM ? 'PM' : 'AM'}}
             </div>
           </li>
           <li class="item range range-positive">
             Hour:
-            <input type="range" name="volume" min="1" max="12" ng-model="reminders[0].hour">
+            <input type="range" name="volume" min="1" max="12" ng-model="r.hour">
             AM&nbsp;
             <div class="item item-toggle amPmToggle">
               <label class="amPmTogglePosition toggle toggle-light">
-                <input type="checkbox" class="amPmCheckBox"
-                       ng-model=reminders[0].isPM
-                       ng-change="toggleAmPm(0)" >
+                <input type="checkbox" class="amPmCheckBox" ng-model=r.isPM>
                 <div class="track">
                   <div class="handle"></div>
                 </div>
@@ -46,91 +42,7 @@
           </li>
           <li class="item range range-positive">
             Minute:
-            <input type="range" name="volume" min="0" max="59" ng-model="reminders[0].min">
-          </li>
-        </ul>
-      </ion-item>
-
-
-      <!-- Reminder 1 -->
-      <ion-item>
-        <ul class="list">
-          <li class="item item-toggle">
-            <label class="toggle toggle-balanced  onOffToggle">
-              OFF
-              <input type="checkbox"
-                     ng-model=reminders[1].isOn
-                     ng-change="toggleOnOff(1)" >
-              <div class="track">
-                <div class="handle onOffHandle"></div>
-              </div>
-              ON
-            </label>
-            <div class="reminderTime">
-              {{padZero(reminders[1].hour)}}:{{padZero(reminders[1].min)}} {{reminders[1].amOrPm}}
-            </div>
-          </li>
-          <li class="item range range-positive">
-            Hour:
-            <input type="range" name="volume" min="1" max="12" ng-model="reminders[1].hour">
-            AM&nbsp;
-            <div class="item item-toggle amPmToggle">
-              <label class="amPmTogglePosition toggle toggle-light">
-                <input type="checkbox" class="amPmCheckBox"
-                       ng-model=reminders[1].isPM
-                       ng-change="toggleAmPm(1)" >
-                <div class="track">
-                  <div class="handle"></div>
-                </div>
-              </label>
-            </div>
-            &nbsp;PM
-          </li>
-          <li class="item range range-positive">
-            Minute:
-            <input type="range" name="volume" min="0" max="59" ng-model="reminders[1].min">
-          </li>
-        </ul>
-      </ion-item>
-
-
-      <!-- Reminder 2 -->
-      <ion-item>
-        <ul class="list">
-          <li class="item item-toggle">
-            <label class="toggle toggle-balanced  onOffToggle">
-              OFF
-              <input type="checkbox"
-                     ng-model=reminders[2].isOn
-                     ng-change="toggleOnOff(2)" >
-              <div class="track">
-                <div class="handle onOffHandle"></div>
-              </div>
-              ON
-            </label>
-            <div class="reminderTime">
-              {{padZero(reminders[2].hour)}}:{{padZero(reminders[2].min)}} {{reminders[2].amOrPm}}
-            </div>
-          </li>
-          <li class="item range range-positive">
-            Hour:
-            <input type="range" name="volume" min="1" max="12" ng-model="reminders[2].hour">
-            AM&nbsp;
-            <div class="item item-toggle amPmToggle">
-              <label class="amPmTogglePosition toggle toggle-light">
-                <input type="checkbox" class="amPmCheckBox"
-                       ng-model=reminders[2].isPM
-                       ng-change="toggleAmPm(2)" >
-                <div class="track">
-                  <div class="handle"></div>
-                </div>
-              </label>
-            </div>
-            &nbsp;PM
-          </li>
-          <li class="item range range-positive">
-            Minute:
-            <input type="range" name="volume" min="0" max="59" ng-model="reminders[2].min">
+            <input type="range" name="volume" min="0" max="59" step="15" ng-model="r.min">
           </li>
         </ul>
       </ion-item>

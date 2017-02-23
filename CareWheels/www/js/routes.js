@@ -50,6 +50,7 @@ angular.module('careWheels')
         }
       })
       .state('app.reminders', {
+	cache: false,
         url: '/reminders',
         views: {
           'menuContent': {

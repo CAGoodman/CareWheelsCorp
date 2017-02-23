@@ -8,7 +8,7 @@
 //
 //
 angular.module('careWheels')
-.controller('AdvancedController', function ($rootScope, $scope, $state, $interval, $ionicLoading,
+.controller('AdvancedController', function ($rootScope, $scope, $state, $interval,
             $ionicPopup, Download, User, traceControls, fileloggerService) {
 
   $scope.traceLevel = 0;
@@ -51,10 +51,12 @@ angular.module('careWheels')
   // localStorage://localhost/careWheelsLocalLogFile.log
   //
 
-  $scope.EmailLogfile= function (traceLevel) {
-    fileloggerService.execTrace("EmailLogfile: Logfile dispathed to server");
+  $scope.UploadLogfile= function (traceLevel) {
+    var creds = User.credentials();
+    fileloggerService.logUpload(creds.uname, creds.passwd);
+    fileloggerService.execTrace("UploadLogfile: Logfile uploaded to the server");
     $ionicPopup.alert({
-      title: "Logfile has been emailed to CareWheels Customer Service!!",
+      title: "Logfile has been uploaded to the CareWheels server!!",
       subTitle: "A friendly customer service professional will get back to you soon"
     });
   }

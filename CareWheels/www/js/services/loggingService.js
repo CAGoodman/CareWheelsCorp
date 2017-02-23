@@ -14,18 +14,24 @@
 --*/
 
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
-  .service('fileloggerService', function ($fileLogger, $filter, $ionicPlatform, $cordovaFile,
+  .service('fileloggerService', function ($fileLogger, $filter, $ionicPlatform, $ionicPopup, $cordovaFile,
     $cordovaFileTransfer, API, apkDependencies) {
     var logFileName = "careWheelsLocalLogFile.log";
     //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
-    var isAndroid = window.cordova!=undefined;
-
+    var isAndroid = window.cordova != undefined;
     var username, password;
+
+    this.fileUploaded = false;   // This will ensure the logfile does not get deleted before upload
 
     this.setLogLocation = function (fileName) {
       $fileLogger.setStorageFilename(fileName);
-      $fileLogger.log('info', 'fileLogger started!');
-      // console.log('Current log file: ' + fileName);
+      //
+      // Right now the name of the file and time stamp is done but the file itself
+      // is not created. The first $fileLogger.log() will create it. We dont want to
+      // create the file right now because we want the old one from previous run to
+      // be uploaded first. Hence the first $fileLogger.log() is in login.js
+      //
+      this.execTrace("Log file name: " + fileName + " was initialized");
     };
 
     this.getCurrentDate = function () {
@@ -62,8 +68,9 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     };
 
     this.deleteLogFile = function () {
+      var dlfthis = this;
       $fileLogger.deleteLogfile().then(function () {
-        $fileLogger.log('info', 'The log file ' + logFileName + ' is deleted!');
+        dlfthis.execTrace("The log file " + logFileName + " is deleted!");
       });
     };
 
@@ -78,20 +85,20 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       // save the "parent process" = "this"
       var pp = this;
 
-
-      var uri = encodeURI(API.loggingServices);
-
-      $fileLogger.checkFile().then(function (d) {
+      var uri = encodeURI(API.loggingServices8080);
+      $fileLogger.checkFile().then(function (checked) {
         var cpp = pp;
-
-        var fileURL = JSON.stringify(d.localURL);
+        cpp.execTrace("LoggingService: CheckFile() " + "Passed");
+        var fileURL = JSON.stringify(checked.localURL);
         fileURL = fileURL.replace(/"+/g, "");
-        console.log('debug', "fileURL: ", fileURL);
+        cpp.execTrace("LoggingService: CheckFileResponse: " + JSON.stringify(checked));
+        cpp.execTrace("LoggingService: URL: " + fileURL);
 
         // generate file name for uploading base on current date and time
         var currentDateTime = cpp.getCurrentDateTime();
         var fileNameUp = username + '-' + currentDateTime + '.log';
         if(isAndroid){
+          cpp.execTrace("LoggingService: This is indeed a Android platform");
           var options = {
             fileKey: "filetoupload",
             fileName: fileNameUp,
@@ -99,34 +106,44 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
             params: {'username': username, 'password': password, 'fileName': fileNameUp}
           };
           options.headers = {'headerParam': 'headerValue'};
+          cpp.execTrace("LoggingService: UploadFileName: " + fileNameUp);
 
           $ionicPlatform.ready(function () {
             $cordovaFileTransfer.upload(uri, fileURL, options).then(function (result) {
-              $fileLogger.log('info', "SUCCESS: " + JSON.stringify(result.response));
-              // $scope.data = JSON.stringify(result.response);
-
-              $fileLogger.log('debug', "Code = " + result.responseCode);
-              $fileLogger.log('debug', "Response = " + result.response);
-              $fileLogger.log('debug', "Sent = " + result.bytesSent);
+              cpp.execTrace("LoggingService: Inside FileTransfer Upload");
+              cpp.execTrace("SUCCESS: " + JSON.stringify(result.response));
+              cpp.execTrace("Code = " + result.responseCode);
+              cpp.execTrace("Response = " + result.response);
+              cpp.execTrace("Sent = " + result.bytesSent);
 
               // delete old log file and create a new one
               cpp.deleteLogFile();
               cpp.initLogComponent();
-              $fileLogger.info('-----New log file is created!');
+              $fileLogger.log("INFO", "-----New log file was created!"); // This operation will create the lofile.
+              cpp.fileUploaded = true;        // LogFile has been uploaded and new logfile created
             }, function (error) {                                         // $cordovaFileTransfer.upload()
-              $fileLogger.log('info', "ERROR: " + JSON.stringify(error));
-              // $scope.data = JSON.stringify(error);
-
-              $fileLogger.log('debug', "An error has occurred!");
-              $fileLogger.log('debug', "Code = " + error.code);
-              $fileLogger.log('debug', "Error source " + error.source);
-              $fileLogger.log('debug', "Error target " + error.target);
+              cpp.execTrace("LoggingService: IF THIS IS A FRESH INSTALL LOGIN, IGNORE: " + JSON.stringify(error));
+              cpp.execTrace("ERROR: " + JSON.stringify(error));
+              cpp.execTrace("An error has occurred!");
+              cpp.execTrace("Code = " + error.code);
+              cpp.execTrace("Error source " + error.source);
+              cpp.execTrace("Error target " + error.target);
+              cpp.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
             }, function (progress) {
               // PROGRESS HANDLING GOES HERE
-            });
-          }); // $ionicPlatform.ready()
-        } // if(isAndroid)
-      }); // $fileLogger.checkFile()
+            }); // $cordovaFileTransfer.upload()
+          },  function(s) {
+                pp.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
+                pp.execTrace("LoggingService: Ionic Platform Not ready: " + JSON.stringify(s));
+              }); // $ionicPlatform.ready()
+        }   else {
+              pp.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
+              pp.execTrace("LoggingService: Not a Android Device " + "Please contact your friendly CareWheels Customer Support");
+            }; // if(isAndroid)
+      },  function(s) {
+            pp.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
+            pp.execTrace("LoggingService: CheckFile Failed: " + JSON.stringify(s));
+        }); // $fileLogger.checkFile()
     };  // logUpload()
 
     //
@@ -137,19 +154,29 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     //
 
     this.execTrace = function(trace0, trace1){
+
+      if (!this.fileUploaded) {  // We have to wait for the old logfile to be uploaded else we will clobber it
+        if (trace1 == angular.isundefined) {
+          console.log(trace0);
+        } else {
+          console.log(trace0 + trace1);
+        }
+        return;
+      }
+
       switch($fileLogger.traceLevel) {
         case '0':
-          $fileLogger.log('info', trace0);
+          $fileLogger.log("INFO", trace0);
           break;
         case '1':                                   // This is a placeholder for now
           if (trace1 != angular.isundefined ) {
-            $fileLogger.log('verbose', trace1);
+            $fileLogger.log("DEBUG", trace1);
           } else {
-            $fileLogger.log('info', trace0);          // If trace 1 undefined print trace 0
+            $fileLogger.log("INFO", trace0);          // If trace 1 undefined print trace 0
           }
           break;
          default:
-          $fileLogger.log('error', "Unsupported execution trace level " + $fileLogger.traceLevel);
+          $fileLogger.log("ERROR", "Unsupported execution trace level " + $fileLogger.traceLevel);
       }
     }; // execTrace()
   })
