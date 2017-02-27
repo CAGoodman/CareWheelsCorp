@@ -127,7 +127,7 @@ angular.module('careWheels')
           // loginTimeoutPeriod time then we issue login failed message
           //
 
-          var loginPromise = setTimeout(function(){
+          var loginTimeoutId = setTimeout(function(){
             loginTimeout = true;
             User.completedDataDownload();       // DataDownload completed
             $state.reload();                    // reload the view (try again)
@@ -137,7 +137,7 @@ angular.module('careWheels')
           // do the data download
 
           Download.DownloadData(function(){
-            clearTimeout(loginPromise);       // resolve timeout promise
+            clearTimeout(loginTimeoutId);       // resolve timeout promise
             if (!loginTimeout){
               scheduleDownload();               // spin up a download/analyze scheduler
               User.completedDataDownload();       // DataDownload completed

@@ -9,7 +9,7 @@
 //
 
 angular.module('careWheels')
-  .factory('Download', function ($http, $httpParamSerializerJQLike, GroupInfo, User, notifications, API,
+  .factory('Download', function ($http, $httpParamSerializerJQLike, $q, GroupInfo, User, notifications, API,
     $fileLogger, fileloggerService) {
     var DownloadService = {};
 
@@ -20,7 +20,7 @@ angular.module('careWheels')
     //
     DownloadService.DownloadData = function (finalCallback) {
 
-      var getData = function (member, callback) {
+      var getData = function (member) {
 
         var usernametofind = member.username; //.toLowerCase();//for each group member
         var user = User.credentials();//from login
@@ -82,9 +82,6 @@ angular.module('careWheels')
 
         }, function error(response) {
           $fileLogger.log("error","request failed ", response);
-        }).then(function(){
-          // were done with this member
-          return callback();
         })
       };
 
@@ -93,17 +90,11 @@ angular.module('careWheels')
       var theseMembers = GroupInfo.groupInfo();//returns all five group members with carebank data after login
 
       // run the download sequentially so we know when were done
-      getData(theseMembers[0], function(){
-        getData(theseMembers[1], function(){
-          getData(theseMembers[2], function(){
-            getData(theseMembers[3], function(){
-              getData(theseMembers[4], function(){
-                fileloggerService.execTrace("Data download completed!!");
-                return finalCallback();
-              });
-            });
-          });
-        });
+      $q.all(theseMembers.map(function (member) {
+        return getData(member);
+      })).then(function(){
+        fileloggerService.execTrace("Data download completed!!");
+        return finalCallback();
       });
     };
     return DownloadService;
