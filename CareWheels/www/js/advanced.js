@@ -53,7 +53,7 @@ angular.module('careWheels')
 
   $scope.UploadLogfile= function (traceLevel) {
     var creds = User.credentials();
-    fileloggerService.logUpload(creds.uname, creds.passwd);
+    fileloggerService.logUpload(creds.username, creds.password);
     fileloggerService.execTrace("UploadLogfile: Logfile uploaded to the server");
     $ionicPopup.alert({
       title: "Logfile has been uploaded to the CareWheels server!!",

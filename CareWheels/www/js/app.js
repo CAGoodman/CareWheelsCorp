@@ -37,7 +37,6 @@ angular.module('careWheels', [
    $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
 
     console.log("StateChangeStart: State change Start " + "From: " + fromState.name + " Next: " + next.name);
-    $rootScope.fileUploaded = true;   // To enable fileLogger.log() on ionic serve run
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then

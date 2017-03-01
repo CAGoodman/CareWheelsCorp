@@ -20,6 +20,8 @@ angular.module('careWheels')
     //
     DownloadService.DownloadData = function (finalCallback) {
 
+      // getData() gets defined here and we need to call it for all the members.
+      // We want to do it asynchronously i.e., in parallel. Hence we queue it using $q
       var getData = function (member) {
 
         var usernametofind = member.username; //.toLowerCase();//for each group member
@@ -83,13 +85,18 @@ angular.module('careWheels')
         }, function error(response) {
           $fileLogger.log("error","request failed ", response);
         })
-      };
+      };    // getData();
 
       // main: this will run when download is called
 
-      var theseMembers = GroupInfo.groupInfo();//returns all five group members with carebank data after login
+      var theseMembers = GroupInfo.groupInfo(); //returns all five group members with carebank data after login
 
-      // run the download sequentially so we know when were done
+      //
+      // run the download in parallel i.e., asynchrounsly this saves a significant time then running in
+      // sequentially. What $q.all does is pass one member after the other to getData(). The map() function
+      // takes the member list from theseMembers and feed them the memeber
+      //
+
       $q.all(theseMembers.map(function (member) {
         return getData(member);
       })).then(function(){

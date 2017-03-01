@@ -10,7 +10,7 @@ angular.module('careWheels')
   notifications.getData = function(){
     fileloggerService.execTrace('hit getData');
     data = angular.fromJson(window.localStorage['Reminders']);
-    fileloggerService.execTrace('data:', data);
+    fileloggerService.execTrace('data:', JSON.stringify(data));
     return angular.fromJson(window.localStorage['Reminders']);
   };
 
@@ -22,10 +22,10 @@ angular.module('careWheels')
   //and calls Create_Notif for each of them
   notifications.Init_Notifs = function() {
 
-    fileloggerService.execTrace('init notifs');
+    fileloggerService.execTrace('Init_Notifs()');
 
     data = angular.fromJson(window.localStorage['Reminders']);
-    fileloggerService.execTrace(data);
+    fileloggerService.execTrace(JSON.stringify(data));
     if(data==null){   //have notifications been initialized before?
       fileloggerService.execTrace("Initializing Notifications from default");
       data = [];    //data param needs to be initialized before indices can be added
@@ -93,7 +93,7 @@ angular.module('careWheels')
   //Unschedules all local reminders; clears its index if it is a user reminder (id 1-3).
   notifications.Delete_Reminders = function(){   //NOTE: id corresponds to data array indices so it is off by one
     //data = angular.fromJson(window.localStorage['Reminders']);
-    fileloggerService.execTrace('hit delete reminders');
+    fileloggerService.execTrace('Delete_Reminders()');
     if(isAndroid){
       for(i=1; i<4; ++i){
         $cordovaLocalNotification.clear(i, function() {

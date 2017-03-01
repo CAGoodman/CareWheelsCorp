@@ -3,8 +3,8 @@
     "apkName": "CareBank-Application",
     "apkCompany": "Carewheels Corporation",
     "apkVersion": "1.0.37",
-    "apkDate": "Sun Feb 26 2017 22:12:37 GMT-0800 (Pacific Standard Time)",
-    "apkPackage": "CareBank-armv7-26Feb17.apk"
+    "apkDate": "Tue Feb 28 2017 22:42:20 GMT-0800 (Pacific Standard Time)",
+    "apkPackage": "CareBank-armv7-28Feb17.apk"
   },
   "dependencies": {
     "angular-moment": "^1.0.0-beta.6",

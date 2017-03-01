@@ -32,17 +32,19 @@ angular.module('careWheels')
     $scope.rememberMe = false;
 
     //
+    // execTraceLevel is the Key or  the address or the name of the storage space. traceFilter is the name/address/index of the Value
+    // in the Key. Key[Value] = 1234 :: execTraceLevel[traceFilter] = 0x1234. How the Value is stored is format independent. In the
+    // case of execTraceLevel we are saving it like an array. Ex: message.log just stores it like a string.
     // $fileLogger.traceLevel is initialized and stored values is initialized to NULL, default value so
-    // that run of the app is back to normal trace level. This sepcial traceLevel set by the user for this
-    // debug run only.
+    // that run of the app is back to normal trace level.
     //
 
     var traceLevel = angular.fromJson(window.localStorage['execTraceLevel']);
     if (traceLevel == angular.isundefined) {
-      $fileLogger.traceLevel = traceControls.info;
+      $fileLogger.traceLevel = traceControls.info;      // Defined in appConstants.js
     }
     else {
-      $fileLogger.traceLevel = traceLevel.traceFilter;
+      $fileLogger.traceLevel = traceLevel.traceFilter;  // From what ever was stored in the memory
     }
 
     window.localStorage['execTraceLevel'] = angular.toJson({"traceFilter": traceControls.info}); // Stored value is set to Info - 0
@@ -105,7 +107,6 @@ angular.module('careWheels')
           //
 
           fileloggerService.logUpload(uname, passwd);
-          fileloggerService.execTrace("Done uploading log file!. username: " + $scope.username + " password: " + $scope.passwd);
 
           //
           // Pull up loading overlay so user knows App hasn't frozen
