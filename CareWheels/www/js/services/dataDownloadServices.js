@@ -9,8 +9,8 @@
 //
 
 angular.module('careWheels')
-  .factory('Download', function ($http, $httpParamSerializerJQLike, $q, GroupInfo, User, notifications, API,
-    $fileLogger, fileloggerService) {
+  .factory('Download', function ($http, $httpParamSerializerJQLike, $q, $fileLogger, GroupInfo, User, notifications, API,
+    fileloggerService) {
     var DownloadService = {};
 
     //
@@ -44,7 +44,8 @@ angular.module('careWheels')
           }
         // success
         }).then(function (response) {
-          fileloggerService.execTrace("Logged in user collecting Sensor Data for: " + response.config.data );
+          var pos = response.config.data.indexOf("&");  //password is removed from display
+          fileloggerService.execTrace("Logged in user collecting Sensor Data for: " + response.config.data.slice(pos+1));
           fileloggerService.execTrace("Balance: " + response.data.balance + " Credit: " + response.data.credit +
             " Debit: " + response.data.debit + " FridgeAlertLevel " + response.data.fridgeAlertLevel +
             " MedsAlertLevel: " + response.data.medsAlertLevel + " VacationMode: " + response.data.vacationMode);
@@ -54,23 +55,29 @@ angular.module('careWheels')
           fileloggerService.execTrace("MedsRollingAlertLevel: " + "[" + response.data.medsRollingAlertLevel + "]");
           fileloggerService.execTrace("PresenceByHour: " + "[" + response.data.presenceByHour + "]");
           fileloggerService.execTrace("Status: " + response.status + " StatusText: " + response.statusText);
-/* bugbug
-          if(usernametofind == "testalice"){
+// bugbug Instrumented code for TestAlice and TestBob for customer demo
+          if(usernametofind == "testalice" || usernametofind == "testbob"){
             var d, h;
             d = new Date();
             h = d.getHours();
             var i1 = Math.floor((Math.random() * h) + 0);
             var i2 = Math.floor((Math.random() * h) + 0);
             var i3 = Math.floor((Math.random() * h) + 0);
-            response.data.fridgeHitsByHour[i1] = 1;
-            response.data.fridgeHitsByHour[i2] = 2;
-            response.data.fridgeHitsByHour[i3] = 3;
+            response.data.fridgeHitsByHour[i1] = Math.floor((Math.random() * 5) + 0);
+            response.data.fridgeHitsByHour[i2] = Math.floor((Math.random() * 5) + 0);
+            response.data.fridgeHitsByHour[i3] = Math.floor((Math.random() * 5) + 0);
+            response.data.medsHitsByHour[i1] = Math.floor((Math.random() * 5) + 0);
+            response.data.medsHitsByHour[i2] = Math.floor((Math.random() * 5) + 0);
+            response.data.medsHitsByHour[i3] = Math.floor((Math.random() * 5) + 0);
+            response.data.presenceByHour[i1] = true;
+            response.data.presenceByHour[i2] = false;
+            response.data.presenceByHour[i3] = true;
             response.data.credit *= i1;
             response.data.debit *= i2;
             response.data.balance *= i3;
             fileloggerService.execTrace("Indices are:" + i1 + " " + i2 + " " + i3);
           }
-*/
+// bugbug Instrumented code for TestAlice and TestBob for customer demo
           GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
 
           if(response.data.medsAlertLevel >= 2) { //handle red alert notifications

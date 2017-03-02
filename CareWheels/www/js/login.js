@@ -19,8 +19,8 @@ For the current setting please check ngConstants.js or appConstants.js
 angular.module('careWheels')
   .controller('loginController',
 
-    function($rootScope, $scope, $controller, User, $state, $ionicLoading, $ionicHistory, $ionicPopup,
-      GroupInfo, $interval, notifications, Download, $fileLogger, fileloggerService, apkDependencies,
+    function($rootScope, $scope, $controller, $state, $ionicLoading, $ionicHistory, $ionicPopup,
+      $interval, $timeout, $fileLogger, GroupInfo, User, notifications, Download, fileloggerService, apkDependencies,
       loginDependencies, traceControls){
 
     //
@@ -128,7 +128,7 @@ angular.module('careWheels')
           // loginTimeoutPeriod time then we issue login failed message
           //
 
-          var loginTimeoutId = setTimeout(function(){
+          var loginPromise = $timeout(function(){
             loginTimeout = true;
             User.completedDataDownload();       // DataDownload completed
             $state.reload();                    // reload the view (try again)
@@ -138,7 +138,7 @@ angular.module('careWheels')
           // do the data download
 
           Download.DownloadData(function(){
-            clearTimeout(loginTimeoutId);       // resolve timeout promise
+            $timeout.cancel(loginPromise);       // resolve timeout promise
             if (!loginTimeout){
               scheduleDownload();               // spin up a download/analyze scheduler
               User.completedDataDownload();       // DataDownload completed

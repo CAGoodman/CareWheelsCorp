@@ -124,7 +124,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
     // #centerAlert is not part of the alertArray[]
     //
 
-	var redAlertPromise = setInterval(function () {
+	var redAlertPromise = $interval(function () {
 		/* jQuery element to fade in and out */
 		var alertArray = [				// alertArray is initailized with id from the html here
 			$('#topLeftAlert'),
@@ -220,7 +220,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
         Download.DownloadData(function(){
             $scope.$broadcast('scroll.refreshComplete');
             fileloggerService.execTrace("GroupStatus: Pull down refresh done!");
-            $state.go($state.current, {}, {reload: true});
+            $state.go($state.current, {reload: true});
         });
      };	// doRefresh()
 

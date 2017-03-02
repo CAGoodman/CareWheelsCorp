@@ -215,7 +215,7 @@ angular.module('careWheels')
       Download.DownloadData(function(){
         $scope.$broadcast('scroll.refreshComplete');
         fileloggerService.execTrace("IndividualStatus: Pull down refresh done!");
-        $state.go($state.current, {}, {reload: true});
+        $state.go($state.current, {reload: true});
       });
 
     };

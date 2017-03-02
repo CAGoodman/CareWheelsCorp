@@ -106,15 +106,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         return $q.resolve();
       } // getFullPkg()
 
-      var debugMode = false;               // for dbugging only
       var getFileURL = function () {
-        // for dbugging only
-        if (debugMode) {
-          return $fileLogger.getLogfile().then(function (gotFile) {
-            uploadFile = "data:" + gotFile;
-          });
-          return uploadFile;
-        }
         return $fileLogger.checkFile().then(function (checked) {
           self.execTrace("LoggingService: CheckFile() " + "Passed");
           var fileURL = checked.localURL;
@@ -143,10 +135,14 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         self.execTrace("LoggingService: UploadFileName: " + fileNameUp);
 
         var uri = encodeURI(API.loggingServices8080);
-        // Second parameter is a URL for the storage file location - fileURL or the file itself - uploadFile
         //var uploadMsg = window.localStorage['uploadMsg.log']; TBD
-        //$cordovaFileTransfer.upload(uri, uploadMsg, options); TBD
-        return $cordovaFileTransfer.upload(uri, fileURL, options);
+        //$fileLogger.log("INFO", uploadMsg); TBD
+
+        // Second parameter is a URL for the storage file location - fileURL or the file itself - uploadFile
+        if (fileURL != angular.undefined) {
+          return $cordovaFileTransfer.upload(uri, fileURL, options);
+        }
+
 
       } // upload()
 
@@ -156,7 +152,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         self.execTrace("Code = " + result.responseCode);
         self.execTrace("Response = " + result.response);
         self.execTrace("Sent = " + result.bytesSent);
-        fileloggerService.execTrace("Done uploading log file!. username: " + usernameIn);
+        self.execTrace("Done uploading log file!. username: " + usernameIn);
 
         // delete old log file and create a new one
         self.deleteLogFile();
