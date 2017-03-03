@@ -45,12 +45,13 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
 
     // gets all possible info of the hardware, software and executing context to help in debug
     this.getUserInfo = function () {
-      var userInfoPkg = "Username: " + username + "; Password: " + password;
-      var apkPkg ="Version: " + apkDependencies.apkVersion + "; Apk: " + apkDependencies.apkPackage +
-      "; Date: " + apkDependencies.apkDate;
-      var osPkg = "Android Version 4.0.8.1";
-      var hardwarePkg = "Samsung Galaxy Note 3";
-      fullPkg = userInfoPkg + apkPkg + osPkg + hardwarePkg;
+      var headerPkg = "Header Package with APK and environment details:\n"
+      var userInfoPkg = username + "; ";
+      var apkPkg = apkDependencies.apkPackage + " Version " + apkDependencies.apkVersion;
+      var datePkg = "APK Date: " + apkDependencies.apkDate;
+      var osPkg = "\nAndroid Version: " ; //+ ionic platform class android.os.Build.VERSION.SDK_INT;
+      var hardwarePkg = " Model and Manufacturer: " ; //+ android.os.Build.MODEL + " " + android.os.Build.MANUFACTURER;
+      fullPkg = headerPkg + userInfoPkg + apkPkg + datePkg + osPkg + hardwarePkg;
       return(fullPkg);
     };
 

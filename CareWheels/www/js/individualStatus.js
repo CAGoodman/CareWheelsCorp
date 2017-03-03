@@ -16,7 +16,7 @@
 
 angular.module('careWheels')
   .controller('individualStatusController',
-      function ($scope, $state, GroupInfo, PaymentService, $fileLogger,
+      function ($scope, $state, $ionicPopup, GroupInfo, PaymentService, $fileLogger,
                   fileloggerService, Download, User, loginDependencies) {
 
     /**
@@ -215,7 +215,7 @@ angular.module('careWheels')
       Download.DownloadData(function(){
         $scope.$broadcast('scroll.refreshComplete');
         fileloggerService.execTrace("IndividualStatus: Pull down refresh done!");
-        $state.go($state.current, {reload: true});
+        $state.go($state.current, {}, {reload: true});
       });
 
     };

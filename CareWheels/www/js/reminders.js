@@ -77,7 +77,7 @@ angular.module('careWheels')
 
             $scope.CallRest(rem1, rem2, rem3);
           } else {
-            fileloggerService.execTrace("ERROR: Cannot make REST call in Reminders because user credentials are undefined.");
+            fileloggerService.execTrace("Reminder:confirmReset():ERROR: Cannot make REST call in Reminders because user credentials are undefined.");
           }
           $state.go($state.current, {}, {reload: true});    //reset view so changes are immediately visible
 	}
@@ -109,13 +109,13 @@ angular.module('careWheels')
           var rem3 = notifications.Reminder_As_String(2);
         } else rem3 = '';
 
-        fileloggerService.execTrace("rem1=" + rem1 + " rem2=" + rem2 + " rem3=" + rem3);
+        fileloggerService.execTrace("Reminder:saveReminders():rem1 = " + rem1 + ", rem2 = " + rem2 + ", rem3 = " + rem3);
         $scope.CallRest(rem1, rem2, rem3);
       } else{
-          fileloggerService.execTrace("ERROR: Cannot make REST call in Reminders because user credentials are undefined.");
+          fileloggerService.execTrace("Reminder:saveReminders():ERROR: Cannot make REST call in Reminders because user credentials are undefined.");
           if(credentialsError){
             credentialsError = false;
-            fileloggerService.execTrace("ERROR: Cannot make REST calls for Reminders because user credentials are undefined.");
+            fileloggerService.execTrace("Reminder:saveReminders():ERROR: Cannot make REST calls for Reminders because user credentials are undefined.");
           }
         }
     };
@@ -149,14 +149,14 @@ angular.module('careWheels')
           var data = response.data || "Request failed";
           status = response.status;
           if (response.status != 200) {
-            fileloggerService.execTrace("ERROR: " + data);
-          } else fileloggerService.execTrace('Success: ' + data);
+            fileloggerService.execTrace("Reminder:CallRest():ERROR: " + JSON.stringify(data));
+          } else fileloggerService.execTrace('Success: ' + JSON.stringify(data));
         })
       } else{
-          fileloggerService.execTrace("ERROR: Cannot make REST call in Reminders because user credentials are undefined.");
+          fileloggerService.execTrace("Reminder:CallRest():ERROR: Cannot make REST call in Reminders because user credentials are undefined.");
           if(credentialsError){
             credentialsError = false;
-            fileloggerService.execTrace('Error: Cannot make REST calls for Reminders because user credentials are undefined.');
+            fileloggerService.execTrace('Reminder:CallRest():Error: Cannot make REST calls for Reminders because user credentials are undefined.');
           }
         }
     };

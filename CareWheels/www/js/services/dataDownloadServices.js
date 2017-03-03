@@ -9,7 +9,7 @@
 //
 
 angular.module('careWheels')
-  .factory('Download', function ($http, $httpParamSerializerJQLike, $q, $fileLogger, GroupInfo, User, notifications, API,
+  .factory('Download', function ($rootScope, $http, $httpParamSerializerJQLike, $q, $fileLogger, GroupInfo, User, notifications, API,
     fileloggerService) {
     var DownloadService = {};
 
@@ -55,42 +55,57 @@ angular.module('careWheels')
           fileloggerService.execTrace("MedsRollingAlertLevel: " + "[" + response.data.medsRollingAlertLevel + "]");
           fileloggerService.execTrace("PresenceByHour: " + "[" + response.data.presenceByHour + "]");
           fileloggerService.execTrace("Status: " + response.status + " StatusText: " + response.statusText);
-// bugbug Instrumented code for TestAlice and TestBob for customer demo
-          if(usernametofind == "testalice" || usernametofind == "testbob"){
-            var d, h;
-            d = new Date();
-            h = d.getHours();
-            var i1 = Math.floor((Math.random() * h) + 0);
-            var i2 = Math.floor((Math.random() * h) + 0);
-            var i3 = Math.floor((Math.random() * h) + 0);
-            response.data.fridgeHitsByHour[i1] = Math.floor((Math.random() * 5) + 0);
-            response.data.fridgeHitsByHour[i2] = Math.floor((Math.random() * 5) + 0);
-            response.data.fridgeHitsByHour[i3] = Math.floor((Math.random() * 5) + 0);
-            response.data.medsHitsByHour[i1] = Math.floor((Math.random() * 5) + 0);
-            response.data.medsHitsByHour[i2] = Math.floor((Math.random() * 5) + 0);
-            response.data.medsHitsByHour[i3] = Math.floor((Math.random() * 5) + 0);
-            response.data.presenceByHour[i1] = true;
-            response.data.presenceByHour[i2] = false;
-            response.data.presenceByHour[i3] = true;
-            response.data.credit *= i1;
-            response.data.debit *= i2;
-            response.data.balance *= i3;
-            fileloggerService.execTrace("Indices are:" + i1 + " " + i2 + " " + i3);
+
+          // **************** BEGIN Debug or Demo code instrumentation**************
+          if(usernametofind == "testalice" && $rootScope.dbgLevel == 1){
+            for (var i = 0; i < response.data.presenceByHour.length; i++) {
+              response.data.presenceByHour[i] = true;
+            }
+            for (var i = 0; i < response.data.fridgeRollingAlertLevel.length; i++) {
+              response.data.fridgeHitsByHour[6] = 2;
+              if (i < 13){
+                response.data.fridgeRollingAlertLevel[i] = 0 ;
+              } else {
+                response.data.fridgeRollingAlertLevel[i] = 1 ;
+                response.data.fridgeAlertLevel = 3;
+              }
+            }
+            for (var i = 0; i < response.data.medsRollingAlertLevel.length; i++) {
+              response.data.medsHitsByHour[6] = 1;
+               if (i < 13){
+                response.data.medsRollingAlertLevel[i] = 0 ;
+              } else {
+                response.data.medsRollingAlertLevel[i] = 2 ;
+                response.data.medsAlertLevel = 6;
+              }
+            }
           }
-// bugbug Instrumented code for TestAlice and TestBob for customer demo
+          // **************** END Debug or Demo code instrumentation**************
+
           GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
 
           if(response.data.medsAlertLevel >= 2) { //handle red alert notifications
             notifications.Create_Notif(0, 0, 0, false, 0);
-            fileloggerService.execTrace("Meds notification created!");
+            fileloggerService.execTrace("DataDownLoad:getData(): Meds notification created!");
           }
           if(response.data.fridgeAlertLevel >= 2) {  //handle *red alert* notifications
             notifications.Create_Notif(0, 0, 0, false, 0);
-            fileloggerService.execTrace("Fridge notification created!")
+            fileloggerService.execTrace("DataDownLoad:getData(): Fridge notification created!")
           }
 
         }, function error(response) {
-          $fileLogger.log("error","request failed ", response);
+          $fileLogger.log("ERROR","DataDownLoad:getData(): Request failed ");
+           var pos = response.config.data.indexOf("&");  //password is removed from display
+          fileloggerService.execTrace("ERROR: Logged in user collecting Sensor Data for: " + response.config.data.slice(pos+1));
+          fileloggerService.execTrace("ERROR: Balance: " + response.data.balance + " Credit: " + response.data.credit +
+            " Debit: " + response.data.debit + " FridgeAlertLevel " + response.data.fridgeAlertLevel +
+            " MedsAlertLevel: " + response.data.medsAlertLevel + " VacationMode: " + response.data.vacationMode);
+          fileloggerService.execTrace("ERROR: FridgeHitsByHour: " + "[" + response.data.fridgeHitsByHour + "]");
+          fileloggerService.execTrace("ERROR: FridgeRollingAlertLevel: " + "[" + response.data.fridgeRollingAlertLevel + "]");
+          fileloggerService.execTrace("ERROR: MedsHitsByHour: " + "[" + response.data.medsHitsByHour + "]");
+          fileloggerService.execTrace("ERROR: MedsRollingAlertLevel: " + "[" + response.data.medsRollingAlertLevel + "]");
+          fileloggerService.execTrace("ERROR: PresenceByHour: " + "[" + response.data.presenceByHour + "]");
+          fileloggerService.execTrace("ERROR: Status: " + response.status + " StatusText: " + response.statusText);
         })
       };    // getData();
 
@@ -107,7 +122,7 @@ angular.module('careWheels')
       $q.all(theseMembers.map(function (member) {
         return getData(member);
       })).then(function(){
-        fileloggerService.execTrace("Data download completed!!");
+        fileloggerService.execTrace("DataDownLoad:getData(): Data download completed!!");
         return finalCallback();
       });
     };

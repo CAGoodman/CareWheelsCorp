@@ -220,7 +220,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
         Download.DownloadData(function(){
             $scope.$broadcast('scroll.refreshComplete');
             fileloggerService.execTrace("GroupStatus: Pull down refresh done!");
-            $state.go($state.current, {reload: true});
+            $state.go($state.current, {}, {reload: true});
         });
      };	// doRefresh()
 

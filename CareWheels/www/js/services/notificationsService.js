@@ -8,9 +8,9 @@ angular.module('careWheels')
 
 
   notifications.getData = function(){
-    fileloggerService.execTrace('hit getData');
+    fileloggerService.execTrace('notifications.getData(): Entered');
     data = angular.fromJson(window.localStorage['Reminders']);
-    fileloggerService.execTrace('data:', JSON.stringify(data));
+    fileloggerService.execTrace('notifications.getData(): Data:', JSON.stringify(data));
     return angular.fromJson(window.localStorage['Reminders']);
   };
 
@@ -21,13 +21,11 @@ angular.module('careWheels')
   //To be called during app startup after login; retrieves saved alert times (if they exist) or creates default alerts (if they don't)
   //and calls Create_Notif for each of them
   notifications.Init_Notifs = function() {
-
-    fileloggerService.execTrace('Init_Notifs()');
-
+    fileloggerService.execTrace('notifications.Init_Notifs(): Entered');
     data = angular.fromJson(window.localStorage['Reminders']);
     fileloggerService.execTrace(JSON.stringify(data));
     if(data==null){   //have notifications been initialized before?
-      fileloggerService.execTrace("Initializing Notifications from default");
+      fileloggerService.execTrace("notifications.Init_Notifs(): Initializing Notifications from default");
       data = [];    //data param needs to be initialized before indices can be added
       data[0] = new notifications.Time();
       data[1] = new notifications.Time();
@@ -36,7 +34,7 @@ angular.module('careWheels')
       notifications.Create_Notif(14,0,0,true,2);
       notifications.Create_Notif(19,0,0,true,3);
     } else {    //need to check if each reminder, as any/all of them could be deleted by user
-      fileloggerService.execTrace("Initializing Notifications from memory");
+      fileloggerService.execTrace("notifications.Init_Notifs(): Initializing Notifications from memory");
       notifications.Create_Notif(data[0].hours,data[0].minutes,data[0].seconds,data[0].on,1);
       notifications.Create_Notif(data[1].hours,data[1].minutes,data[1].seconds,data[1].on,2);
       notifications.Create_Notif(data[2].hours,data[2].minutes,data[2].seconds,data[2].on,3);
@@ -54,9 +52,9 @@ angular.module('careWheels')
           title: "CareWheels",
           sound: null   //should be updated to freeware sound
         }).then(function() {
-          $log.log("Alert notification has been set");
+          fileloggerService.execTrace("notifications.Create_Notif(): Alert notification has been set");
         });
-      } else $fileLogger.log("warning", "Plugin disabled");
+      } else $fileLogger.log("WARNING", "notifications.Create_Notif(): Plugin disabled");
     } if(reminderNum>0 && reminderNum <4){    //is notif a user reminder?
       var time = new Date();    //defaults to current date/time
       time.setHours(hours);     //update
@@ -77,30 +75,30 @@ angular.module('careWheels')
                 title: "CareWheels",
                 sound: null   //same, hopefully a different sound than red alerts
               }).then(function() {
-                $log.log("Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");
+                fileloggerService.execTrace("Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");
               });
-          } else $fileLogger.log("warning", "Plugin disabled");
+          } else $fileLogger.log("WARNING", "fileloggerService.execTrace(): Plugin disabled");
         } else {    //need to deschedule notification if it has been turned off
           if(isAndroid){
             $cordovaLocalNotification.cancel(reminderNum, function() {
-              fileloggerService.execTrace("Reminder" + reminderNum + " has been descheduled.");
+              fileloggerService.execTrace("fileloggerService.execTrace(): Reminder" + reminderNum + " has been descheduled.");
             });
           }
         }
-    } else if(reminderNum >=4) $fileLogger.log("warning", "Incorrect attempt to create notification for id #" + reminderNum);
+    } else if(reminderNum >=4) $fileLogger.log("WARNING", "Incorrect attempt to create notification for id #" + reminderNum);
   };
 
   //Unschedules all local reminders; clears its index if it is a user reminder (id 1-3).
   notifications.Delete_Reminders = function(){   //NOTE: id corresponds to data array indices so it is off by one
     //data = angular.fromJson(window.localStorage['Reminders']);
-    fileloggerService.execTrace('Delete_Reminders()');
+    fileloggerService.execTrace('notifications.Delete_Reminders(): Entered');
     if(isAndroid){
       for(i=1; i<4; ++i){
         $cordovaLocalNotification.clear(i, function() {
-          fileloggerService.execTrace(i + " is cleared");
+          fileloggerService.execTrace("notifications.Delete_Reminders(): " + i + " is cleared");
         });
       }
-    } else $fileLogger.log("warning", "Plugin disabled");
+    } else $fileLogger.log("WARNING", "notifications.Delete_Reminders(): Plugin disabled");
 
     window.localStorage['Reminders'] = null;   //and delete Reminders array
     data = null;
@@ -112,7 +110,7 @@ angular.module('careWheels')
    */
   notifications.Reminder_As_String = function(id){
     if(id>2){
-      $fileLogger.log("error", "Attempted to print Reminder id " + id + ", but there are only 3 reminders!");
+      $fileLogger.log("ERROR", "notifications.Reminder_As_String(): Attempted to print Reminder id " + id + ", but there are only 3 reminders!");
     } else {
       var hour = data[id].hours;
       if(hour<10) hour = 0 + String(hour);

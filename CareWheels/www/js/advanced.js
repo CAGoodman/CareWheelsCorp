@@ -60,4 +60,42 @@ angular.module('careWheels')
       subTitle: "A friendly customer service professional will get back to you soon"
     });
   }
+
+  //
+  // 1. When there are issues the user will enable debug. Debug enabled is remembered and on restart
+  // will produce detailed error log.
+  // 2. For demonstations we need to instrument the code this feature will enable that too.
+  // In case the app does not even display the login screen and dies during login then we have to
+  // ask the user to uninstall the released version of the APK and install a debug version of the APK
+  //
+
+  $scope.EnableDebug = function (dbgLevel) {
+    switch(dbgLevel) {
+      case "0":
+      case "1":
+        break;
+      case "2":
+      case "3":
+      default:
+        $ionicPopup.alert({
+          title: "Debug was not Enbaled, Currently supported level are 0(Disable) and 1(Enable)",
+          subTitle: "Please select a number below the Debug Enable button"
+        });
+        return;
+    }
+
+    $rootScope.dbgLevel = dbgLevel;
+    if (dbgLevel != 0) {
+      $ionicPopup.alert({
+        title: "Debug Enabled. Set to level: " + dbgLevel,
+        subTitle: "Do a Screen Refresh. After the debug run set it back to 0"
+      });
+    } else {
+      $ionicPopup.alert({
+        title: "Debug Disabled. Set to level: 0",
+        subTitle: "Do a Screen Refresh to restore default data"
+      });
+    }
+
+  }
 })

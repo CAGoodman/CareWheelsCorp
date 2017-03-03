@@ -60,16 +60,16 @@ angular.module('careWheels')
       }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
         status = response.status;
         data = response.data;
-        fileloggerService.execTrace('Rest Status = ' + status);
+        fileloggerService.execTrace('PaymentService.call(): Rest Status = ' + status);
       }, function (response) {
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
-          $fileLogger.log("error", "CreditPoseted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-        } else fileloggerService.execTrace('Success: ' + "CreditPoseted: " + data.creditPosted +
+          $fileLogger.log("ERROR", "PaymentService.call(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+        } else fileloggerService.execTrace('Success: ' + "CreditPosted: " + data.creditPosted +
                 "ReasonCode: " + data.reasonCode);
       })
-    } else $fileLogger.log("error", "Cannot make REST call for Call  Payment because user credentials are undefined.");
+    } else $fileLogger.log("ERROR", "PaymentService.call(): Cannot make REST call for Call  Payment because user credentials are undefined.");
   };    // PaymentService.call
 
   //
@@ -103,16 +103,16 @@ angular.module('careWheels')
       }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
         status = response.status;
         data = response.data;
-        fileloggerService.execTrace('Rest Status = ' + status);
+        fileloggerService.execTrace('PaymentService.sensorDataView(): Rest Status = ' + status);
       }, function (response) {
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
-          $fileLogger.log("error", "CreditPoseted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-        } else fileloggerService.execTrace('Success: ' + "CreditPoseted: " + data.creditPosted +
+          $fileLogger.log("ERROR", "PaymentService.sensorDataView(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+        } else fileloggerService.execTrace('Success: ' + "CreditPosted: " + data.creditPosted +
                 "ReasonCode: " + data.reasonCode);
       })
-    } else $fileLogger.log("error", "Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
+    } else $fileLogger.log("ERROR", "PaymentService.sensorDataView(): Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
   };  // PaymentService.sensorDataView
 
   //
@@ -145,16 +145,16 @@ angular.module('careWheels')
       }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
         status = response.status;
         data = response.data;
-        fileloggerService.execTrace('Rest Status = ' + status);
+        fileloggerService.execTrace('PaymentService.memberSummary(): Rest Status = ' + status);
       }, function (response) {
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
-          $fileLogger.log("error", "CreditPoseted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-        } else fileloggerService.execTrace('Success: ' + "CreditPoseted: " + data.creditPosted +
+          $fileLogger.log("error", "PaymentService.memberSummary(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+        } else fileloggerService.execTrace('PaymentService.memberSummary(): Success: ' + "CreditPosted: " + data.creditPosted +
                 "ReasonCode: " + data.reasonCode);
       })
-    } else $fileLogger.log("error", "Cannot make REST call for memberSummary Payment because user credentials are undefined.");
+    } else $fileLogger.log("ERROR", "PaymentService.memberSummary(): Cannot make REST call for memberSummary Payment because user credentials are undefined.");
   };
   return PaymentService;
 }); // PaymentService.memberSummary
