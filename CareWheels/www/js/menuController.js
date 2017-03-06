@@ -118,7 +118,10 @@ angular.module('careWheels')
             { label: 'Company', value: apkDependencies.apkCompany },
             { label: 'Version', value: apkDependencies.apkVersion },
             { label: 'Apk', value: apkDependencies.apkPackage },
-            { label: 'Date', value: apkDependencies.apkDate }
+            { label: 'Date', value: apkDependencies.apkDate },
+            { label: 'Cordova Version', value: window.device.cordova },
+            { label: 'Model and Manufacturer', value: window.device.model + " " + window.device.manufacturer},
+            { label: 'Serial Number and UUID', value: window.device.serial + window.device.uuid}
         ]
 
         var template = ''
@@ -147,7 +150,8 @@ angular.module('careWheels')
                 "intentstart": "startActivity"
             })
             .start(function() {
-;            }, function(error) {
+                fileloggerService.execTrace("Sen.Se Pocketmother application Entered");
+            }, function(error) {
                 $ionicPopup.alert({
                     title: 'Error',
                     subTitle: "Sen.se application not available"
@@ -168,7 +172,8 @@ angular.module('careWheels')
                 "intentstart": "startActivity"
             })
             .start(function() {
-;            }, function(error) {
+                fileloggerService.execTrace("Cyclos application Entered");
+            }, function(error) {
                 $ionicPopup.alert({
                     title: 'Error',
                     subTitle: "Cyclos application not available"

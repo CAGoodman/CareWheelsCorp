@@ -15,7 +15,8 @@
 
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
   .service('fileloggerService', function ($rootScope, $timeout, $q, $fileLogger, $filter, $ionicPlatform,
-    $ionicPopup, $cordovaFile, $cordovaFileTransfer, API, apkDependencies) {
+    $ionicPopup, $cordovaFile, $cordovaFileTransfer,  $cordovaAppVersion, API, apkDependencies) {
+
     var logFileName = "careWheelsLocalLogFile.log";
     var username, password;
 
@@ -45,13 +46,14 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
 
     // gets all possible info of the hardware, software and executing context to help in debug
     this.getUserInfo = function () {
-      var headerPkg = "Header Package with APK and environment details:\n"
-      var userInfoPkg = username + "; ";
-      var apkPkg = apkDependencies.apkPackage + " Version " + apkDependencies.apkVersion;
-      var datePkg = "APK Date: " + apkDependencies.apkDate;
-      var osPkg = "\nAndroid Version: " ; //+ ionic platform class android.os.Build.VERSION.SDK_INT;
-      var hardwarePkg = " Model and Manufacturer: " ; //+ android.os.Build.MODEL + " " + android.os.Build.MANUFACTURER;
-      fullPkg = headerPkg + userInfoPkg + apkPkg + datePkg + osPkg + hardwarePkg;
+      var headerPkg   = "Logfile Header For User: " + username + "\n"
+      var cordovaPkg  = "Cordova Version: " + window.device.cordova + "\n";
+      var apkPkg      = apkDependencies.apkPackage + " Version " + apkDependencies.apkVersion;
+      var datePkg     = " APK Date: " + apkDependencies.apkDate;
+      var osPkg       = "OS: " + window.device.platform + " Version: " + window.device.version + "\n";
+      var hardwarePkg = "Model and Manufacturer: " + window.device.model + " " + window.device.manufacturer + "\n";
+      var IDPkg       = "Serial Number: " + window.device.serial + " UUID: " + window.device.uuid + "\n";
+      fullPkg = headerPkg + cordovaPkg + apkPkg + datePkg + osPkg + hardwarePkg + IDPkg;
       return(fullPkg);
     };
 

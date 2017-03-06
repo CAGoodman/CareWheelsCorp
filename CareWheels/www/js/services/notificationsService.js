@@ -49,7 +49,7 @@ angular.module('careWheels')
         $cordovaLocalNotification.schedule({    //omitting 'at' and 'every' params means it occurs once, immediately
           id: reminderNum,
           message: "There are red alert(s) on your CareWheel!",
-          title: "CareWheels",
+          title: "CareBank",
           sound: null   //should be updated to freeware sound
         }).then(function() {
           fileloggerService.execTrace("notifications.Create_Notif(): Alert notification has been set");
@@ -72,7 +72,7 @@ angular.module('careWheels')
                 at: time,
                 every: "day",
                 text: "Reminder " + reminderNum + ": Please check in with your CareWheel!",
-                title: "CareWheels",
+                title: "CareBank",
                 sound: null   //same, hopefully a different sound than red alerts
               }).then(function() {
                 fileloggerService.execTrace("Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");

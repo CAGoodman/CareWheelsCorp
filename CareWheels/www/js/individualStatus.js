@@ -182,8 +182,7 @@ angular.module('careWheels')
       callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) +
        "-" + cyclosPhoneNumber.substring(8);
       var msg = "Username: " + analysis.username + " Balance: " + analysis.balance;
-      fileloggerService.execTrace("IndividualStatus: " + msg + " Cyclos Phone number : " +
-        cyclosPhoneNumber + " CallString: " + callString);
+      fileloggerService.execTrace("IndividualStatus: " + msg);
       var alertNum = analysis.analysisData.fridgeAlertLevel;
       if (analysis.analysisData.medsAlertLevel > alertNum) {
         alertNum = analysis.analysisData.medsAlertLevel;
