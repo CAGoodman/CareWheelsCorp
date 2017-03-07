@@ -2,11 +2,11 @@
 <widget id="org.carewheels.carebank" version="1.0.41" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>CareBank</name>
   <description>
-        An Ionic Framework and Cordova project.
-    </description>
+    CareBank: a social care network platform
+  </description>
   <author email="CAG@CareWheels.org" href="http://carewheels.org/">
-      Claude A Goodman
-    </author>
+    Claude A Goodman
+  </author>
   <content src="index.html"/>
   <allow-navigation href="*"/>
   <access origin="*"/>

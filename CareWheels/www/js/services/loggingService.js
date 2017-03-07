@@ -70,7 +70,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     };
 
     //
-    // logUpload() gets called during login which loads the previous lofile.
+    // logUpload() gets called during login or from Advance/Upload menu which loads the current existing lofile.
     //
 
     this.logUpload = function (usernameIn, passwordIn) {
@@ -118,7 +118,12 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           return fileURL;
         }).catch(function(reason) {
           $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
-          self.execTrace("LoggingService: CheckFile Failed: " + JSON.stringify(reason));
+          $fileLogger.log("INFO", fullPkg); // This will get added to the current new logfile not to the one just uploaded now
+          if (reason.message == "NOT_FOUND_ERR") {
+            self.FirstLogin = true;
+          } else {
+            self.execTrace("LoggingService: CheckFile Failed: " + JSON.stringify(reason));
+          }
           return;
         })
       } // getFileURL()
@@ -127,7 +132,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         // generate file name for uploading base on current date and time
         var currentDateTime = self.getCurrentDateTime();
         var fileNameUp = username + '-' + currentDateTime + '.log';
-        self.execTrace("LoggingService: This is indeed a Android platform");
+        self.execTrace("LoggingService: Running on Android platform");
         var options = {
           fileKey: "filetoupload",
           fileName: fileNameUp,
@@ -138,8 +143,10 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         self.execTrace("LoggingService: UploadFileName: " + fileNameUp);
 
         var uri = encodeURI(API.loggingServices8080);
-        //var uploadMsg = window.localStorage['uploadMsg.log']; TBD
-        //$fileLogger.log("INFO", uploadMsg); TBD
+
+        // upLoadMsg.log is not being loaded now will do it in the furture when we dont use cordovaFileTransfer
+        //var uploadMsg = window.localStorage['uploadMsg.log'];
+        //$fileLogger.log("INFO", uploadMsg);
 
         // Second parameter is a URL for the storage file location - fileURL or the file itself - uploadFile
         if (fileURL != angular.undefined) {
@@ -179,12 +186,15 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           .then(upload)
           .then(cleanUp)
           .catch(function (error) {                                         // $cordovaFileTransfer.upload()
-            self.execTrace("LoggingService: IF THIS IS A FRESH INSTALL LOGIN, IGNORE: " + JSON.stringify(error));
-            self.execTrace("ERROR: " + JSON.stringify(error));
-            self.execTrace("An error has occurred!");
-            self.execTrace("Code = " + error.code);
-            self.execTrace("Error source " + error.source);
-            self.execTrace("Error target " + error.target);
+            if (self.FirstLogin == true) {
+              self.execTrace("LoggingService: This is a first login no logfile to upload");
+            } else {
+              self.execTrace("ERROR: " + JSON.stringify(error));
+              self.execTrace("An error has occurred!");
+              self.execTrace("Code = " + error.code);
+              self.execTrace("Error source " + error.source);
+              self.execTrace("Error target " + error.target);
+            }
             $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
         });
       }); // $ionicPlatform.ready()

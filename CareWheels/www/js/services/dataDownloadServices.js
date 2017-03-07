@@ -57,27 +57,49 @@ angular.module('careWheels')
           fileloggerService.execTrace("Status: " + response.status + " StatusText: " + response.statusText);
 
           // **************** BEGIN Debug or Demo code instrumentation**************
-          if(usernametofind == "testalice" && $rootScope.dbgLevel == 1){
-            for (var i = 0; i < response.data.presenceByHour.length; i++) {
-              response.data.presenceByHour[i] = true;
-            }
-            for (var i = 0; i < response.data.fridgeRollingAlertLevel.length; i++) {
-              response.data.fridgeHitsByHour[6] = 2;
-              if (i < 13){
-                response.data.fridgeRollingAlertLevel[i] = 0 ;
-              } else {
-                response.data.fridgeRollingAlertLevel[i] = 1 ;
-                response.data.fridgeAlertLevel = 3;
+          if(usernametofind == "testalice") {
+            if ($rootScope.dbgLevel == 1){    // This is for the VC Demo
+              for (var i = 0; i < response.data.presenceByHour.length; i++) {
+                response.data.presenceByHour[i] = true;
               }
-            }
-            for (var i = 0; i < response.data.medsRollingAlertLevel.length; i++) {
-              response.data.medsHitsByHour[6] = 1;
-               if (i < 13){
-                response.data.medsRollingAlertLevel[i] = 0 ;
-              } else {
-                response.data.medsRollingAlertLevel[i] = 2 ;
-                response.data.medsAlertLevel = 6;
+              for (var i = 0; i < response.data.fridgeRollingAlertLevel.length; i++) {
+                response.data.fridgeHitsByHour[6] = 2;
+                if (i < 13){
+                  response.data.fridgeRollingAlertLevel[i] = 0 ;
+                } else {
+                  response.data.fridgeRollingAlertLevel[i] = 1 ;
+                  response.data.fridgeAlertLevel = 3;
+                }
               }
+              for (var i = 0; i < response.data.medsRollingAlertLevel.length; i++) {
+                response.data.medsHitsByHour[6] = 1;
+                 if (i < 13){
+                  response.data.medsRollingAlertLevel[i] = 0 ;
+                } else {
+                  response.data.medsRollingAlertLevel[i] = 2 ;
+                  response.data.medsAlertLevel = 6;
+                }
+              }
+            } // dbgLevel = 1
+            if ($rootScope.dbgLevel == 2){    // For validating referesh using pull
+              var d, h;
+              d = new Date();
+              h = d.getHours();
+              var i1 = Math.floor((Math.random() * h) + 0);
+              var i2 = Math.floor((Math.random() * h) + 0);
+              var i3 = Math.floor((Math.random() * h) + 0);
+              response.data.fridgeHitsByHour[i1] = Math.floor((Math.random() * 5) + 0);
+              response.data.fridgeHitsByHour[i2] = Math.floor((Math.random() * 5) + 0);
+              response.data.fridgeHitsByHour[i3] = Math.floor((Math.random() * 5) + 0);
+              response.data.medsHitsByHour[i1] = Math.floor((Math.random() * 5) + 0);
+              response.data.medsHitsByHour[i2] = Math.floor((Math.random() * 5) + 0);
+              response.data.medsHitsByHour[i3] = Math.floor((Math.random() * 5) + 0);
+              response.data.presenceByHour[i1] = true;
+              response.data.presenceByHour[i2] = false;
+              response.data.presenceByHour[i3] = true;
+              response.data.credit *= i1;
+              response.data.debit *= i2;
+              response.data.balance *= i3;
             }
           }
           // **************** END Debug or Demo code instrumentation**************

@@ -212,11 +212,17 @@ angular.module('careWheels')
     // pulldown refresh event
     $scope.doRefresh = function () {
       Download.DownloadData(function(){
-        $scope.$broadcast('scroll.refreshComplete');
+        //$scope.$broadcast('scroll.refreshComplete');
         fileloggerService.execTrace("IndividualStatus: Pull down refresh done!");
+
+        //
+        // Back and forward arrows help to go back/forward the the immidiate past or future screen.
+        // As we move from screen to screen back/forward an index is maintained. So if we ant to jump into
+        // the index then we use $stat.go. The current index is alwsys = 0.
+        //
+
         $state.go($state.current, {}, {reload: true});
       });
-
     };
 
     $scope.name = analysis.name;

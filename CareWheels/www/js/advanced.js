@@ -73,12 +73,12 @@ angular.module('careWheels')
     switch(dbgLevel) {
       case "0":
       case "1":
-        break;
       case "2":
       case "3":
+        break;
       default:
         $ionicPopup.alert({
-          title: "Debug was not Enbaled, Currently supported level are 0(Disable) and 1(Enable)",
+          title: "Debug was not Enbaled, Currently supported level are 0 - Disable, 1 - DemoEnable, 2 - PullEnable, 3 - NA",
           subTitle: "Please select a number below the Debug Enable button"
         });
         return;

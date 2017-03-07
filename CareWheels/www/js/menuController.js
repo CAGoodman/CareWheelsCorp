@@ -121,7 +121,7 @@ angular.module('careWheels')
             { label: 'Date', value: apkDependencies.apkDate },
             { label: 'Cordova Version', value: window.device.cordova },
             { label: 'Model and Manufacturer', value: window.device.model + " " + window.device.manufacturer},
-            { label: 'Serial Number and UUID', value: window.device.serial + window.device.uuid}
+            { label: 'Serial Number and UUID', value: window.device.serial +  " " +window.device.uuid}
         ]
 
         var template = ''
