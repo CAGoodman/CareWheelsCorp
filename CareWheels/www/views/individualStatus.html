@@ -13,16 +13,20 @@ is live and checking. However we do know no one is goign to call these two funct
 So to indicate that
 -->
 
+<!--
+When ever <a href tag is set the browser will automatically make the link or the string pointed clickable.
+However in this case there is no link to click but rather we want to click the button. So what we do is
+overlay the call button and then make it clickable. The ng-click="checkPhoneError()" will override the
+the default one.
+-->
 <ion-view view-title="app.individualStatus" class="overflow-scroll">
   <ion-nav-title>Status: {{name}}
-    <a href="{{::getPhoneNumber()}}" class="blue" ng-show="::showCallButton">
-      <div id="callArea"
-           class="button"
-           ng-class="::getCallButtonColor()">
-          Call
+    <a href="{{::getPhoneNumber()}}" class="blue" ng-click="checkPhoneError()" ng-show="::showCallButton">
+      <div id="callArea" class="button" ng-class="::getCallButtonColor()">
+        Call
       </div>
     </a>
-    <div id="buttonOverlay" ng-click="checkPhoneError()"></div>
+    <div id="buttonOverlay" ></div>
   </ion-nav-title>
 
   <!-- individual status content -->

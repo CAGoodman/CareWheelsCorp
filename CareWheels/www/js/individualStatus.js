@@ -148,10 +148,10 @@ angular.module('careWheels')
 
       // check for color status of button
       if (fridge >= 2 || meds >= 2) {
-        returnString += ' button-assertive';
+        returnString += ' button-assertive';  // Red
       }
       else if (fridge == 1 || meds == 1) {
-        returnString += ' button-energized';
+        returnString += ' button-energized';  // Yellow
       }
       else {
         returnString += ' button-dark disableCallButton';
@@ -163,7 +163,7 @@ angular.module('careWheels')
 
     /**
      * This function takes the phone number string returned from Cyclos (which
-     * us in the incorrect format), and it changes the string to a format
+     * is in the incorrect format), and it changes the string to a format
      * necessary for making a call. Note: if no phone number is put on the
      * Cyclos server, the number (000) 000-0000 will be inserted. This indicates
      * that the number needs to be placed in the system.
@@ -183,16 +183,23 @@ angular.module('careWheels')
        "-" + cyclosPhoneNumber.substring(8);
       var msg = "Username: " + analysis.username + " Balance: " + analysis.balance;
       fileloggerService.execTrace("IndividualStatus: " + msg);
-      var alertNum = analysis.analysisData.fridgeAlertLevel;
-      if (analysis.analysisData.medsAlertLevel > alertNum) {
-        alertNum = analysis.analysisData.medsAlertLevel;
-      }
+      var alertNumFridge = analysis.analysisData.fridgeAlertLevel;
+      var alertNumMeds = analysis.analysisData.medsAlertLevel;
+      //
+      // Alert intervals are defined for time ranges- 6:00AM-10:59AM, 11:00AM-3:59PM and 4:00PM-9:59PM.
+      // If there are no events and the interval is enabled for alerts and the user is present the alert is raised.
+      // fridgeAlertLevel is raised by 1(yellow) and medsAlertLevel is raised by 2(red).
+      // If the same condition persists for the next time interval food alerts goes red.
+      // fridgeAlertLevel escalates by 1 and medsAlertLevle escalates by 2
+      //
+      //
       var alertLevel = '';
-      if (alertNum >= 2) {
-        alertLevel = 'yellow';
-      }
-      else if (alertNum == 1){
+      if (alertNumMeds >= 2) {
         alertLevel = 'red';
+      } else {
+        if (alertNumFridge == 1){
+          alertLevel = 'yellow';
+        }
       }
       $scope.alertLevel = alertLevel;
       return callString;
@@ -205,7 +212,7 @@ angular.module('careWheels')
         $fileLogger.log("error", "There is no phone number for " + analysis.name);
       }
       else if ($scope.alertLevel != '') {
-        PaymentService.call(analysis.name, $scope.alertLevel);
+        PaymentService.call(analysis.username, $scope.alertLevel);
       }
     };
 

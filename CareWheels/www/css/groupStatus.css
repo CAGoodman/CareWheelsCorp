@@ -10,13 +10,9 @@
  calls ID by name to set the style of the page.
  Anything staring with a "." is a class meaning a group od values/attributes. ID is also a class but unique
  Both of them what the style will be when HTML code calls them.
- We identify 4 major ID's which get called by HTML and some other smalled ID's too
- 1. #careBankBlock	--> This is the main block located at the very top
- 2. #careBankHeader	--> This provides the space for the name CareWheels Group
- 3. #careBankData
- 4. #userGroup
-The HTML file will call the ID or the Class by "string name" explicitly and CSS will define the style of the display
-Note: In html do not use // for comments they mess up the format
+ Deivce ID #userGroup gets called by the HTML
+ The HTML file will call the ID or the Class by "string name" explicitly and CSS will define the style of the display
+ Note: In html do not use // for comments they mess up the format
 --*/
 
 /*
@@ -26,34 +22,16 @@ Note: In html do not use // for comments they mess up the format
 ul {
 	list-style: none;
 }
-#careBankBlock{
-	margin-top:0;
-}
 
-#careBankHeader {
-	text-align: center;
-	font-size: 26px;
-}
-
-.careBankDetail{
+.careBankBalance{
 	display: inline-block;
 	position: inherit;
 	text-align: center;
 	width: 100%;
 	margin-left: 0%;
-	padding: 10px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-
-}
-
-/* All this provides is a blank box. Html file fills in the wordings and data */
-.careBankBalance{
-}
-
-#careBankData {
-
-
+	padding: 0px;
+	margin-top: 0px;
+	margin-bottom: 30px;
 }
 
 #userGroup {
@@ -80,21 +58,6 @@ ul {
 	height: 50%;
 	border: none;
 }
-
-/*
-WOULD NOT BE TARGETED
-<div class="userSquare">
-	<div class="vacationMode">
-		<img />
-	</div>
-</div>
-
-any images within a div with userSquare AND vacationMode classes, will get opacity 0.5,
-classes without spaces indicate AND */
-/*.userSquare.vacationMode img {
-	opacity:0.5;
-}*/
-
 
 /* This determines the size of the user image */
 .userImage {

@@ -51,13 +51,27 @@ angular.module('careWheels')
   // localStorage://localhost/careWheelsLocalLogFile.log
   //
 
-  $scope.UploadLogfile= function (traceLevel) {
+  $scope.UploadLogfile= function () {
     var creds = User.credentials();
     fileloggerService.logUpload(creds.username, creds.password);
     fileloggerService.execTrace("UploadLogfile: Logfile uploaded to the server");
     $ionicPopup.alert({
       title: "Logfile has been uploaded to the CareWheels server!!",
       subTitle: "A friendly customer service professional will get back to you soon"
+    });
+  }
+
+  //
+  // Logfiles can grow to horrendous so once in a while it is better to delete it.
+  // During debug, validation and testing it is helpful to have a small logfile to manage.
+  //
+
+   $scope.DeleteLogfile= function () {
+    fileloggerService.deleteLogFile();
+    fileloggerService.execTrace("DeleteLogfile: Logfile deleted");
+    $ionicPopup.alert({
+      title: "Logfile has been deleted",
+      subTitle: "A new logfile automatically starts building up which you can upload anytime"
     });
   }
 

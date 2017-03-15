@@ -25,8 +25,8 @@ The browser calls the index.html first and that loads this file.
 					<!--ng-class conditionally adds a css class. ex: {className: Bool} -->
 					<!--for example, if group[1].vacationMode === True, then userSquare topLeft will also get class of vacationMode -->
 					<!-- The physical coding order in which we postion the following users matters
-					The center user group[0] entry has to be the last one as it get superimposed
-					on the the 4 squares
+					The center user group[0] entry has to be the last one as it get superimposed on the the 4 squares
+					group[x].status = alertColor - Red, yellow, blue or grey
 					-->
 					<li class="userSquare topLeft" ng-class="{vacationMode: group[1].vacationMode}" ng-click="clickTopLeft()">
 						<div id="topLeftAlert" class="alertOverlay"
@@ -57,33 +57,31 @@ The browser calls the index.html first and that loads this file.
 				</ul>
 			</ion-item>
 			<ion-item>
-				<div id="careBankBlock" class="card" ng-click="clickCareBank()">
-					<div id="careBankHeader" class="item item-stable">CareBank</div>
-					<div id="careBankData" class="">
-						<div class="careBankDetail careBankBalance">
-							<div class="miniCardHeader center">
-                				<table width="100%">
-                        			<tr>
-                                		<td align="center">Balance</td>
-                                		<td rowspan="2" width="10%" align="center" style="vertical-align: middle;"> = </td>
-                                		<td align="center">Donated</td>
-                                		<td rowspan="2" width="10%" align="center" style="vertical-align: middle;"> - </td>
-                                		<td align="center">Received</td>
-                        			</tr>
-                        			<tr>
-                                		<td align="center">{{group[0].balance | number:1}}</td>
-                                		<td align="center">{{group[0].credit | number:1}}</td>
-                                		<td align="center">{{group[0].debit  | number:1}}</td>
-                        			</tr>
-                				</table>
-							</div>
-						</div>
+				<div class="careBankBalance">
+					<div class="miniCardHeader center">
+        				<table width="100%">
+                			<tr>
+                        		<td align="center">Balance</td>
+                        		<td rowspan="2" width="10%" align="center" style="vertical-align: middle;"> = </td>
+                        		<td align="center">Donated</td>
+                        		<td rowspan="2" width="10%" align="center" style="vertical-align: middle;"> - </td>
+                        		<td align="center">Received</td>
+                			</tr>
+                			<tr>
+                        		<td align="center">{{group[0].balance | number:1}}</td>
+                        		<td align="center">{{group[0].credit | number:1}}</td>
+                        		<td align="center">{{group[0].debit  | number:1}}</td>
+                			</tr>
+        				</table>
 					</div>
 				</div>
 			</ion-item>
 		</ion-list>
-		<div id="vacationMode" class="bar bar-footer" ng-class=barClass ng-show=showBar>
-			<div class="title">{{barLegend}}</div>
+		<div id="careBankBlock" class="bar bar-footer" ng-class=barClassCB ng-show=showBarCB>
+			<div class="title">{{barLegendCB}}</div>
+		</div>
+		<div id="vacationMode" class="bar bar-footer" ng-class=barClassVM ng-show=showBarVM>
+			<div class="title">{{barLegendVM}}</div>
 		</div>
 	</ion-content>
 </ion-view>

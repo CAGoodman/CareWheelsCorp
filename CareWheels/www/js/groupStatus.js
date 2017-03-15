@@ -53,7 +53,8 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 		// The groupInfo object is not available immediately, spin until available
 		// It is happening in back ground with the server hence wait for 50 mili seconds
 		// toDo: remove this once the callbacks for downland and analysis are set up
-		// Note: Any call enclosed between setInterval() does not just fall through when stepping.
+		// Note: Any call enclosed between $interval() does not just fall through when stepping.
+		// groupArray[0] to grou[[4] has users in the same order irrespective of the user logged in
 
 			var initGroupInfoPromise = $interval(function () {
 			var groupArray = GroupInfo.groupInfo();
@@ -72,44 +73,47 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 
 	}	//runOnStateChange().
 
-	// For center user we are not flashing alert but putting a red bar hence need to be discovered
-	// groupArray[1] technically is always center user but that is a hardcoded value. In case in the future
-	// that were to change then the code would break hence go by pure logic
+	//
+	// For center user i.e., logged in user we are not flashing alert but putting a red bar hence need to be discovered
+	// In setGroupArray() the logged in user info is stuffed to groupArray[0] but its AlertColor was not discovered
+	//
 
 	function checkCenterUserAlertLevel() {
 		var creds = User.credentials();
 		var groupArray = GroupInfo.groupInfo();
-		for (i = 0; i < loginDependencies.userCount; i++) {
-			if (groupArray[i].username == creds.username) {
-				var status;	// Precdence is set as - Vacation, grey, red, yellow, blue
-				status = getAlertColor(groupArray[i].analysisData.fridgeAlertLevel,
-					groupArray[i].analysisData.medsAlertLevel, User.getVacationValue(), i);
-				switch (status) {
-					case "grey":
-						$scope.showBar = true;
-						$scope.barLegend = "Vacation Mode On";
-						$scope.barClass = "bar-positive";
-						break;
-					case "red":
-						$scope.showBar = true;
-						$scope.barLegend = "Check Your Alert!";
-						$scope.barClass = "bar-assertive";
-						break;
-					case "yellow":
-						$scope.showBar = true;
-						$scope.barLegend = "Check Your Alert!";
-						$scope.barClass = "bar-energized";
-						break;
-					case "blue":
-						$scope.showBar = false;
-						break;
-					default:
-						$fileLogger.log("error", "Bad alert status: " + status + "Username: " + creds.username);
-						$scope.showBar = false;
-
-				}	// switch()
-			}	// if()
-		}	//for()
+		$scope.showBarCB = true;
+		$scope.barLegendCB = "Care Bank";
+		$scope.barClassCB = "bar-positive";
+		var status;	// Precdence is set as - Vacation, grey, red, yellow, blue
+		var loggedInUserIndex = $scope.group[0].selfUserIndex;
+		//
+		// We cannot use $scope.group[] here becasue that has not been saved hence we use groupArray[]
+		//
+		status = getAlertColor(groupArray[loggedInUserIndex].analysisData.fridgeAlertLevel,
+			groupArray[loggedInUserIndex].analysisData.medsAlertLevel, User.getVacationValue(), loggedInUserIndex);
+		switch (status) {
+			case "grey":
+				$scope.showBarVM = true;
+				$scope.barLegendVM = "Vacation Mode On";
+				$scope.barClassVM = "bar-positive";
+				break;
+			case "red":
+				$scope.showBarVM = true;
+				$scope.barLegendVM = "Check Your Alert!";
+				$scope.barClassVM = "bar-assertive";
+				break;
+			case "yellow":
+				$scope.showBarVM = true;
+				$scope.barLegendVM = "Check Your Alert!";
+				$scope.barClassVM = "bar-energized";
+				break;
+			case "blue":
+				$scope.showBarVM = false;
+				break;
+			default:
+				$fileLogger.log("error", "Bad alert status: " + status + "Username: " + creds.username);
+				$scope.showBarVM = false;
+		}	// switch()
 		if (i > loginDependencies.userCount) {
 			$fileLogger.log("error", "Oh! Oh! username: " + creds.username + " is missing contact server admin");
 		}
@@ -248,7 +252,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
     }	// getLoggedInUser()
 
     //
-    // $scope.group[] isa tied to the html screen and groupArray[] is the data coming from the server
+    // $scope.group[] is tied to the html screen and groupArray[] is the data coming from the server
     // Now let us set the scope variables for the group view. group[] is populated here
     // User creds, special settings and alerts are saved here in the group[]
     // Logged in user data is directed to the center user i.e., $scope.group[0] . Index 0 is reserved for the center user
@@ -258,7 +262,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
     function setGroupArray(groupArray) {
 		var currentUser = 0;
 		var fridgeAlert, medsAlert;
-
+		// loggedInUserIndex can vary from 0 - 4 but group[0] will be alaways = logged in user
 		var loggedInUserIndex = $scope.group[0].selfUserIndex;
 
 		// next lets set the data for the user that logged in,
@@ -275,7 +279,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 		currentUser++; // = 1 at this point
 		// put everyone else into the array
 		for (var i = 0; i < loginDependencies.userCount; i++) {
-			if (i != $scope.group[0].selfUserIndex) {
+			if (i != loggedInUserIndex) {		// loggedInUserIndex has already been saved to group[0]
 				$scope.group[currentUser].image = groupArray[i].photoUrl;
 				$scope.group[currentUser].username = groupArray[i].username;
 				$scope.group[currentUser].name = groupArray[i].name;
@@ -285,20 +289,20 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 					fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
 					medsAlert = groupArray[i].analysisData.medsAlertLevel;
 					vacationMode = groupArray[i].analysisData.vacationMode;
-					$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode, i);
+					$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode, currentUser); //LoggedInUser status is not set
 				}
 				catch (Exception) {
 					$scope.group[currentUser].status = 'grey';
-					$scope.group[currentUser].error = true;
+					$scope.group[currentUser].error = true; //LoggedInUser error is not set
 				}
 				currentUser++;
-			}
+			}  // if()
 			// on the last element of the loop, now check health
 			if (i == loginDependencies.userCount - 1) {
 				if (!GroupInfo.getSensorError())
 					checkGroupHealth();
 			}
-		}
+		}	// for()
     }	// setGroupArray();
 
     //

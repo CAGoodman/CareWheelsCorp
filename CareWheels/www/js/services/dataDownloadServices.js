@@ -57,27 +57,34 @@ angular.module('careWheels')
           fileloggerService.execTrace("Status: " + response.status + " StatusText: " + response.statusText);
 
           // **************** BEGIN Debug or Demo code instrumentation**************
+          // presenceByHour -> True or false and is 24 element long
+          // HitsByHour --> A number which is the count of hits/hour. Can be max of 5/hour
+          // FriddeAlertLevel --> Current Alert level. Starts 1(Yellow) then escalates to 2(Red) and further increases by 1
+          // MedsAlertLEvel --> Current Alert Level. Starts 2(Red) and increases by 2 never yellow
+          // RollingAlertLevel --> Remebers the previous Alert Levels as the day rolls by
+          // The max for FridgeAlertLevel = 6 and MedsAlertLevel = 12
+          //
           if(usernametofind == "testalice") {
             if ($rootScope.dbgLevel == 1){    // This is for the VC Demo
               for (var i = 0; i < response.data.presenceByHour.length; i++) {
-                response.data.presenceByHour[i] = true;
+                response.data.presenceByHour[i] = true; // Make it full present for Alert to kick in
               }
+              response.data.fridgeHitsByHour[6] = 2;      // 6AM we enter to red alert fridge
+              response.data.fridgeAlertLevel = 1;         // current level
               for (var i = 0; i < response.data.fridgeRollingAlertLevel.length; i++) {
-                response.data.fridgeHitsByHour[6] = 2;
                 if (i < 13){
-                  response.data.fridgeRollingAlertLevel[i] = 0 ;
+                  response.data.fridgeRollingAlertLevel[i] = 0 ;  // Ensure 0 hits till 1AM to push it to yellow alert
                 } else {
-                  response.data.fridgeRollingAlertLevel[i] = 1 ;
-                  response.data.fridgeAlertLevel = 3;
+                  response.data.fridgeRollingAlertLevel[i] = 1 ; // Yellow
                 }
               }
+              response.data.medsHitsByHour[6] = 1;      // 6AM we enter to red alert meds
+              response.data.medsAlertLevel = 2;         // current level
               for (var i = 0; i < response.data.medsRollingAlertLevel.length; i++) {
-                response.data.medsHitsByHour[6] = 1;
                  if (i < 13){
-                  response.data.medsRollingAlertLevel[i] = 0 ;
+                  response.data.medsRollingAlertLevel[i] = 0 ; // Ensure 0 hits till 1AM to push it to red alert
                 } else {
-                  response.data.medsRollingAlertLevel[i] = 2 ;
-                  response.data.medsAlertLevel = 6;
+                  response.data.medsRollingAlertLevel[i] = 2 ; // Red
                 }
               }
             } // dbgLevel = 1
