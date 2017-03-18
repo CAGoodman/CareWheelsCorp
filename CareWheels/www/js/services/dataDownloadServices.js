@@ -123,18 +123,18 @@ angular.module('careWheels')
           }
 
         }, function error(response) {
-          $fileLogger.log("ERROR","DataDownLoad:getData(): Request failed ");
+          $fileLogger.log("ERROR", "DataDownLoad:getData(): Request failed ");
            var pos = response.config.data.indexOf("&");  //password is removed from display
-          fileloggerService.execTrace("ERROR: Logged in user collecting Sensor Data for: " + response.config.data.slice(pos+1));
-          fileloggerService.execTrace("ERROR: Balance: " + response.data.balance + " Credit: " + response.data.credit +
+          $fileLogger.log("ERROR", "Logged in user collecting Sensor Data for: " + response.config.data.slice(pos+1));
+          $fileLogger.log("ERROR", "Balance: " + response.data.balance + " Credit: " + response.data.credit +
             " Debit: " + response.data.debit + " FridgeAlertLevel " + response.data.fridgeAlertLevel +
             " MedsAlertLevel: " + response.data.medsAlertLevel + " VacationMode: " + response.data.vacationMode);
-          fileloggerService.execTrace("ERROR: FridgeHitsByHour: " + "[" + response.data.fridgeHitsByHour + "]");
-          fileloggerService.execTrace("ERROR: FridgeRollingAlertLevel: " + "[" + response.data.fridgeRollingAlertLevel + "]");
-          fileloggerService.execTrace("ERROR: MedsHitsByHour: " + "[" + response.data.medsHitsByHour + "]");
-          fileloggerService.execTrace("ERROR: MedsRollingAlertLevel: " + "[" + response.data.medsRollingAlertLevel + "]");
-          fileloggerService.execTrace("ERROR: PresenceByHour: " + "[" + response.data.presenceByHour + "]");
-          fileloggerService.execTrace("ERROR: Status: " + response.status + " StatusText: " + response.statusText);
+          $fileLogger.log("ERROR", "FridgeHitsByHour: " + "[" + response.data.fridgeHitsByHour + "]");
+          $fileLogger.log("ERROR", "FridgeRollingAlertLevel: " + "[" + response.data.fridgeRollingAlertLevel + "]");
+          $fileLogger.log("ERROR", "MedsHitsByHour: " + "[" + response.data.medsHitsByHour + "]");
+          $fileLogger.log("ERROR", "MedsRollingAlertLevel: " + "[" + response.data.medsRollingAlertLevel + "]");
+          $fileLogger.log("ERROR", "PresenceByHour: " + "[" + response.data.presenceByHour + "]");
+          $fileLogger.log("ERROR", "Status: " + response.status + " StatusText: " + response.statusText);
         })
       };    // getData();
 

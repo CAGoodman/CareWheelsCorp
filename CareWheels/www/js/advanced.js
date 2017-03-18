@@ -54,7 +54,7 @@ angular.module('careWheels')
   $scope.UploadLogfile= function () {
     var creds = User.credentials();
     fileloggerService.logUpload(creds.username, creds.password);
-    fileloggerService.execTrace("UploadLogfile: Logfile uploaded to the server");
+    fileloggerService.execTrace("UploadLogfile: Logfile is being uploaded to the server");
     $ionicPopup.alert({
       title: "Logfile has been uploaded to the CareWheels server!!",
       subTitle: "A friendly customer service professional will get back to you soon"
