@@ -2,7 +2,7 @@
   "apkDependencies": {
     "apkName": "CareBank-Application",
     "apkCompany": "CareWheels Corporation",
-    "apkVersion": "1.0.43",
+    "apkVersion": "1.0.44",
     "apkDate": "Sat Mar 18 2017 14:53:41 GMT-0700 (Pacific Daylight Time)",
     "apkPackage": "CareBank-armv7-18Mar17.apk"
   },
