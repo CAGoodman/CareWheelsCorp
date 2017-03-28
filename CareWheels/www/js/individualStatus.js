@@ -52,7 +52,7 @@ angular.module('careWheels')
     }
 
     function convertPresenceAlertLevelToColor(sensorArray) {
-
+      fileloggerService.execTrace("ISCtrl:convertPresenceAlertLevelToColor: Enter");
       var coloredArray = [];
 
       for (var i = 0; i < sensorArray.length; i++) {
@@ -65,7 +65,7 @@ angular.module('careWheels')
           coloredArray[i] = "blue";
         }
       }
-
+      fileloggerService.execTrace("ISCtrl:convertPresenceAlertLevelToColor: Exit");
       return coloredArray;
     }
 
@@ -118,6 +118,7 @@ angular.module('careWheels')
      * This function returns the color for the call button.
      */
     $scope.getCallButtonColor = function () {
+      fileloggerService.execTrace("ISCtrl:getCallButtonColor: Enter");
       var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
       fileloggerService.execTrace("IndividualStatus: GetCallButtonColor()" + msg);
 
@@ -157,7 +158,7 @@ angular.module('careWheels')
         returnString += ' button-dark disableCallButton';
          $scope.showCallButton = false;
       }
-      // done
+      fileloggerService.execTrace("ISCtrl:getCallButtonColor: Exit");
       return returnString;
     };
 
@@ -169,6 +170,7 @@ angular.module('careWheels')
      * that the number needs to be placed in the system.
      */
     $scope.getPhoneNumber = function () {
+      fileloggerService.execTrace("ISCtrl:getPhoneNumber: Enter");
       var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
       fileloggerService.execTrace("IndividualStatus: GetPhoneNumber() hit" + msg);
       var cyclosPhoneNumber = analysis.phoneNumber;
@@ -202,6 +204,7 @@ angular.module('careWheels')
         }
       }
       $scope.alertLevel = alertLevel;
+      fileloggerService.execTrace("ISCtrl:getPhoneNumber: Exit");
       return callString;
     };
 

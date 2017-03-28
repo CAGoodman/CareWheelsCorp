@@ -143,14 +143,12 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
         }
       }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
-        status = response.status;
-        data = response.data;
-        fileloggerService.execTrace('PaymentService.memberSummary(): Rest Status = ' + status);
+        fileloggerService.execTrace("PaymentService.memberSummary(): " + JSON.stringify(response));
       }, function (response) {
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
-          $fileLogger.log("error", "PaymentService.memberSummary(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+          $fileLogger.log("ERROR", "PaymentService.memberSummary(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
         } else fileloggerService.execTrace('PaymentService.memberSummary(): Success: ' + "CreditPosted: " + data.creditPosted +
                 "ReasonCode: " + data.reasonCode);
       })

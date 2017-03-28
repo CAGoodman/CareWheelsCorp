@@ -76,7 +76,7 @@ angular.module('careWheels')
     }
 
     $scope.TappedOrClicked = function() {
-      console.log("TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
+      fileloggerService.execTrace("TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
       $scope.showHelp = true;
     }
 
@@ -97,7 +97,7 @@ angular.module('careWheels')
       // It checks with the server and returns the creds or errors out
       //
       User.login(uname, passwd, rmbr).then(function(response) {
-
+        fileloggerService.execTrace("LoginCtrl:login: Enter");
         if (User.credentials()) {
 
           //
@@ -146,6 +146,7 @@ angular.module('careWheels')
             }
           });
         }
+        fileloggerService.execTrace("LoginCtrl:login: Exit");
       });
     };
 
@@ -163,7 +164,6 @@ angular.module('careWheels')
     function scheduleDownload(){
       User.stopDownloadPromise = $interval(function(){
         Download.DownloadData(function(){
-          fileloggerService.execTrace("Download scheduler finished");
           if ($state.current.name == "app.groupStatus") {
             $rootScope.autoRefresh = true;
           }
@@ -197,4 +197,14 @@ angular.module('careWheels')
           $scope.connectionError = false;
       });
     }
+    /*
+    //
+    // When the app is put in background it gets automatically logged off. When it is brought to
+    // foreground we need to automatically login. This will happen only if the user had saved
+    // credentials. The only issue with this is the user cannot just logoff and be logged off
+    // because the below script will log them back. So they have to clean memory and then logout or Force Shutdown.
+    //
+    if (credentials)
+      $scope.login(credentials.username, credentials.password, true);
+    */
 });

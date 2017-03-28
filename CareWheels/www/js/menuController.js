@@ -50,6 +50,7 @@ angular.module('careWheels')
     };
 
     $scope.clickPocketMother = function() {
+        fileloggerService.execTrace("MenuCtrl:clickPocketMother: Enter");
         $scope.isChecked.value = false;
         var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
         if (!noWarn) {
@@ -63,16 +64,20 @@ angular.module('careWheels')
                 if (res) {
                     if ($scope.isChecked.value)
                         window.localStorage["noLeaveAppWarn"] = angular.toJson($scope.isChecked.value);
+                    fileloggerService.execTrace("MenuCtrl:clickPocketMother: Exit");
                     openSense();
                 }
             });
 
         }
-        else
+        else {
+            fileloggerService.execTrace("MenuCtrl:clickPocketMother: Exit");
             openSense();
+        }
     };
 
     $scope.clickCyclos = function() {
+        fileloggerService.execTrace("MenuCtrl:clickCyclos: Enter");
         $scope.isChecked.value = false;
         var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
         if (!noWarn) {
@@ -86,13 +91,16 @@ angular.module('careWheels')
                 if (res) {
                     if ($scope.isChecked.value)
                         window.localStorage["noLeaveAppWarn"] = angular.toJson($scope.isChecked.value);
+                    fileloggerService.execTrace("MenuCtrl:clickCyclos: Exit");
                     openCyclos();
                 }
             });
 
         }
-        else
+        else {
+            fileloggerService.execTrace("MenuCtrl:clickCyclos: Exit");
             openCyclos();
+        }
     };
 
 	$scope.clickAdvanced = function () {

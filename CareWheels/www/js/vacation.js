@@ -12,7 +12,7 @@
 angular.module('careWheels')
 
 .controller('vacationController',
-	function($scope, $state, $controller, $ionicLoading, GroupInfo, User, Download) {
+	function($scope, $state, $controller, $ionicLoading, GroupInfo, User, Download, fileloggerService) {
 
 	//
 	// From menu.html the control comes here and the pbject $scope.data.currentVacationMode gets initialized
@@ -30,7 +30,7 @@ angular.module('careWheels')
 
 
     $scope.toggleVacationMode = function (currentVacationMode) {
-
+    	fileloggerService.execTrace("VacationCtrl:toggleVacationMode: Enter");
 		var creds = User.credentials();
 		User.setOnVacation(creds.username, creds.password, $scope.data.currentVacationMode).then(function(resultValue){
 			User.waitForDataDownload();  // Blocking the user till the data download is done
@@ -39,5 +39,6 @@ angular.module('careWheels')
 	            $state.go('app.groupStatus');     // go to group view
 	        });
     	});
+    	fileloggerService.execTrace("VacationCtrl:toggleVacationMode: Exit");
 	}
 });

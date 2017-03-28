@@ -26,17 +26,24 @@ angular.module('careWheels', [
 ])
 
 
-.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, User, loginDependencies) {
+.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, User, loginDependencies, fileloggerService) {
 
+  //
+  // preLogin.log will save away the console.log messages we miss out in the main log file careWheelsLocalLogFile.log.
+  //
+
+  window.localStorage.removeItem('preLogin.log');
+  window.localStorage['preLogin.log'] = "\n******Pre Login Log Messages Begin****** \n\n";
+  $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
   //
   // When ionic.serve is run this is the entry point to the application
   //
 
   $rootScope.autoRefresh = false;
 
-   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+  $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
 
-    console.log("StateChangeStart: State change Start " + "From: " + fromState.name + " Next: " + next.name);
+    fileloggerService.execTrace("App:StateChangeStart: State change Start " + "From: " + fromState.name + " Next: " + next.name);
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then
@@ -67,12 +74,12 @@ angular.module('careWheels', [
   $rootScope.$on('$stateChangeSuccess', function(event, next, toParams, from, fromState) {
       $rootScope.previousState = from.name;
       $rootScope.currentState = next.name;
-      console.log("StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
+      fileloggerService.execTrace("App:StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
 
   });
 
   $ionicPlatform.registerBackButtonAction(function (event) {
-    console.log("In Back button handler" + $ionicHistory.backTitle());
+    fileloggerService.execTrace("In Back button handler" + $ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
   }, loginDependencies.backbuttonTimeout);
 

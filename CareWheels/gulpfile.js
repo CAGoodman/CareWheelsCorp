@@ -25,24 +25,14 @@ var sh = require('shelljs')
 
 var debug = require('gulp-debug')
 
-var paths = {
-  sass: ['./scss/**/*.scss']
-}
+//
+// This will bump up the ID, AppName in the config.xml which will get reflected in the App manifest 
+// To view the manifest search Application Manager and click on CareWheels
+// Ex: gulp config --appId="1234", gulp config --appName="AppName". These will not change the Version number
+// NOTE: We are not using gulp for config.xml modification instead use cordova apps. BuildApk.bat has details
+//
 
-gulp.task('default', ['sass'])
-
-gulp.task('sass', function (done) {
-  gulp.src('./scss/ionic.app.scss')
-    .pipe(sass())
-    .on('error', sass.logError)
-    .pipe(gulp.dest('./www/css/'))
-    .pipe(minifyCss({
-      keepSpecialComments: 0
-    }))
-    .pipe(rename({ extname: '.min.css' }))
-    .pipe(gulp.dest('./www/css/'))
-    .on('end', done)
-})
+gulp.task('config', require('gulp-cordova-config-xml'));
 
 //
 // This function just bumps the version string only by default
@@ -73,9 +63,9 @@ gulp.task('git-check', function(done) {
 });
 
 //
-// This function just bumps the apkVersion string only by default.
-// Gulp functions operate async hence you will find the retun's in the middle.
-// line 78: It reads package.json pipes the read info to bump() and returns
+// This function bumps any string with the word "version" in package.json
+// Gulp functions operate async hence you will find the return's in the middle. return gulp.src('./package.json')
+// This reads package.json pipes the read info to bump() and returns
 // Bump() does its work and pipes it to dest() which will copy it to package.json in the current folder.
 // If you were to run it under different folder it senses it and changes it to the folder pf the json file
 // Version format is Major.Minor.Patch BuildApl.bat need to call them as needed.
@@ -120,7 +110,7 @@ gulp.task('bumpDispPatchVer', function(callback) {
 
 gulp.task('resetVersion', function () {
   return gulp.src('./package.json')
-    .pipe(replace(/"version*.*/, "\"version\": "  + "\"" + argv.version + "\","))
+    .pipe(replace(/"apkVersion*.*/, "\"apkVersion\": "  + "\"" + argv.version + "\","))
     .pipe(gulp.dest('./'));
 });
 

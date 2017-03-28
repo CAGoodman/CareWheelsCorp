@@ -6,8 +6,7 @@ echo MAKE SURE YOU ARE AT THE HOME DIRECTORY EX: ....\CareWheelsCorp\CareWheels
 echo It is recommended to run ionic reset once every 10 builds
 echo This builds apk for ARMv7 processors only
 echo Ensure your MAILTO in Control Panel --> Programs --> Default Program --> Assocaited is configured correclty
-echo Did you remove all the instrumented code and set all time out to normal ...???
-pause
+
 IF "%1"=="-?" goto HELP
 IF "%1"=="-p" goto PROPERTY
 IF "%1"=="-r" goto RESET
@@ -70,6 +69,11 @@ REM This calls bumpPatch, bumpDate, bumpConstants and finally calls getProperty
 REM bumpApk, bumpPatch, bumpDate all bump it up in the package.json only
 REM bumpConstants creates a new file ngconstants.js which gets bundled with the APK
 REM ngconstants.js has all the source/binary controls
+
+IF "%1"=="-d" (
+start gulp resetVersion --version "9.9.8"
+pause
+)
 start gulp bumpAll
 echo Did the bumpAll finish successfully?
 set /p ans=Enter y or n:
@@ -77,7 +81,30 @@ IF "%ans%"=="y" goto APK_BUILD
 goto END
 
 :APK_BUILD
+REM We get the bumped up Version from package.json and update config.xml
+IF "%1"=="-d" (
+start cordova-update-config --appname "CareBank-BetaDbg"
+) ELSE (
+start cordova-update-config --appname "CareBank-BetaRel"
+)
+pause
+start cordova-update-config --appid "org.carewheels.carebank"
+pause
+@FOR /F "eol=; tokens=1,2* delims=, " %%i in (package.json) do (
+@IF %%i=="apkVersion": (
+set apkVersion=%%j
+goto VERSION_DONE
+)
+)
+:VERSION_DONE
+start cordova-update-config --appversion %apkVersion%
+pause
+IF "%1"=="-d" (
+start cordova build --debug android
+goto END
+) ELSE (
 start cordova build --release android
+)
 REM At this point we get the file platforms\android\build\outputs\apk\android-release-unsigned.apk
 echo Did it build successfully?
 set /p ans=Enter y or n:

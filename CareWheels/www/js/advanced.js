@@ -13,11 +13,16 @@ angular.module('careWheels')
 
   $scope.traceLevel = 0;
 
+  $rootScope.$on('Logout', function() {
+    $scope.Logout();
+  })
+
   $scope.ScreenRefresh = function () {
+    fileloggerService.execTrace("AdvCtrl:ScreenRefresh: Enter");
     User.waitForDataDownload();  // Blocking the user till the data download is done
     Download.DownloadData(function () {
       User.completedDataDownload();       // DataDownload completed
-      fileloggerService.execTrace("ScreenRefresh: Forced Screen Refresh finished");
+      fileloggerService.execTrace("AdvCtrl:ScreenRefresh: Exit");
       $state.go($rootScope.previousState, {}, {reload:true});
     });
   }
@@ -27,16 +32,18 @@ angular.module('careWheels')
   //
 
   $scope.Logout = function () {
+    fileloggerService.execTrace("AdvCtrl:Logout: Enter");
     $interval.cancel(User.stopDownloadPromise);
-    fileloggerService.execTrace("Logout: Logged out");
+    fileloggerService.execTrace("AdvCtrl:Logout: Exit");
     $state.go('login', {}, {reload:true});
   }
 
   $scope.ClearMemory = function () {
+    fileloggerService.execTrace("AdvCtrl:ClearMemory: Enter");
     window.applicationCache.abort();
     window.caches.delete(100);
     window.localStorage.clear();
-    fileloggerService.execTrace("ClearMemory: Local memory cleared");
+    fileloggerService.execTrace("AdvCtrl:ClearMemory: Exit");
     $ionicPopup.alert({
        title: "Data and cache memory cleared!!",
        subTitle: ""
@@ -52,9 +59,10 @@ angular.module('careWheels')
   //
 
   $scope.UploadLogfile= function () {
+    fileloggerService.execTrace("AdvCtrl:UploadLogfile: Enter");
     var creds = User.credentials();
     fileloggerService.logUpload(creds.username, creds.password);
-    fileloggerService.execTrace("UploadLogfile: Logfile is being uploaded to the server");
+    fileloggerService.execTrace("AdvCtrl:UploadLogfile: Exit");
     $ionicPopup.alert({
       title: "Logfile has been uploaded to the CareWheels server!!",
       subTitle: "A friendly customer service professional will get back to you soon"
@@ -67,8 +75,9 @@ angular.module('careWheels')
   //
 
    $scope.DeleteLogfile= function () {
+    fileloggerService.execTrace("AdvCtrl:DeleteLogfile: Enter");
     fileloggerService.deleteLogFile();
-    fileloggerService.execTrace("DeleteLogfile: Logfile deleted");
+    fileloggerService.execTrace("AdvCtrl:DeleteLogfile: Exit");
     $ionicPopup.alert({
       title: "Logfile has been deleted",
       subTitle: "A new logfile automatically starts building up which you can upload anytime"
@@ -84,6 +93,7 @@ angular.module('careWheels')
   //
 
   $scope.EnableDebug = function (dbgLevel) {
+    fileloggerService.execTrace("AdvCtrl:EnableDebug: Enter");
     switch(dbgLevel) {
       case "0":
       case "1":
@@ -97,7 +107,6 @@ angular.module('careWheels')
         });
         return;
     }
-
     $rootScope.dbgLevel = dbgLevel;
     if (dbgLevel != 0) {
       $ionicPopup.alert({
@@ -110,6 +119,6 @@ angular.module('careWheels')
         subTitle: "Do a Screen Refresh to restore default data"
       });
     }
-
+    fileloggerService.execTrace("AdvCtrl:EnableDebug: Exit");
   }
 })
