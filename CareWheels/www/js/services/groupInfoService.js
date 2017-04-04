@@ -373,9 +373,13 @@ angular.module('careWheels')
     for (i = 1; i < groupInfo.length; ++i) {
       unameList += groupInfo[i].username + " ";
     }
-    $fileLogger.log("ERROR", unameList);
-    $rootScope.$broadcast('Logout');      // $rootScope.$broadcast("func_call", { myParam: {} });
-  };  //bugbug2
+    $ionicPopup.alert({
+      title: "Username is missing or undefined",
+      subTitle: "Please contact your friendly CareBank customer support for help"
+    });
+    $fileLogger.log("ERROR", "SetMember(): Could not find username: " + Username + " in the username list: " + unameList);
+    $rootScope.$broadcast('Logout', "groupInfoService.getMember");
+  };
 
   groupInfoService.setMember = function (groupInfoMember) {     // Sets the groupInfo array index that contains the same username as the username parameter to the value of the groupInfoMember paramemter.
     for (i = 0; i < 5; ++i) {
@@ -384,7 +388,12 @@ angular.module('careWheels')
         return true;
       }
     }
-    $fileLogger.log("error", "SetMember(): Could not find username " + Username);
+    $ionicPopup.alert({
+      title: "Username is missing or undefined",
+      subTitle: "Please contact your friendly CareBank customer support for help"
+    });
+    $fileLogger.log("error", "groupInfoService.getMember: Could not find username " + groupInfoMember.username);
+    $rootScope.$broadcast('Logout', "groupInfoService.setMember");
     return false;
   };
   return groupInfoService;

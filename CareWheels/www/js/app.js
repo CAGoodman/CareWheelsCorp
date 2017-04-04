@@ -93,6 +93,17 @@ angular.module('careWheels', [
     }
   });
 
+  //
+  // Anywahere in the code if there is an error and we want to bail out all we
+  // have to do is broadcast('Logout'). This on will pick it up and safely log you out.
+  // Right now the event and args are place holders but will be used for debug trace
+  //
+
+  $rootScope.$on('Logout', function(event, args) {
+    $interval.cancel(User.stopDownloadPromise);
+    fileloggerService.execTrace(args + " Initiated Logout");
+    $state.go('login', {}, {reload:true});
+  });
 })
 
 // API factory for making all php endpoints globally accessible.

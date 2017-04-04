@@ -17,7 +17,7 @@
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fileloggerService,
+function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, $ionicPopup, fileloggerService,
 	GroupInfo, User, PaymentService, Download, loginDependencies) {
 
 	//
@@ -240,19 +240,30 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
     function getLoggedInUser(groupInfo) {
 		var user = User.credentials();
 		// error unable to load user object;
-		if (user == null) {
-			$scope.group[0].selfUserIndex = -1;
-		}
+		if (user == null || user == angular.isundefined) {
+			$ionicPopup.alert({
+	            title: "Username is missing or undefined",
+	            subTitle: "Please contact your friendly CareBank customer support for help"
+	        });
+		} else {
 
-		// loop through the groupInfo array to find the user who
-		// logged in.
-		for (var i = 0; i < groupInfo.length; i++) {
-			if (user.username == groupInfo[i].username) {
-				$scope.group[0].selfUserIndex = i; // gotcha!
-				return true;
+			// loop through the groupInfo array to find the user who
+			// logged in.
+			for (var i = 0; i < groupInfo.length; i++) {
+				if (user.username == groupInfo[i].username) {
+					$scope.group[0].selfUserIndex = i; // gotcha!
+					return true;
+				}
 			}
-		}
-    }	// getLoggedInUser()
+			$ionicPopup.alert({
+	            title: "Username is missing or undefnined",
+	            subTitle: "Please contact your friendly CareBank customer support for help"
+		    })
+	    }
+	    $fileLogger.log("ERROR", "getLoggedInUser() Unknown username: " + user.username);
+	    $rootScope.$broadcast('Logout', "groupStatus:getLoggedInUser()");
+	    return false;
+	}	// getLoggedInUser()
 
     //
     // $scope.group[] is tied to the html screen and groupArray[] is the data coming from the server

@@ -13,10 +13,6 @@ angular.module('careWheels')
 
   $scope.traceLevel = 0;
 
-  $rootScope.$on('Logout', function() {
-    $scope.Logout();
-  })
-
   $scope.ScreenRefresh = function () {
     fileloggerService.execTrace("AdvCtrl:ScreenRefresh: Enter");
     User.waitForDataDownload();  // Blocking the user till the data download is done
@@ -27,15 +23,8 @@ angular.module('careWheels')
     });
   }
 
-  //
-  // This clears the creds, stops the download scheduler and logsout the app
-  //
-
-  $scope.Logout = function () {
-    fileloggerService.execTrace("AdvCtrl:Logout: Enter");
-    $interval.cancel(User.stopDownloadPromise);
-    fileloggerService.execTrace("AdvCtrl:Logout: Exit");
-    $state.go('login', {}, {reload:true});
+  $scope.InitiateLogout = function () {
+    $rootScope.$broadcast('Logout');
   }
 
   $scope.ClearMemory = function () {
