@@ -50,7 +50,7 @@ angular.module('careWheels')
     };
 
     $scope.clickPocketMother = function() {
-        fileloggerService.execTrace("MenuCtrl:clickPocketMother: Enter");
+        fileloggerService.info("MenuCtrl:clickPocketMother: Enter");
         $scope.isChecked.value = false;
         var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
         if (!noWarn) {
@@ -64,20 +64,20 @@ angular.module('careWheels')
                 if (res) {
                     if ($scope.isChecked.value)
                         window.localStorage["noLeaveAppWarn"] = angular.toJson($scope.isChecked.value);
-                    fileloggerService.execTrace("MenuCtrl:clickPocketMother: Exit");
+                    fileloggerService.info("MenuCtrl:clickPocketMother: Exit");
                     openSense();
                 }
             });
 
         }
         else {
-            fileloggerService.execTrace("MenuCtrl:clickPocketMother: Exit");
+            fileloggerService.info("MenuCtrl:clickPocketMother: Exit");
             openSense();
         }
     };
 
     $scope.clickCyclos = function() {
-        fileloggerService.execTrace("MenuCtrl:clickCyclos: Enter");
+        fileloggerService.info("MenuCtrl:clickCyclos: Enter");
         $scope.isChecked.value = false;
         var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
         if (!noWarn) {
@@ -91,14 +91,14 @@ angular.module('careWheels')
                 if (res) {
                     if ($scope.isChecked.value)
                         window.localStorage["noLeaveAppWarn"] = angular.toJson($scope.isChecked.value);
-                    fileloggerService.execTrace("MenuCtrl:clickCyclos: Exit");
+                    fileloggerService.info("MenuCtrl:clickCyclos: Exit");
                     openCyclos();
                 }
             });
 
         }
         else {
-            fileloggerService.execTrace("MenuCtrl:clickCyclos: Exit");
+            fileloggerService.info("MenuCtrl:clickCyclos: Exit");
             openCyclos();
         }
     };
@@ -116,11 +116,11 @@ angular.module('careWheels')
 
     $scope.clickAbout = function () {
 
-        fileloggerService.execTrace('Name: ' + apkDependencies.apkName);
-        fileloggerService.execTrace('Company: ' + apkDependencies.apkCompany);
-        fileloggerService.execTrace('Version: ' + apkDependencies.apkVersion);
-        fileloggerService.execTrace('Apk: ' + apkDependencies.apkPackage);
-        fileloggerService.execTrace('Date: ' + apkDependencies.apkDate);
+        fileloggerService.info('Name: ' + apkDependencies.apkName);
+        fileloggerService.info('Company: ' + apkDependencies.apkCompany);
+        fileloggerService.info('Version: ' + apkDependencies.apkVersion);
+        fileloggerService.info('Apk: ' + apkDependencies.apkPackage);
+        fileloggerService.info('Date: ' + apkDependencies.apkDate);
         var aboutEntries = [
             { label: 'Name', value: apkDependencies.apkName },
             { label: 'Company', value: apkDependencies.apkCompany },
@@ -158,7 +158,7 @@ angular.module('careWheels')
                 "intentstart": "startActivity"
             })
             .start(function() {
-                fileloggerService.execTrace("Sen.Se Pocketmother application Entered");
+                fileloggerService.info("Sen.Se Pocketmother application Entered");
             }, function(error) {
                 $ionicPopup.alert({
                     title: 'Error',
@@ -180,7 +180,7 @@ angular.module('careWheels')
                 "intentstart": "startActivity"
             })
             .start(function() {
-                fileloggerService.execTrace("Cyclos application Entered");
+                fileloggerService.info("Cyclos application Entered");
             }, function(error) {
                 $ionicPopup.alert({
                     title: 'Error',

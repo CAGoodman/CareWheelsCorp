@@ -16,7 +16,7 @@
 
 angular.module('careWheels')
   .controller('individualStatusController',
-      function ($scope, $state, $ionicPopup, GroupInfo, PaymentService, $fileLogger,
+      function ($scope, $state, $ionicPopup, GroupInfo, PaymentService,
                   fileloggerService, Download, User, loginDependencies) {
 
     /**
@@ -52,7 +52,7 @@ angular.module('careWheels')
     }
 
     function convertPresenceAlertLevelToColor(sensorArray) {
-      fileloggerService.execTrace("ISCtrl:convertPresenceAlertLevelToColor: Enter");
+      fileloggerService.info("ISCtrl:convertPresenceAlertLevelToColor: Enter");
       var coloredArray = [];
 
       for (var i = 0; i < sensorArray.length; i++) {
@@ -65,7 +65,7 @@ angular.module('careWheels')
           coloredArray[i] = "blue";
         }
       }
-      fileloggerService.execTrace("ISCtrl:convertPresenceAlertLevelToColor: Exit");
+      fileloggerService.info("ISCtrl:convertPresenceAlertLevelToColor: Exit");
       return coloredArray;
     }
 
@@ -118,9 +118,9 @@ angular.module('careWheels')
      * This function returns the color for the call button.
      */
     $scope.getCallButtonColor = function () {
-      fileloggerService.execTrace("ISCtrl:getCallButtonColor: Enter");
+      fileloggerService.info("ISCtrl:getCallButtonColor: Enter");
       var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
-      fileloggerService.execTrace("IndividualStatus: GetCallButtonColor()" + msg);
+      fileloggerService.info("IndividualStatus: GetCallButtonColor()" + msg);
 
       $scope.showCallButton = true;
 
@@ -158,7 +158,7 @@ angular.module('careWheels')
         returnString += ' button-dark disableCallButton';
          $scope.showCallButton = false;
       }
-      fileloggerService.execTrace("ISCtrl:getCallButtonColor: Exit");
+      fileloggerService.info("ISCtrl:getCallButtonColor: Exit");
       return returnString;
     };
 
@@ -170,9 +170,9 @@ angular.module('careWheels')
      * that the number needs to be placed in the system.
      */
     $scope.getPhoneNumber = function () {
-      fileloggerService.execTrace("ISCtrl:getPhoneNumber: Enter");
+      fileloggerService.info("ISCtrl:getPhoneNumber: Enter");
       var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
-      fileloggerService.execTrace("IndividualStatus: GetPhoneNumber() hit" + msg);
+      fileloggerService.info("IndividualStatus: GetPhoneNumber() hit" + msg);
       var cyclosPhoneNumber = analysis.phoneNumber;
 
       if (cyclosPhoneNumber == null) {
@@ -184,7 +184,7 @@ angular.module('careWheels')
       callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) +
        "-" + cyclosPhoneNumber.substring(8);
       var msg = "Username: " + analysis.username + " Balance: " + analysis.balance;
-      fileloggerService.execTrace("IndividualStatus: " + msg);
+      fileloggerService.info("IndividualStatus: " + msg);
       var alertNumFridge = analysis.analysisData.fridgeAlertLevel;
       var alertNumMeds = analysis.analysisData.medsAlertLevel;
       //
@@ -204,7 +204,7 @@ angular.module('careWheels')
         }
       }
       $scope.alertLevel = alertLevel;
-      fileloggerService.execTrace("ISCtrl:getPhoneNumber: Exit");
+      fileloggerService.info("ISCtrl:getPhoneNumber: Exit");
       return callString;
     };
 
@@ -212,7 +212,7 @@ angular.module('careWheels')
     $scope.checkPhoneError = function () {
       if (phoneNumberError) {
         displayError();
-        $fileLogger.log("error", "There is no phone number for " + analysis.name);
+        fileloggerService.error("There is no phone number for " + analysis.name);
       }
       else if ($scope.alertLevel != '') {
         PaymentService.call(analysis.username, $scope.alertLevel);
@@ -223,7 +223,7 @@ angular.module('careWheels')
     $scope.doRefresh = function () {
       Download.DownloadData(function(){
         //$scope.$broadcast('scroll.refreshComplete');
-        fileloggerService.execTrace("IndividualStatus: Pull down refresh done!");
+        fileloggerService.info("IndividualStatus: Pull down refresh done!");
 
         //
         // Back and forward arrows help to go back/forward the the immidiate past or future screen.

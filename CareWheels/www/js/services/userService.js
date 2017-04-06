@@ -11,7 +11,7 @@
 angular.module('careWheels')
 // User factory
 .factory('User', function (GroupInfo, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading,
-	$fileLogger, fileloggerService) {
+	fileloggerService) {
 	var user = {};
 	var userService = {};
 	var failCount = 0;
@@ -56,9 +56,9 @@ angular.module('careWheels')
 			//response.status = 404;
 			//response.data = "nothing";
 			//
-			fileloggerService.execTrace("Status: " + response.status);
+			fileloggerService.info("Status: " + response.status);
 			for (var i = 0; i < response.data.length; i++) {
-				fileloggerService.execTrace("Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
+				fileloggerService.info("Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
 			}
 
 			if (failCount >= 3) {
@@ -139,16 +139,16 @@ angular.module('careWheels')
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		}).then(function (response) {
-			fileloggerService.execTrace("Successfully updated setting!");
+			fileloggerService.info("Successfully updated setting!");
 			userService.completedDataDownload();       // DataDownload completed
 			return true;
 		},function (response) {
 			userService.completedDataDownload();       // DataDownload completed
 			var errorMsg = "Unknown error.";
 			//
-			fileloggerService.execTrace("Status: " + response.status);
+			fileloggerService.info("Status: " + response.status);
 			for (var i = 0; i < response.data.length; i++) {
-				fileloggerService.execTrace("Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
+				fileloggerService.info("Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
 			}
 
 			if (response.status != 200) {

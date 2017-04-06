@@ -27,7 +27,7 @@
 */
 
 angular.module('careWheels')
-.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API, $fileLogger, fileloggerService){
+.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API, fileloggerService){
   var PaymentService = {};
 
   //
@@ -60,16 +60,20 @@ angular.module('careWheels')
       }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
         status = response.status;
         data = response.data;
-        fileloggerService.execTrace('PaymentService.call(): Rest Status = ' + status);
+        fileloggerService.info('PaymentService.call(): Rest Status = ' + status);
       }, function (response) {
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
-          $fileLogger.log("ERROR", "PaymentService.call(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-        } else fileloggerService.execTrace('Success: ' + "CreditPosted: " + data.creditPosted +
+          fileloggerService.warn("Incorrect attempt to create notification for id #" + reminderNum);
+          fileloggerService.error("PaymentService.call(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+        } else fileloggerService.info('Success: ' + "CreditPosted: " + data.creditPosted +
                 "ReasonCode: " + data.reasonCode);
       })
-    } else $fileLogger.log("ERROR", "PaymentService.call(): Cannot make REST call for Call  Payment because user credentials are undefined.");
+    } else {
+      fileloggerService.warn("Incorrect attempt to create notification for id #" + reminderNum);
+      fileloggerService.error("PaymentService.call(): Cannot make REST call for Call  Payment because user credentials are undefined.");
+    }
   };    // PaymentService.call
 
   //
@@ -103,16 +107,20 @@ angular.module('careWheels')
       }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
         status = response.status;
         data = response.data;
-        fileloggerService.execTrace('PaymentService.sensorDataView(): Rest Status = ' + status);
+        fileloggerService.info('PaymentService.sensorDataView(): Rest Status = ' + status);
       }, function (response) {
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
-          $fileLogger.log("ERROR", "PaymentService.sensorDataView(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-        } else fileloggerService.execTrace('Success: ' + "CreditPosted: " + data.creditPosted +
+          fileloggerService.warn("Incorrect attempt to create notification for id #" + reminderNum);
+          fileloggerService.error("PaymentService.sensorDataView(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+        } else fileloggerService.info('Success: ' + "CreditPosted: " + data.creditPosted +
                 "ReasonCode: " + data.reasonCode);
       })
-    } else $fileLogger.log("ERROR", "PaymentService.sensorDataView(): Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
+    } else {
+      fileloggerService.warn("Incorrect attempt to create notification for id #" + reminderNum);
+      fileloggerService.error("PaymentService.sensorDataView(): Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
+    }
   };  // PaymentService.sensorDataView
 
   //
@@ -143,16 +151,20 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
         }
       }).then(function (response) {    //the old $http success/error methods have been depricated; this is the new format
-        fileloggerService.execTrace("PaymentService.memberSummary(): " + JSON.stringify(response));
+        fileloggerService.info("PaymentService.memberSummary(): " + JSON.stringify(response));
       }, function (response) {
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
-          $fileLogger.log("ERROR", "PaymentService.memberSummary(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-        } else fileloggerService.execTrace('PaymentService.memberSummary(): Success: ' + "CreditPosted: " + data.creditPosted +
+          fileloggerService.warn("Incorrect attempt to create notification for id #" + reminderNum);
+          fileloggerService.error("PaymentService.memberSummary(): CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+        } else fileloggerService.info('PaymentService.memberSummary(): Success: ' + "CreditPosted: " + data.creditPosted +
                 "ReasonCode: " + data.reasonCode);
       })
-    } else $fileLogger.log("ERROR", "PaymentService.memberSummary(): Cannot make REST call for memberSummary Payment because user credentials are undefined.");
+    } else  {
+      fileloggerService.warn("Incorrect attempt to create notification for id #" + reminderNum);
+      fileloggerService.error("PaymentService.memberSummary(): Cannot make REST call for memberSummary Payment because user credentials are undefined.");
+    }
   };
   return PaymentService;
 }); // PaymentService.memberSummary

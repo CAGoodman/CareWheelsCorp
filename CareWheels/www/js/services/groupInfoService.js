@@ -11,7 +11,7 @@
 
 // GroupInfo factory for global GroupInfo
 angular.module('careWheels')
-.factory('GroupInfo', function ($rootScope, $fileLogger, fileloggerService) {
+.factory('GroupInfo', function ($rootScope, fileloggerService) {
   var groupInfoService = {};
   var groupInfo = [];
   var memberSelected;
@@ -367,8 +367,8 @@ angular.module('careWheels')
         return groupInfo[i];
       }
     }
-    $fileLogger.log("ERROR", "GetMember(): Could not find username " + Username);
-    $fileLogger.log("ERROR", "GetMember(): Found the following usernames:");
+    fileloggerService.error("GetMember(): Could not find username " + Username);
+    fileloggerService.error("GetMember(): Found the following usernames:");
     var unameList = groupInfo[0].username + " ";
     for (i = 1; i < groupInfo.length; ++i) {
       unameList += groupInfo[i].username + " ";
@@ -377,7 +377,7 @@ angular.module('careWheels')
       title: "Username is missing or undefined",
       subTitle: "Please contact your friendly CareBank customer support for help"
     });
-    $fileLogger.log("ERROR", "SetMember(): Could not find username: " + Username + " in the username list: " + unameList);
+    fileloggerService.error("SetMember(): Could not find username: " + Username + " in the username list: " + unameList);
     $rootScope.$broadcast('Logout', "groupInfoService.getMember");
   };
 
@@ -392,7 +392,7 @@ angular.module('careWheels')
       title: "Username is missing or undefined",
       subTitle: "Please contact your friendly CareBank customer support for help"
     });
-    $fileLogger.log("error", "groupInfoService.getMember: Could not find username " + groupInfoMember.username);
+    fileloggerService.error("groupInfoService.getMember: Could not find username " + groupInfoMember.username);
     $rootScope.$broadcast('Logout', "groupInfoService.setMember");
     return false;
   };

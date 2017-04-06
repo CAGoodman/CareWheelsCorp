@@ -28,6 +28,7 @@ angular.module('careWheels', [
 
 .run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, User, loginDependencies, fileloggerService) {
 
+/* TODO: To be tackled later. Please see logginService for more details
   //
   // preLogin.log will save away the console.log messages we miss out in the main log file careWheelsLocalLogFile.log.
   //
@@ -35,6 +36,7 @@ angular.module('careWheels', [
   window.localStorage.removeItem('preLogin.log');
   window.localStorage['preLogin.log'] = "\n******Pre Login Log Messages Begin****** \n\n";
   $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
+*/
   //
   // When ionic.serve is run this is the entry point to the application
   //
@@ -43,7 +45,7 @@ angular.module('careWheels', [
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
 
-    fileloggerService.execTrace("App:StateChangeStart: State change Start " + "From: " + fromState.name + " Next: " + next.name);
+	fileloggerService.info('App:StateChangeStart', {from: fromState.name, next: next.name})
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then
@@ -51,9 +53,9 @@ angular.module('careWheels', [
     // timer occurrence goes on accumalating.
     //
 
-    if ($rootScope.redAlertPromise !== angular.isundefined) {
+    if ($rootScope.redAlertPromise !== undefined) {
       $interval.cancel($rootScope.redAlertPromise);
-      $rootScope.redAlertPromise = angular.isundefined;
+      $rootScope.redAlertPromise = undefined;
     }
 
     if (User.credentials() === null) {
@@ -74,12 +76,12 @@ angular.module('careWheels', [
   $rootScope.$on('$stateChangeSuccess', function(event, next, toParams, from, fromState) {
       $rootScope.previousState = from.name;
       $rootScope.currentState = next.name;
-      fileloggerService.execTrace("App:StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
+      fileloggerService.info("App:StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
 
   });
 
   $ionicPlatform.registerBackButtonAction(function (event) {
-    fileloggerService.execTrace("In Back button handler" + $ionicHistory.backTitle());
+    fileloggerService.info("In Back button handler" + $ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
   }, loginDependencies.backbuttonTimeout);
 
@@ -101,7 +103,7 @@ angular.module('careWheels', [
 
   $rootScope.$on('Logout', function(event, args) {
     $interval.cancel(User.stopDownloadPromise);
-    fileloggerService.execTrace(args + " Initiated Logout");
+    fileloggerService.info(args + " Initiated Logout");
     $state.go('login', {}, {reload:true});
   });
 })

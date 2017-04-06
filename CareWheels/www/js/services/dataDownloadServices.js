@@ -9,7 +9,7 @@
 //
 
 angular.module('careWheels')
-  .factory('Download', function ($rootScope, $http, $httpParamSerializerJQLike, $q, $fileLogger, GroupInfo, User, notifications, API,
+  .factory('Download', function ($rootScope, $http, $httpParamSerializerJQLike, $q, GroupInfo, User, notifications, API,
     fileloggerService) {
     var DownloadService = {};
     var dd = [], ddIndex = 0, ddInit = false;   // Variables to help log the download data only if there is a change
@@ -53,13 +53,13 @@ angular.module('careWheels')
           }
           if (!ddInit){   //Initially save away the data to an array
             dd[ddIndex] = response;
-            fileloggerService.execTrace("DataDownLoad: " + response.config.data + ": " + JSON.stringify(response));
+            fileloggerService.info("DataDownLoad: " + response.config.data + ": " + JSON.stringify(response));
           } else {    // After the first download all control will come here
             for (i = 0; i < 5; i++) {   // Check if the config.data's match
               if (dd[i].config.data == response.config.data) {
                 if (JSON.stringify(dd[i]) != JSON.stringify(response)) {  // Now check if the entire response does not match
                   dd[i] = response;       // It did not match so replace the old with the new data
-                  fileloggerService.execTrace("DataDownLoad: " + response.config.data + ": " + JSON.stringify(response)); // Log the new response data
+                  fileloggerService.info("DataDownLoad: " + response.config.data + ": " + JSON.stringify(response)); // Log the new response data
                   break;
                 }
               }
@@ -134,7 +134,7 @@ angular.module('careWheels')
         }, function error(response) {
           var pos = response.config.data.indexOf("&");  //positioned at the first & which is start of the username
           response.config.data = response.config.data.slice(pos+1); // password is suppressed!!
-          $fileLogger.log("ERROR", "DataDownLoad:getData(): Request failed " + JSON.stringify(response));
+          fileloggerService.error("DataDownLoad:getData(): Request failed " + JSON.stringify(response));
         })
       };    // getData();
 
@@ -151,7 +151,7 @@ angular.module('careWheels')
       $q.all(theseMembers.map(function (member) {
         return getData(member);
       })).then(function(){
-        fileloggerService.execTrace("DataDownLoad:getData(): Data download completed!!");
+        fileloggerService.info("DataDownLoad:getData(): Data download completed!!");
         return finalCallback();
       });
     };
