@@ -26,7 +26,16 @@ angular.module('careWheels', [
 ])
 
 
-.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, User, loginDependencies) {
+.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $ionicPopup, $state, User, loginDependencies, fileloggerService) {
+
+
+  //
+  // preLogin.log will save away the console.log messages we miss out in the main log file careWheelsLocalLogFile.log.
+  //
+
+  window.localStorage.removeItem('preLogin.log');
+  window.localStorage['preLogin.log'] = "\n******Pre Login Log Messages Begin****** \n\n";
+  $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
 
   //
   // When ionic.serve is run this is the entry point to the application
@@ -34,9 +43,27 @@ angular.module('careWheels', [
 
   $rootScope.autoRefresh = false;
 
-   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+  document.addEventListener("pause", function() {
+    $ionicPopup.alert({
+      title: "Application will go to background",
+      subTitle: "Testing development underway"
+    });
+    fileloggerService.info("Application will go to background!!!");
+    $rootScope.$broadcast('onPaused');
+  }, false);
 
-    console.log("StateChangeStart: State change Start " + "From: " + fromState.name + " Next: " + next.name);
+  document.addEventListener("resume", function() {
+    $ionicPopup.alert({
+      title: "Application is back on the foreground",
+      subTitle: "Testing development underway"
+    });
+    fileloggerService.info("Application is back on the foreground!!!");
+    $rootScope.$broadcast('onResumed');
+  }, false);
+
+  $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+
+	fileloggerService.info('App:StateChangeStart', {from: fromState.name, next: next.name})
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then
@@ -44,9 +71,9 @@ angular.module('careWheels', [
     // timer occurrence goes on accumalating.
     //
 
-    if ($rootScope.redAlertPromise !== angular.isundefined) {
+    if ($rootScope.redAlertPromise !== undefined) {
       $interval.cancel($rootScope.redAlertPromise);
-      $rootScope.redAlertPromise = angular.isundefined;
+      $rootScope.redAlertPromise = undefined;
     }
 
     if (User.credentials() === null) {
@@ -67,12 +94,12 @@ angular.module('careWheels', [
   $rootScope.$on('$stateChangeSuccess', function(event, next, toParams, from, fromState) {
       $rootScope.previousState = from.name;
       $rootScope.currentState = next.name;
-      console.log("StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
+      fileloggerService.info("App:StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
 
   });
 
   $ionicPlatform.registerBackButtonAction(function (event) {
-    console.log("In Back button handler" + $ionicHistory.backTitle());
+    fileloggerService.info("In Back button handler" + $ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
   }, loginDependencies.backbuttonTimeout);
 
@@ -86,6 +113,17 @@ angular.module('careWheels', [
     }
   });
 
+  //
+  // Anywahere in the code if there is an error and we want to bail out all we
+  // have to do is broadcast('Logout'). This on will pick it up and safely log you out.
+  // Right now the event and args are place holders but will be used for debug trace
+  //
+
+  $rootScope.$on('Logout', function(event, args) {
+    $interval.cancel(User.stopDownloadPromise);
+    fileloggerService.info(args + " Initiated Logout");   // args contains the name of the function calling logout.
+    $state.go('login', {}, {reload:true});
+  });
 })
 
 // API factory for making all php endpoints globally accessible.

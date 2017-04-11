@@ -16,8 +16,16 @@
 
 angular.module('careWheels')
   .controller('individualStatusController',
-      function ($scope, $state, $ionicPopup, GroupInfo, PaymentService, $fileLogger,
+      function ($scope, $state, $ionicPopup, GroupInfo, PaymentService,
                   fileloggerService, Download, User, loginDependencies) {
+
+  $scope.$on('onPaused', function(event, args) {
+    console.log("IS: OnPause got it!!");
+  });
+
+  $scope.$on('onResumed', function(event, args) {
+    console.log("IS: onResume got it!!");
+  })
 
     /**
      * grabs the analysis of the member selected on the previous view
@@ -52,7 +60,6 @@ angular.module('careWheels')
     }
 
     function convertPresenceAlertLevelToColor(sensorArray) {
-
       var coloredArray = [];
 
       for (var i = 0; i < sensorArray.length; i++) {
@@ -65,7 +72,6 @@ angular.module('careWheels')
           coloredArray[i] = "blue";
         }
       }
-
       return coloredArray;
     }
 
@@ -119,7 +125,7 @@ angular.module('careWheels')
      */
     $scope.getCallButtonColor = function () {
       var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
-      fileloggerService.execTrace("IndividualStatus: GetCallButtonColor()" + msg);
+      fileloggerService.info("IndividualStatus: GetCallButtonColor()" + msg);
 
       $scope.showCallButton = true;
 
@@ -157,9 +163,8 @@ angular.module('careWheels')
         returnString += ' button-dark disableCallButton';
          $scope.showCallButton = false;
       }
-      // done
       return returnString;
-    };
+    }; // getCallButtonColor()
 
     /**
      * This function takes the phone number string returned from Cyclos (which
@@ -170,7 +175,7 @@ angular.module('careWheels')
      */
     $scope.getPhoneNumber = function () {
       var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
-      fileloggerService.execTrace("IndividualStatus: GetPhoneNumber() hit" + msg);
+      fileloggerService.info("IndividualStatus: GetPhoneNumber() hit" + msg);
       var cyclosPhoneNumber = analysis.phoneNumber;
 
       if (cyclosPhoneNumber == null) {
@@ -182,7 +187,7 @@ angular.module('careWheels')
       callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) +
        "-" + cyclosPhoneNumber.substring(8);
       var msg = "Username: " + analysis.username + " Balance: " + analysis.balance;
-      fileloggerService.execTrace("IndividualStatus: " + msg);
+      fileloggerService.info("IndividualStatus: " + msg);
       var alertNumFridge = analysis.analysisData.fridgeAlertLevel;
       var alertNumMeds = analysis.analysisData.medsAlertLevel;
       //
@@ -203,24 +208,24 @@ angular.module('careWheels')
       }
       $scope.alertLevel = alertLevel;
       return callString;
-    };
+    };  // getPhoneNumber()
 
     // button press event
     $scope.checkPhoneError = function () {
       if (phoneNumberError) {
         displayError();
-        $fileLogger.log("error", "There is no phone number for " + analysis.name);
+        fileloggerService.error("There is no phone number for " + analysis.name);
       }
       else if ($scope.alertLevel != '') {
         PaymentService.call(analysis.username, $scope.alertLevel);
       }
-    };
+    };  // checkPhoneError()
 
     // pulldown refresh event
     $scope.doRefresh = function () {
       Download.DownloadData(function(){
         //$scope.$broadcast('scroll.refreshComplete');
-        fileloggerService.execTrace("IndividualStatus: Pull down refresh done!");
+        fileloggerService.info("IndividualStatus: Pull down refresh done!");
 
         //
         // Back and forward arrows help to go back/forward the the immidiate past or future screen.

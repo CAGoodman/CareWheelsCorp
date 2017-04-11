@@ -10,9 +10,3 @@ angular.module("app.constants", [])
 	"maxHitIndicator":"5",
 	"backbuttonTimeout": "100"
 })
-.constant("traceControls", {
-	"info": "0",
-	"verbose": "1",
-	"warnings": "2",
-	"errors": "3"
-})

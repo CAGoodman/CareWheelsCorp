@@ -17,8 +17,24 @@
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fileloggerService,
+function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fileloggerService,
 	GroupInfo, User, PaymentService, Download, loginDependencies) {
+
+    $rootScope.$on('onPaused', function(event, args) {
+		console.log("GS: root - OnPause got it!!");
+	});
+
+	$scope.$on('onPaused', function(event, args) {
+		console.log("GS: OnPause got it!!");
+	});
+
+	$rootScope.$on('onResumed', function(event, args) {
+		console.log("GS: root - onResume got it!!");
+	});
+
+	$scope.$on('onResumed', function(event, args) {
+		console.log("GS: onResume got it!!");
+  	})
 
 	//
 	// Any time the main screen i.e. group status screen is to be displayed this groupStatusController()
@@ -36,16 +52,13 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 	//
 
 	function runOnStateChange() {
+		fileloggerService.info("GSCtrl:runOnStateChange: Entering Group Status screen");
 		var creds = User.credentials();
-		if ($rootScope.autoRefresh) {
-			var msg = "GroupStatus: Skipping crediting user for group summary view because of auto-refresh ";
-			fileloggerService.execTrace(msg + "Username: " + creds.username + " Previous State : " +
-				$rootScope.previousState + " Current State: " +  $rootScope.currentState);
+		if ($rootScope.autoRefresh) {			//Skipping crediting user for group summary view because of auto-refresh
 			$rootScope.autoRefresh = false;
 		}
 		else {
-			var msg =
-			fileloggerService.execTrace("GroupStatus: Crediting user for group summary view " + "Username: " + creds.username);
+			fileloggerService.info("GSCtrl:runOnStateChange: Crediting user for group summary view " + "Username: " + creds.username);
 			PaymentService.memberSummary();
 		}
 
@@ -70,7 +83,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 		// From here the control just drops down to the first code executing inside the controller.
 		// There it  displays the GroupStatus screen and then drops down to alertArry[] to take care of the alerts
 		//
-
+		fileloggerService.info("GSCtrl:runOnStateChange: Exiting Group Status screen");
 	}	//runOnStateChange().
 
 	//
@@ -86,6 +99,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 		$scope.barClassCB = "bar-positive";
 		var status;	// Precdence is set as - Vacation, grey, red, yellow, blue
 		var loggedInUserIndex = $scope.group[0].selfUserIndex;
+		fileloggerService.info("GSCtrl:checkCenterUserAlertLevel: Enter");
 		//
 		// We cannot use $scope.group[] here becasue that has not been saved hence we use groupArray[]
 		//
@@ -111,12 +125,13 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 				$scope.showBarVM = false;
 				break;
 			default:
-				$fileLogger.log("error", "Bad alert status: " + status + "Username: " + creds.username);
+				fileloggerService.error("GSCtrl:checkCenterUserAlertLevel:Bad alert status: " + status + "Username: " + creds.username);
 				$scope.showBarVM = false;
 		}	// switch()
 		if (i > loginDependencies.userCount) {
-			$fileLogger.log("error", "Oh! Oh! username: " + creds.username + " is missing contact server admin");
+			fileloggerService.error("GSCtrl:checkCenterUserAlertLevel:Username: " + creds.username + " is missing contact server admin");
 		}
+		fileloggerService.info("GSCtrl:checkCenterUserAlertLevel: Exit");
 		return;
 	}
 
@@ -223,7 +238,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
     $scope.doRefresh = function () {
         Download.DownloadData(function(){
             //$scope.$broadcast('scroll.refreshComplete');
-            fileloggerService.execTrace("GroupStatus: Pull down refresh done!");
+            fileloggerService.info("GSCtrl:doRefresh: Pull down refresh done!");
             $state.go($state.current, {}, {reload: true});
         });
      };	// doRefresh()
@@ -237,19 +252,30 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
     function getLoggedInUser(groupInfo) {
 		var user = User.credentials();
 		// error unable to load user object;
-		if (user == null) {
-			$scope.group[0].selfUserIndex = -1;
-		}
+		if (user == null || user == undefined) {
+			$ionicPopup.alert({
+	            title: "Username is missing or undefined",
+	            subTitle: "Please contact your friendly CareBank customer support for help"
+	        });
+		} else {
 
-		// loop through the groupInfo array to find the user who
-		// logged in.
-		for (var i = 0; i < groupInfo.length; i++) {
-			if (user.username == groupInfo[i].username) {
-				$scope.group[0].selfUserIndex = i; // gotcha!
-				return true;
+			// loop through the groupInfo array to find the user who
+			// logged in.
+			for (var i = 0; i < groupInfo.length; i++) {
+				if (user.username == groupInfo[i].username) {
+					$scope.group[0].selfUserIndex = i; // gotcha!
+					return true;
+				}
 			}
-		}
-    }	// getLoggedInUser()
+			$ionicPopup.alert({
+	            title: "Username is missing or undefnined",
+	            subTitle: "Please contact your friendly CareBank customer support for help"
+		    })
+	    }
+	    fileloggerService.error("getLoggedInUser() Unknown username: " + user.username);
+	    $rootScope.$broadcast('Logout', "groupStatus:getLoggedInUser()");
+	    return false;
+	}	// getLoggedInUser()
 
     //
     // $scope.group[] is tied to the html screen and groupArray[] is the data coming from the server
@@ -260,6 +286,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
     //
 
     function setGroupArray(groupArray) {
+    	//fileloggerService.info("GSCtrl:setGroupArray: Enter");
 		var currentUser = 0;
 		var fridgeAlert, medsAlert;
 		// loggedInUserIndex can vary from 0 - 4 but group[0] will be alaways = logged in user
@@ -303,6 +330,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 					checkGroupHealth();
 			}
 		}	// for()
+		//fileloggerService.info("GSCtrl:setGroupArray: Exit");
     }	// setGroupArray();
 
     //

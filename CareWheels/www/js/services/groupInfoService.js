@@ -11,333 +11,328 @@
 
 // GroupInfo factory for global GroupInfo
 angular.module('careWheels')
-.factory('GroupInfo', function ($fileLogger, fileloggerService) {
+.factory('GroupInfo', function ($rootScope, fileloggerService) {
   var groupInfoService = {};
   var groupInfo = [];
   var memberSelected;
-    var groupArray = [];
+  var groupArray = [];
   var sensorError = false;
 
-    var CUSTOMFIELD_TYPE = {
-      BOOLEAN: "booleanValue",
-      STRING: "stringValue"
+  var CUSTOMFIELD_TYPE = {
+    BOOLEAN: "booleanValue",
+    STRING: "stringValue"
+  }
+
+  var CUSTOMFIELD = {
+
+    ACCESS_TOKEN: { name: "accessToken", type: CUSTOMFIELD_TYPE.STRING },
+    REFRESH_TOKEN: { name: "refreshToken", type: CUSTOMFIELD_TYPE.STRING },
+    REMINDER_1: { name: "reminder1", type: CUSTOMFIELD_TYPE.STRING },
+    REMINDER_2: { name: "reminder2", type: CUSTOMFIELD_TYPE.STRING },
+    REMINDER_3: { name: "reminder3", type: CUSTOMFIELD_TYPE.STRING },
+    SENSE_USERNAME: { name: "SenseUsername", type: CUSTOMFIELD_TYPE.STRING },
+    MEDS_INTERVAL_2: { name: "medsInterval2", type: CUSTOMFIELD_TYPE.BOOLEAN },
+    MEDS_INTERVAL_3: { name: "medsInterval3", type: CUSTOMFIELD_TYPE.BOOLEAN },
+    MEDS_INTERVAL_4: { name: "medsInterval4", type: CUSTOMFIELD_TYPE.BOOLEAN },
+    ON_VACATION: { name: "onVacation", type: CUSTOMFIELD_TYPE.BOOLEAN }
+
+  };
+
+  groupInfoService.getCustomFieldValue = function (groupMemberObject, customField) {
+
+    if(groupMemberObject.customValues == null) {
+      return null;
     }
 
-    var CUSTOMFIELD = {
+    for(var i = 0; i < groupMemberObject.customValues.length; i++) {
 
-      ACCESS_TOKEN: { name: "accessToken", type: CUSTOMFIELD_TYPE.STRING },
-      REFRESH_TOKEN: { name: "refreshToken", type: CUSTOMFIELD_TYPE.STRING },
-      REMINDER_1: { name: "reminder1", type: CUSTOMFIELD_TYPE.STRING },
-      REMINDER_2: { name: "reminder2", type: CUSTOMFIELD_TYPE.STRING },
-      REMINDER_3: { name: "reminder3", type: CUSTOMFIELD_TYPE.STRING },
-      SENSE_USERNAME: { name: "SenseUsername", type: CUSTOMFIELD_TYPE.STRING },
-      MEDS_INTERVAL_2: { name: "medsInterval2", type: CUSTOMFIELD_TYPE.BOOLEAN },
-      MEDS_INTERVAL_3: { name: "medsInterval3", type: CUSTOMFIELD_TYPE.BOOLEAN },
-      MEDS_INTERVAL_4: { name: "medsInterval4", type: CUSTOMFIELD_TYPE.BOOLEAN },
-      ON_VACATION: { name: "onVacation", type: CUSTOMFIELD_TYPE.BOOLEAN }
+      if (groupMemberObject.customValues[i].field.internalName == customField.name) {
 
-    };
+        if(customField.type == CUSTOMFIELD_TYPE.BOOLEAN) {
 
-    groupInfoService.getCustomFieldValue = function (groupMemberObject, customField) {
+          return groupMemberObject.customValues[i].booleanValue;
+        }
 
-      if(groupMemberObject.customValues == null) {
-        return null;
-      }
+        if(customField.type == CUSTOMFIELD_TYPE.STRING) {
 
-      for(var i = 0; i < groupMemberObject.customValues.length; i++) {
-
-        if (groupMemberObject.customValues[i].field.internalName == customField.name) {
-
-          if(customField.type == CUSTOMFIELD_TYPE.BOOLEAN) {
-
-            return groupMemberObject.customValues[i].booleanValue;
-          }
-
-          if(customField.type == CUSTOMFIELD_TYPE.STRING) {
-
-            return groupMemberObject.customValues[i].stringValue;
-          }
+          return groupMemberObject.customValues[i].stringValue;
         }
       }
+    }
 
+    return null;
+  };
+
+  groupInfoService.setCustomFieldValue = function (groupMemberObject, customField, newValue) {
+
+    if(groupMemberObject.customValues == null) {
       return null;
-    };
+    }
 
-    groupInfoService.setCustomFieldValue = function (groupMemberObject, customField, newValue) {
+    for(var i = 0; i < groupMemberObject.customValues.length; i++) {
 
-      if(groupMemberObject.customValues == null) {
-        return null;
-      }
+      if (groupMemberObject.customValues[i].field.internalName == customField.name) {
 
-      for(var i = 0; i < groupMemberObject.customValues.length; i++) {
+        if(customField.type == CUSTOMFIELD_TYPE.BOOLEAN) {
 
-        if (groupMemberObject.customValues[i].field.internalName == customField.name) {
-
-          if(customField.type == CUSTOMFIELD_TYPE.BOOLEAN) {
-
-            groupMemberObject.customValues[i].booleanValue = newValue;
-          }
-
-          if(customField.type == CUSTOMFIELD_TYPE.STRING) {
-
-            return groupMemberObject.customValues[i].stringValue = newValue;
-          }
-
-          return groupMemberObject;
+          groupMemberObject.customValues[i].booleanValue = newValue;
         }
+
+        if(customField.type == CUSTOMFIELD_TYPE.STRING) {
+
+          return groupMemberObject.customValues[i].stringValue = newValue;
+        }
+
+        return groupMemberObject;
       }
+    }
 
-      return null;
+    return null;
+  };
+
+  groupInfoService.getUsername = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var username = memberObject.username;
+
+    return username;
+  };
+
+  groupInfoService.getName = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var name = memberObject.name;
+
+    return name;
+  };
+
+  groupInfoService.getPhoneNumber = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var phoneNumber = memberObject.phoneNumber;
+
+    return phoneNumber;
+  };
+
+  groupInfoService.getEmail = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var email = memberObject.email;
+
+    return email;
+  };
+
+  groupInfoService.getPhotoUrl = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var photoUrl = memberObject.photoUrl;
+
+    return photoUrl;
+  };
+
+  groupInfoService.getBalance = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var balance = memberObject.balance;
+
+    return balance;
+  };
+
+  groupInfoService.setBalance = function(username, newValue) {
+    var memberObject = groupInfoService.getMember(username);
+    memberObject.balance = newValue;
+    groupInfoService.setMember(memberObject);
+
+    return memberObject;
+  };
+
+  groupInfoService.getSensorData = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var sensorData = memberObject.sensorData;
+
+    return sensorData;
+  };
+
+  groupInfoService.setSensorData = function(username, newValue) {
+    var memberObject = groupInfoService.getMember(username);
+    memberObject.sensorData = newValue;
+    groupInfoService.setMember(memberObject);
+
+    return memberObject;
+  };
+
+  groupInfoService.getAnalysisData = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var analysisData = memberObject.analysisData;
+
+    return analysisData;
+  };
+
+  groupInfoService.setAnalysisData = function(username, newValue) {
+    var memberObject = groupInfoService.getMember(username);
+    memberObject.analysisData = newValue;
+    groupInfoService.setMember(memberObject);
+
+    return memberObject;
+  };
+
+  groupInfoService.getAccessToken = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var accessToken = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.ACCESS_TOKEN);
+
+    return accessToken;
+  };
+
+  groupInfoService.getRefreshToken = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var refreshToken = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REFRESH_TOKEN);
+
+    return refreshToken;
+  };
+
+  groupInfoService.getReminder1 = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var reminder1 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_1);
+
+    return reminder1;
+  };
+
+  groupInfoService.setReminder1 = function(username, newValue) {
+    var memberObject = groupInfoService.getMember(username);
+    memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_1, newValue);
+    groupInfoService.setMember(memberObject);
+
+    return memberObject;
+  };
+
+  groupInfoService.getReminder2 = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var reminder2 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_2);
+
+    return reminder2;
+  };
+
+  groupInfoService.setReminder2 = function(username, newValue) {
+    var memberObject = groupInfoService.getMember(username);
+    memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_2, newValue);
+    groupInfoService.setMember(memberObject);
+
+    return memberObject;
+  };
+
+  groupInfoService.getReminder3 = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var reminder3 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_3);
+
+    return reminder3;
+  };
+
+  groupInfoService.setReminder3 = function(username, newValue) {
+    var memberObject = groupInfoService.getMember(username);
+    memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_3, newValue);
+    groupInfoService.setMember(memberObject);
+
+    return memberObject;
+  };
+
+  groupInfoService.getSenseUsername = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var senseUsername = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.SENSE_USERNAME);
+
+    return senseUsername;
+  };
+
+  groupInfoService.getMedsInterval2 = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var medsInterval2 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_2);
+
+    return medsInterval2;
+  };
+
+  groupInfoService.setMedsInterval2 = function(username, newValue) {
+    var memberObject = groupInfoService.getMember(username);
+    memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_2, newValue);
+
+    return memberObject;
+  };
+
+  groupInfoService.getMedsInterval3 = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var medsInterval3 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_3);
+
+    return medsInterval3;
+  };
+
+  groupInfoService.setMedsInterval3 = function(username, newValue) {
+    var memberObject = groupInfoService.getMember(username);
+    memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_3, newValue);
+
+    return memberObject;
+  };
+
+  groupInfoService.getMedsInterval4 = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var medsInterval4 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_4);
+
+    return medsInterval4;
+  };
+
+  groupInfoService.setMedsInterval4 = function(username, newValue) {
+    var memberObject = groupInfoService.getMember(username);
+    memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_4, newValue);
+
+    return memberObject;
+  };
+
+  groupInfoService.getOnVacation = function(username) {
+    var memberObject = groupInfoService.getMember(username);
+    var OnVacation = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.ON_VACATION);
+
+    return OnVacation;
+  };
+
+  groupInfoService.createGroupMember = function(groupMemberObject) {
+
+    // New object that we should move our code towards instead of modifying the
+    // returned cyclos data object directly.
+    var groupMember = {
+
+      username: groupMemberObject.username,
+      name: groupMemberObject.name,
+      phoneNumber: groupMemberObject. phoneNumber,
+      email: groupMemberObject. email,
+      onVacation: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.ON_VACATION),
+      photoUrl: groupMemberObject.photoUrl,
+      balance: groupMemberObject.balance,
+      reminder1: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.REMINDER_1),
+      reminder2: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.REMINDER_2),
+      reminder3: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.REMINDER_3),
+      medsInterval2: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.MEDS_INTERVAL_2),
+      medsInterval3: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.MEDS_INTERVAL_3),
+      medsInterval4: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.MEDS_INTERVAL_4),
+      accessToken: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.ACCESS_TOKEN),
+      refreshToken: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.REFRESH_TOKEN),
+      senseUsername: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.SENSE_USERNAME),
+      sensorData: null,
+      analyzsisData: null
     };
 
-    groupInfoService.getUsername = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var username = memberObject.username;
+    return groupMember;
+  };
 
-      return username;
-    };
-
-    groupInfoService.getName = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var name = memberObject.name;
-
-      return name;
-    };
-
-    groupInfoService.getPhoneNumber = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var phoneNumber = memberObject.phoneNumber;
-
-      return phoneNumber;
-    };
-
-    groupInfoService.getEmail = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var email = memberObject.email;
-
-      return email;
-    };
-
-    groupInfoService.getPhotoUrl = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var photoUrl = memberObject.photoUrl;
-
-      return photoUrl;
-    };
-
-    groupInfoService.getBalance = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var balance = memberObject.balance;
-
-      return balance;
-    };
-
-    groupInfoService.setBalance = function(username, newValue) {
-      var memberObject = groupInfoService.getMember(username);
-      memberObject.balance = newValue;
-      groupInfoService.setMember(memberObject);
-
-      return memberObject;
-    };
-
-    groupInfoService.getSensorData = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var sensorData = memberObject.sensorData;
-
-      return sensorData;
-    };
-
-    groupInfoService.setSensorData = function(username, newValue) {
-      var memberObject = groupInfoService.getMember(username);
-      memberObject.sensorData = newValue;
-      groupInfoService.setMember(memberObject);
-
-      return memberObject;
-    };
-
-    groupInfoService.getAnalysisData = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var analysisData = memberObject.analysisData;
-
-      return analysisData;
-    };
-
-    groupInfoService.setAnalysisData = function(username, newValue) {
-      var memberObject = groupInfoService.getMember(username);
-      memberObject.analysisData = newValue;
-      groupInfoService.setMember(memberObject);
-
-      return memberObject;
-    };
-
-    groupInfoService.getAccessToken = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var accessToken = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.ACCESS_TOKEN);
-
-      return accessToken;
-    };
-
-    groupInfoService.getRefreshToken = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var refreshToken = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REFRESH_TOKEN);
-
-      return refreshToken;
-    };
-
-    groupInfoService.getReminder1 = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var reminder1 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_1);
-
-      return reminder1;
-    };
-
-    groupInfoService.setReminder1 = function(username, newValue) {
-      var memberObject = groupInfoService.getMember(username);
-      memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_1, newValue);
-      groupInfoService.setMember(memberObject);
-
-      return memberObject;
-    };
-
-    groupInfoService.getReminder2 = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var reminder2 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_2);
-
-      return reminder2;
-    };
-
-    groupInfoService.setReminder2 = function(username, newValue) {
-      var memberObject = groupInfoService.getMember(username);
-      memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_2, newValue);
-      groupInfoService.setMember(memberObject);
-
-      return memberObject;
-    };
-
-    groupInfoService.getReminder3 = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var reminder3 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_3);
-
-      return reminder3;
-    };
-
-    groupInfoService.setReminder3 = function(username, newValue) {
-      var memberObject = groupInfoService.getMember(username);
-      memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.REMINDER_3, newValue);
-      groupInfoService.setMember(memberObject);
-
-      return memberObject;
-    };
-
-    groupInfoService.getSenseUsername = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var senseUsername = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.SENSE_USERNAME);
-
-      return senseUsername;
-    };
-
-    groupInfoService.getMedsInterval2 = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var medsInterval2 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_2);
-
-      return medsInterval2;
-    };
-
-    groupInfoService.setMedsInterval2 = function(username, newValue) {
-      var memberObject = groupInfoService.getMember(username);
-      memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_2, newValue);
-
-      return memberObject;
-    };
-
-    groupInfoService.getMedsInterval3 = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var medsInterval3 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_3);
-
-      return medsInterval3;
-    };
-
-    groupInfoService.setMedsInterval3 = function(username, newValue) {
-      var memberObject = groupInfoService.getMember(username);
-      memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_3, newValue);
-
-      return memberObject;
-    };
-
-    groupInfoService.getMedsInterval4 = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var medsInterval4 = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_4);
-
-      return medsInterval4;
-    };
-
-    groupInfoService.setMedsInterval4 = function(username, newValue) {
-      var memberObject = groupInfoService.getMember(username);
-      memberObject = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.MEDS_INTERVAL_4, newValue);
-
-      return memberObject;
-    };
-
-    groupInfoService.getOnVacation = function(username) {
-      var memberObject = groupInfoService.getMember(username);
-      var OnVacation = groupInfoService.getCustomFieldValue(memberObject, CUSTOMFIELD.ON_VACATION);
-
-      return OnVacation;
-    };
-
-    groupInfoService.createGroupMember = function(groupMemberObject) {
-
-      // New object that we should move our code towards instead of modifying the
-      // returned cyclos data object directly.
-      var groupMember = {
-
-        username: groupMemberObject.username,
-        name: groupMemberObject.name,
-        phoneNumber: groupMemberObject. phoneNumber,
-        email: groupMemberObject. email,
-        onVacation: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.ON_VACATION),
-        photoUrl: groupMemberObject.photoUrl,
-        balance: groupMemberObject.balance,
-        reminder1: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.REMINDER_1),
-        reminder2: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.REMINDER_2),
-        reminder3: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.REMINDER_3),
-        medsInterval2: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.MEDS_INTERVAL_2),
-        medsInterval3: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.MEDS_INTERVAL_3),
-        medsInterval4: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.MEDS_INTERVAL_4),
-        accessToken: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.ACCESS_TOKEN),
-        refreshToken: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.REFRESH_TOKEN),
-        senseUsername: groupInfoService.getCustomFieldValue(groupMemberObject, CUSTOMFIELD.SENSE_USERNAME),
-        sensorData: null,
-        analyzsisData: null
-      };
-
-      return groupMember;
-    };
-
-    groupInfoService.createGroup = function (cyclosGroupDataArray) {
-
-      var groupMembers = [];
-
-      for(var i = 0; i < cyclosGroupDataArray.length; i++) {
-        groupMembers[i] = groupInfoService.createGroupMember(cyclosGroupDataArray[i]);
-      }
-
-      return groupMembers;
-    };
+  groupInfoService.createGroup = function (cyclosGroupDataArray) {
+    var groupMembers = [];
+    for(var i = 0; i < cyclosGroupDataArray.length; i++) {
+      groupMembers[i] = groupInfoService.createGroupMember(cyclosGroupDataArray[i]);
+    }
+    return groupMembers;
+  };
 
 
-    groupInfoService.setSensorError = function(boolean){
+  groupInfoService.setSensorError = function(boolean){
     sensorError = boolean;
   };
 
-    groupInfoService.getSensorError = function(){
+  groupInfoService.getSensorError = function(){
     return sensorError;
   };
 
   groupInfoService.initGroupInfo = function (data) {
-
     groupArray = groupInfoService.createGroup(data)
-
     return groupInfo = data;
   };
 
@@ -366,17 +361,24 @@ angular.module('careWheels')
     return true;
   };
 
-
   groupInfoService.getMember = function (Username) {       // Returns the groupInfo member array index object that contains the same username as the username parameter.
     for (i = 0; i < groupInfo.length; ++i) {
       if (groupInfo[i].username == Username) {
-        fileloggerService.execTrace("GetMember(): Found " + Username + "==" + groupInfo[i].username);
         return groupInfo[i];
       }
-
     }
-
-    $fileLogger.log("error", "GetMember(): Could not find username " + Username);
+    fileloggerService.error("GetMember(): Could not find username " + Username);
+    fileloggerService.error("GetMember(): Found the following usernames:");
+    var unameList = groupInfo[0].username + " ";
+    for (i = 1; i < groupInfo.length; ++i) {
+      unameList += groupInfo[i].username + " ";
+    }
+    $ionicPopup.alert({
+      title: "Username is missing or undefined",
+      subTitle: "Please contact your friendly CareBank customer support for help"
+    });
+    fileloggerService.error("SetMember(): Could not find username: " + Username + " in the username list: " + unameList);
+    $rootScope.$broadcast('Logout', "groupInfoService.getMember");
   };
 
   groupInfoService.setMember = function (groupInfoMember) {     // Sets the groupInfo array index that contains the same username as the username parameter to the value of the groupInfoMember paramemter.
@@ -385,13 +387,14 @@ angular.module('careWheels')
         groupInfo[i] = groupInfoMember;
         return true;
       }
-
     }
-
-    $fileLogger.log("error", "SetMember(): Could not find username " + Username);
+    $ionicPopup.alert({
+      title: "Username is missing or undefined",
+      subTitle: "Please contact your friendly CareBank customer support for help"
+    });
+    fileloggerService.error("groupInfoService.getMember: Could not find username " + groupInfoMember.username);
+    $rootScope.$broadcast('Logout', "groupInfoService.setMember");
     return false;
   };
-
   return groupInfoService;
-
 });

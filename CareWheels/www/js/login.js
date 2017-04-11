@@ -20,8 +20,11 @@ angular.module('careWheels')
   .controller('loginController',
 
     function($rootScope, $scope, $controller, $state, $ionicLoading, $ionicHistory, $ionicPopup,
-      $interval, $timeout, $fileLogger, GroupInfo, User, notifications, Download, fileloggerService, apkDependencies,
-      loginDependencies, traceControls){
+      $interval, $timeout, GroupInfo, User, notifications, Download, fileloggerService, apkDependencies,
+      loginDependencies){
+
+    $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
+    fileloggerService.info("LoginCtrl:login: Enter");
 
     //
     // When the app starts it enrters via app.js and then execution comes here.
@@ -30,24 +33,6 @@ angular.module('careWheels')
 
     var loginTimeout = false;
     $scope.rememberMe = false;
-
-    //
-    // execTraceLevel is the Key or  the address or the name of the storage space. traceFilter is the name/address/index of the Value
-    // in the Key. Key[Value] = 1234 :: execTraceLevel[traceFilter] = 0x1234. How the Value is stored is format independent. In the
-    // case of execTraceLevel we are saving it like an array. Ex: message.log just stores it like a string.
-    // $fileLogger.traceLevel is initialized and stored values is initialized to NULL, default value so
-    // that run of the app is back to normal trace level.
-    //
-
-    var traceLevel = angular.fromJson(window.localStorage['execTraceLevel']);
-    if (traceLevel == angular.isundefined) {
-      $fileLogger.traceLevel = traceControls.info;      // Defined in appConstants.js
-    }
-    else {
-      $fileLogger.traceLevel = traceLevel.traceFilter;  // From what ever was stored in the memory
-    }
-
-    window.localStorage['execTraceLevel'] = angular.toJson({"traceFilter": traceControls.info}); // Stored value is set to Info - 0
 
     //
     // If "remember credentials" is selected login credentials are stored in localStorage - userService.js
@@ -76,7 +61,7 @@ angular.module('careWheels')
     }
 
     $scope.TappedOrClicked = function() {
-      console.log("TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
+      fileloggerService.info("TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
       $scope.showHelp = true;
     }
 
@@ -103,7 +88,7 @@ angular.module('careWheels')
           //
           // do the log upload. This is where the app talks to the server for credentials authentication
           // The credentials remembering is within the app only the server is unaware of it
-          // fileloggerService.execTrace(() executed here will create the logfile
+          // fileloggerService.info(() executed here will create the logfile
           //
 
           fileloggerService.logUpload(uname, passwd);
@@ -146,6 +131,7 @@ angular.module('careWheels')
             }
           });
         }
+        fileloggerService.info("LoginCtrl:login: Exit");
       });
     };
 
@@ -163,7 +149,6 @@ angular.module('careWheels')
     function scheduleDownload(){
       User.stopDownloadPromise = $interval(function(){
         Download.DownloadData(function(){
-          fileloggerService.execTrace("Download scheduler finished");
           if ($state.current.name == "app.groupStatus") {
             $rootScope.autoRefresh = true;
           }
@@ -197,4 +182,14 @@ angular.module('careWheels')
           $scope.connectionError = false;
       });
     }
+    /*
+    //
+    // When the app is put in background it gets automatically logged off. When it is brought to
+    // foreground we need to automatically login. This will happen only if the user had saved
+    // credentials. The only issue with this is the user cannot just logoff and be logged off
+    // because the below script will log them back. So they have to clean memory and then logout or Force Shutdown.
+    //
+    if (credentials)
+      $scope.login(credentials.username, credentials.password, true);
+    */
 });

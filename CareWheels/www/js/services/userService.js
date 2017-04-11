@@ -11,7 +11,7 @@
 angular.module('careWheels')
 // User factory
 .factory('User', function (GroupInfo, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading,
-	$fileLogger, fileloggerService) {
+	fileloggerService) {
 	var user = {};
 	var userService = {};
 	var failCount = 0;
@@ -34,7 +34,7 @@ angular.module('careWheels')
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
-		}).then(function (response) {
+		}).then(function successCallback(response) {
 			if (rmbr) {		// credentials are saved in local storage. In login.js it is retrived
 				window.localStorage['loginCredentials'] = angular.toJson({"username": uname, "password": passwd});
 			} else {
@@ -47,49 +47,47 @@ angular.module('careWheels')
 
 				GroupInfo.initGroupInfo(response.data);
 				userService.completedDataDownload();       // DataDownload completed
-			}, function (response) {
+		}, function errorCallback(response) {
 			//present login failed
 			userService.completedDataDownload();       // DataDownload completed
-			var errorMsg = "Unknown error.";
+			var errorMsg = "userService.login: Login failed:  ";
 
-			//CHECKING TO FOR 404 ERRROR
-			//response.status = 404;
-			//response.data = "nothing";
-			//
-			fileloggerService.execTrace("Status: " + response.status);
-			for (var i = 0; i < response.data.length; i++) {
-				fileloggerService.execTrace("Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
-			}
+			fileloggerService.error(errorMsgStatus + "Status: " + response.status);
 
 			if (failCount >= 3) {
-				errorMsg = "Exceeding invalid login attempts. Please Contact admin";
+				errorMsg += "Exceeding invalid login attempts. Please Contact admin";
 			} else {
 				switch(response.status) {
+					case -1:
+					    if (response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
+				            User.getHttpErrorCode("userService.login: ", response);
+				        }
 					case 400:
-						errorMsg = "Please check your credentials! ";
+						errorMsg += "Please check your credentials! ";
 						break;
 					case 401:
-						errorMsg = "The entered username is incorrect. ";
+						errorMsg += "The entered username is incorrect. ";
 						break;
 					case 404:
-						errorMsg = "Unable to reach the server ";
+						errorMsg += "Unable to reach the server ";
 						break;
 					default:
 						if (response.data === "Your access is blocked by exceeding invalid login attempts") {
-							errorMsg = "Account got blocked by exceeding invalid login attempts. Please contact admin";
+							errorMsg += "Account got blocked by exceeding invalid login attempts. Please contact admin";
 						}
 						failCount++;
 						var alertPopup = $ionicPopup.alert({
 							title: 'Login failed!',
-							template: errorMsg,
-							template: response.data
+							template: [errorMsg + response.data]
 						});
+						fileloggerService.error(errorMsg + JSON.stringify(response));
 						return;
 				} // switch
 				var alertPopup = $ionicPopup.alert({
 					title: 'Login failed!',
 					template: [errorMsg + response.data]
 				});
+				fileloggerService.error(errorMsg + JSON.stringify(response));
 			} // else
 			user.errorCode = response.status;
 			$state.go($state.current, {}, {reload:true})
@@ -138,31 +136,44 @@ angular.module('careWheels')
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
-		}).then(function (response) {
-			fileloggerService.execTrace("Successfully updated setting!");
+		}).then(function successCallback(response) {
+			fileloggerService.info("userService.setOnVacation: Successfully updated vacatoin settings!");
 			userService.completedDataDownload();       // DataDownload completed
 			return true;
-		},function (response) {
+		},function errorCallback(response) {
 			userService.completedDataDownload();       // DataDownload completed
-			var errorMsg = "Unknown error.";
-			//
-			fileloggerService.execTrace("Status: " + response.status);
+			var errorMsg = "userService.setOnVacation: ";
+
+			fileloggerService.info("userService.setOnVacation: Vacation setting failed. Status: " + response.status);
 			for (var i = 0; i < response.data.length; i++) {
-				fileloggerService.execTrace("Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
+				fileloggerService.info("userService.setOnVacation: Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
 			}
 
 			if (response.status != 200) {
-			  errorMsg = "Unable to update settings on server!";
+				if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
+            		User.getHttpErrorCode("userService.setOnVacation: ", response);
+          		}
+			  	errorMsg = "Unable to update settings on server!";
 			}
 
 			var alertPopup = $ionicPopup.alert({
 			  title: 'Settings update failed!',
 			  template: errorMsg
 			});
-
+			fileloggerService.error("userService.setOnVacation: " + JSON.stringify(response));
 			return false;
 		})
 	};	// userService.setOnVacation
+
+	userService.getHttpErrorCode = function(funcName, response){
+	    switch(response.status) {
+	      case -1:
+	      	response.statusText = "ERR_NETWORK_IO_SUSPENDED";
+	        break;
+	      default:
+	      	fileloggerService.error(funcName + "Unknown Error Code: " + errorCode + "Error: Some unknown network related error");
+	    }
+	} // userService.getHttpErrorCode
 
 	return userService;
 }); // factory

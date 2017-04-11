@@ -2,9 +2,9 @@
   "apkDependencies": {
     "apkName": "CareBank-Application",
     "apkCompany": "CareWheels Corporation",
-    "apkVersion": "1.0.43",
-    "apkDate": "Sat Mar 18 2017 14:53:41 GMT-0700 (Pacific Daylight Time)",
-    "apkPackage": "CareBank-armv7-18Mar17.apk"
+    "apkVersion": "1.1.1",
+    "apkDate": "Mon Apr 10 2017 22:17:44 GMT-0700 (Pacific Daylight Time)",
+    "apkPackage": "CareBank-armv7-10Apr17.apk"
   },
   "dependencies": {
     "angular-moment": "^1.0.0-beta.6",
@@ -16,6 +16,7 @@
     "gulp-minify-css": "^0.3.0",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.0.4",
+    "http-status-codes": "^1.1.6",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
     "ng-webworker": "^0.2.3"
@@ -27,6 +28,9 @@
     "eslint-config-angular": "^0.5.0",
     "eslint-plugin-angular": "^1.6.1",
     "eslint-plugin-promise": "^3.4.0",
+    "gulp-cordova-config-xml": "0.0.1",
+    "gulp-cordova-create": "^1.3.1",
+    "gulp-cordova-version": "^0.3.0",
     "gulp-eslint": "^3.0.1",
     "gulp-ng-constant": "^2.0.0-2",
     "gulp-process": "^0.1.2",

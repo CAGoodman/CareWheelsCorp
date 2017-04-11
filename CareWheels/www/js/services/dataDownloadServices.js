@@ -9,10 +9,11 @@
 //
 
 angular.module('careWheels')
-  .factory('Download', function ($rootScope, $http, $httpParamSerializerJQLike, $q, $fileLogger, GroupInfo, User, notifications, API,
+  .factory('Download', function ($rootScope, $http, $httpParamSerializerJQLike, $q, GroupInfo, User, notifications, API,
     fileloggerService) {
-    var DownloadService = {};
 
+    var DownloadService = {};
+    var dd = [], ddIndex = 0, ddInit = false;   // Variables to help log the download data only if there is a change
     //
     // This is the last function called after login as part of download scheduling
     // Currently this gets called from groupStatus.js, IndividualStatus.js when the user pulls for a refresh.
@@ -23,14 +24,12 @@ angular.module('careWheels')
       // getData() gets defined here and we need to call it for all the members.
       // We want to do it asynchronously i.e., in parallel. Hence we queue it using $q
       var getData = function (member) {
-
         var usernametofind = member.username; //.toLowerCase();//for each group member
         var user = User.credentials();//from login
         var password = user.password;//credentials of logged in user, from USER service
         var username = user.username;
 
-           //http request to carebank /getfeeds/ endpoint
-
+        //http request to carebank /getfeeds/ endpoint
         return $http({
           url: API.sensorDownLoad,
           method: 'POST',
@@ -43,18 +42,30 @@ angular.module('careWheels')
             'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
           }
         // success
-        }).then(function (response) {
-          var pos = response.config.data.indexOf("&");  //password is removed from display
-          fileloggerService.execTrace("Logged in user collecting Sensor Data for: " + response.config.data.slice(pos+1));
-          fileloggerService.execTrace("Balance: " + response.data.balance + " Credit: " + response.data.credit +
-            " Debit: " + response.data.debit + " FridgeAlertLevel " + response.data.fridgeAlertLevel +
-            " MedsAlertLevel: " + response.data.medsAlertLevel + " VacationMode: " + response.data.vacationMode);
-          fileloggerService.execTrace("FridgeHitsByHour: " + "[" + response.data.fridgeHitsByHour + "]");
-          fileloggerService.execTrace("FridgeRollingAlertLevel: " + "[" + response.data.fridgeRollingAlertLevel + "]");
-          fileloggerService.execTrace("MedsHitsByHour: " + "[" + response.data.medsHitsByHour + "]");
-          fileloggerService.execTrace("MedsRollingAlertLevel: " + "[" + response.data.medsRollingAlertLevel + "]");
-          fileloggerService.execTrace("PresenceByHour: " + "[" + response.data.presenceByHour + "]");
-          fileloggerService.execTrace("Status: " + response.status + " StatusText: " + response.statusText);
+        }).then(function successCallback(response) {
+          var pos = response.config.data.indexOf("&");  //positioned at the first & which is start of the username
+          response.config.data = response.config.data.slice(pos+1); // password is suppressed!!
+          // Five users have to be hard coded here as we come here for the first time.
+          // Since this constant changing is a rare thing will not out this in ngConstants.js for now
+          if (ddIndex == 5) {   // If we have saved away all 5 users we are done intializing
+            ddInit = true;
+            ddIndex = 0;
+          }
+          if (!ddInit){   //Initially save away the data to an array
+            dd[ddIndex] = response;
+            fileloggerService.info("DataDownLoad: " + response.config.data + ": " + JSON.stringify(response));
+          } else {    // After the first download all control will come here
+            for (i = 0; i < 5; i++) {   // Check if the config.data's match
+              if (dd[i].config.data == response.config.data) {
+                if (JSON.stringify(dd[i]) != JSON.stringify(response)) {  // Now check if the entire response does not match
+                  dd[i] = response;       // It did not match so replace the old with the new data
+                  fileloggerService.info("DataDownLoad: " + response.config.data + ": " + JSON.stringify(response)); // Log the new response data
+                  break;
+                }
+              }
+            }
+          }
+          ddIndex++;
 
           // **************** BEGIN Debug or Demo code instrumentation**************
           // presenceByHour -> True or false and is 24 element long
@@ -111,30 +122,22 @@ angular.module('careWheels')
           }
           // **************** END Debug or Demo code instrumentation**************
 
-          GroupInfo.setAnalysisData(usernametofind, response.data);//add new analysis data to group member
+          GroupInfo.setAnalysisData(usernametofind, response.data); //add new analysis data to group member
 
           if(response.data.medsAlertLevel >= 2) { //handle red alert notifications
             notifications.Create_Notif(0, 0, 0, false, 0);
-            fileloggerService.execTrace("DataDownLoad:getData(): Meds notification created!");
           }
           if(response.data.fridgeAlertLevel >= 2) {  //handle *red alert* notifications
             notifications.Create_Notif(0, 0, 0, false, 0);
-            fileloggerService.execTrace("DataDownLoad:getData(): Fridge notification created!")
           }
 
-        }, function error(response) {
-          $fileLogger.log("ERROR", "DataDownLoad:getData(): Request failed ");
-           var pos = response.config.data.indexOf("&");  //password is removed from display
-          $fileLogger.log("ERROR", "Logged in user collecting Sensor Data for: " + response.config.data.slice(pos+1));
-          $fileLogger.log("ERROR", "Balance: " + response.data.balance + " Credit: " + response.data.credit +
-            " Debit: " + response.data.debit + " FridgeAlertLevel " + response.data.fridgeAlertLevel +
-            " MedsAlertLevel: " + response.data.medsAlertLevel + " VacationMode: " + response.data.vacationMode);
-          $fileLogger.log("ERROR", "FridgeHitsByHour: " + "[" + response.data.fridgeHitsByHour + "]");
-          $fileLogger.log("ERROR", "FridgeRollingAlertLevel: " + "[" + response.data.fridgeRollingAlertLevel + "]");
-          $fileLogger.log("ERROR", "MedsHitsByHour: " + "[" + response.data.medsHitsByHour + "]");
-          $fileLogger.log("ERROR", "MedsRollingAlertLevel: " + "[" + response.data.medsRollingAlertLevel + "]");
-          $fileLogger.log("ERROR", "PresenceByHour: " + "[" + response.data.presenceByHour + "]");
-          $fileLogger.log("ERROR", "Status: " + response.status + " StatusText: " + response.statusText);
+        }, function errorCallback(response) {     // Most common error code is -1 = ERR_NETWORK_IO_SUSPENDED
+          var pos = response.config.data.indexOf("&");  //positioned at the first & which is start of the username
+          response.config.data = response.config.data.slice(pos+1); // password is suppressed!!
+          if (response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
+            User.getHttpErrorCode("getData", response);
+          }
+          fileloggerService.error("DataDownLoad:getData(): Request failed " + JSON.stringify(response));
         })
       };    // getData();
 
@@ -151,7 +154,7 @@ angular.module('careWheels')
       $q.all(theseMembers.map(function (member) {
         return getData(member);
       })).then(function(){
-        fileloggerService.execTrace("DataDownLoad:getData(): Data download completed!!");
+        fileloggerService.info("DataDownLoad:getData(): Data download completed!!");
         return finalCallback();
       });
     };
