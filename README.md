@@ -28,4 +28,5 @@ A new repository CareWheelsCorp is being created to house the new changes
 As a first step the contents of Capstone repository is cloned in to CareWheelsCorp ASIS  
 Capstone will be the baseline for the CareBank Alpha release.  
 As the work progrresses sources in CareWheelsCorp = Capstone + Bug fixes + New features  
+For more information, please visit http://carewheels.org/carebank
 For more details, issues or concerns please contact Claude.Goodman@CareWheels.com  
