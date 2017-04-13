@@ -43,6 +43,7 @@ angular.module('careWheels', [
 
   $rootScope.autoRefresh = false;
 
+/* BACKGROUND hooks
   document.addEventListener("pause", function() {
     $ionicPopup.alert({
       title: "Application will go to background",
@@ -60,10 +61,11 @@ angular.module('careWheels', [
     fileloggerService.info("Application is back on the foreground!!!");
     $rootScope.$broadcast('onResumed');
   }, false);
+*/
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
 
-	fileloggerService.info('App:StateChangeStart', {from: fromState.name, next: next.name})
+    fileloggerService.info("App:StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next:" + next.name);
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then
@@ -114,7 +116,7 @@ angular.module('careWheels', [
   });
 
   //
-  // Anywahere in the code if there is an error and we want to bail out all we
+  // Anywhere in the code if there is an error and we want to bail out all we
   // have to do is broadcast('Logout'). This on will pick it up and safely log you out.
   // Right now the event and args are place holders but will be used for debug trace
   //

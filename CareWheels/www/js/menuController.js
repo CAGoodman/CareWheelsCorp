@@ -12,6 +12,8 @@ angular.module('careWheels')
 
 .controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkDependencies, User, fileloggerService) {
 
+    fileloggerService.info("Menu Controller Entered");
+
     $scope.versionNumber = apkDependencies.apkVersion;
 
     $scope.navHistory = function() {
@@ -71,13 +73,13 @@ angular.module('careWheels')
 
         }
         else {
-            fileloggerService.info("MenuCtrl:clickPocketMother: Exit");
+            //fileloggerService.info("MenuCtrl:clickPocketMother: Exit");
             openSense();
         }
     };
 
     $scope.clickCyclos = function() {
-        fileloggerService.info("MenuCtrl:clickCyclos: Enter");
+        //fileloggerService.info("MenuCtrl:clickCyclos: Enter");
         $scope.isChecked.value = false;
         var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
         if (!noWarn) {
@@ -98,7 +100,7 @@ angular.module('careWheels')
 
         }
         else {
-            fileloggerService.info("MenuCtrl:clickCyclos: Exit");
+            //fileloggerService.info("MenuCtrl:clickCyclos: Exit");
             openCyclos();
         }
     };
@@ -189,5 +191,5 @@ angular.module('careWheels')
             })
         , false);
     };
-
+    fileloggerService.info("Menu Controller Exited");
 });

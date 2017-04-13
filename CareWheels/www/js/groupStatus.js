@@ -20,6 +20,9 @@ angular.module('careWheels').controller('groupStatusController',
 function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fileloggerService,
 	GroupInfo, User, PaymentService, Download, loginDependencies) {
 
+	fileloggerService.info("Group Status controller Entered");
+
+/* BACKGROUND Hooks
     $rootScope.$on('onPaused', function(event, args) {
 		console.log("GS: root - OnPause got it!!");
 	});
@@ -35,6 +38,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 	$scope.$on('onResumed', function(event, args) {
 		console.log("GS: onResume got it!!");
   	})
+*/
 
 	//
 	// Any time the main screen i.e. group status screen is to be displayed this groupStatusController()
@@ -52,7 +56,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 	//
 
 	function runOnStateChange() {
-		fileloggerService.info("GSCtrl:runOnStateChange: Entering Group Status screen");
+		//fileloggerService.info("GSCtrl:runOnStateChange: Entering Group Status screen");
 		var creds = User.credentials();
 		if ($rootScope.autoRefresh) {			//Skipping crediting user for group summary view because of auto-refresh
 			$rootScope.autoRefresh = false;
@@ -83,7 +87,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 		// From here the control just drops down to the first code executing inside the controller.
 		// There it  displays the GroupStatus screen and then drops down to alertArry[] to take care of the alerts
 		//
-		fileloggerService.info("GSCtrl:runOnStateChange: Exiting Group Status screen");
+		//fileloggerService.info("GSCtrl:runOnStateChange: Exiting Group Status screen");
 	}	//runOnStateChange().
 
 	//
@@ -99,7 +103,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 		$scope.barClassCB = "bar-positive";
 		var status;	// Precdence is set as - Vacation, grey, red, yellow, blue
 		var loggedInUserIndex = $scope.group[0].selfUserIndex;
-		fileloggerService.info("GSCtrl:checkCenterUserAlertLevel: Enter");
+		//fileloggerService.info("GSCtrl:checkCenterUserAlertLevel: Enter");
 		//
 		// We cannot use $scope.group[] here becasue that has not been saved hence we use groupArray[]
 		//
@@ -125,13 +129,21 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 				$scope.showBarVM = false;
 				break;
 			default:
+				$ionicPopup.alert({
+		            title: "Vacation mode not set. Status: " + status + " Alert level undetected for Username: " + creds.username,
+		            subTitle: "Please contact your friendly CareBank customer support for help"
+	        	});
 				fileloggerService.error("GSCtrl:checkCenterUserAlertLevel:Bad alert status: " + status + "Username: " + creds.username);
 				$scope.showBarVM = false;
 		}	// switch()
 		if (i > loginDependencies.userCount) {
-			fileloggerService.error("GSCtrl:checkCenterUserAlertLevel:Username: " + creds.username + " is missing contact server admin");
+			$ionicPopup.alert({
+	            title: "Vacation mode not set. " + i + " user count exceeds expected user count " + loginDependencies.userCount,
+	            subTitle: "Please contact your friendly CareBank customer support for help"
+	    	});
+			fileloggerService.error("GSCtrl:checkCenterUserAlertLevel:Username: " + creds.username + " is missing");
 		}
-		fileloggerService.info("GSCtrl:checkCenterUserAlertLevel: Exit");
+		//fileloggerService.info("GSCtrl:checkCenterUserAlertLevel: Exit");
 		return;
 	}
 
@@ -268,11 +280,11 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 				}
 			}
 			$ionicPopup.alert({
-	            title: "Username is missing or undefnined",
+	            title: "Username: " + user.username + " is missing or undefnined",
 	            subTitle: "Please contact your friendly CareBank customer support for help"
 		    })
 	    }
-	    fileloggerService.error("getLoggedInUser() Unknown username: " + user.username);
+	    fileloggerService.error("getLoggedInUser(): Unknown username: " + user.username);
 	    $rootScope.$broadcast('Logout', "groupStatus:getLoggedInUser()");
 	    return false;
 	}	// getLoggedInUser()
@@ -430,4 +442,5 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 			}
 		}
     };	// checkGroupHealth();
+    fileloggerService.info("Group Status controller Exited");
  });

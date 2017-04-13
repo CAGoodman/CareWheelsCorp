@@ -62,7 +62,7 @@ angular.module('careWheels')
 
     //creates a popup to verify user wants to reset to default Reminder times
     $scope.confirmReset = function () {
-      fileloggerService.info("ReminderCtrl:confirmReset: Enter");
+      //fileloggerService.info("ReminderCtrl:confirmReset: Enter");
       var confirmPopup = $ionicPopup.confirm({
         title: 'Reminder Reset',
         template: 'Are you sure you want to reset all Reminders to their default times?'
@@ -82,9 +82,13 @@ angular.module('careWheels')
 
             $scope.CallRest(rem1, rem2, rem3);
           } else {
-            fileloggerService.error("Reminder:confirmReset(): Cannot make REST call in Reminders because user credentials are undefined.");
+            $ionicPopup.alert({
+              title: "Reminders was not reset properly. User credentials missing",
+              subTitle: "Please contact your friendly CareBank customer support for help"
+            });
+            fileloggerService.error("Reminder:confirmReset(): Cannot make REST call in Reminders, user credentials are undefined.");
           }
-          fileloggerService.info("ReminderCtrl:confirmReset: Exit");
+          //fileloggerService.info("ReminderCtrl:confirmReset: Exit");
           $state.go($state.current, {}, {reload: true});    //reset view so changes are immediately visible
 	     }
       });
@@ -93,7 +97,7 @@ angular.module('careWheels')
     //Push live Reminder values to all other locations
     $scope.saveReminders = function () {
       //update Notification component's memory and local reminder times
-      fileloggerService.info("ReminderCtrl:saveReminders: Enter");
+      //fileloggerService.info("ReminderCtrl:saveReminders: Enter");
       for (var i = 0; i < 3; ++i) {
         var myHours = $scope.reminders[i].hour; // Do nothing for 1AM-11AM and 12PM
       	if (myHours == 12 && !$scope.reminders[i].isPM) // 12AM (Midnight) is 00
@@ -119,8 +123,12 @@ angular.module('careWheels')
 
         fileloggerService.info("saveReminders():rem1 = " + rem1 + ", rem2 = " + rem2 + ", rem3 = " + rem3);
         $scope.CallRest(rem1, rem2, rem3);
-        fileloggerService.info("ReminderCtrl:saveReminders: Exit");
+        //fileloggerService.info("ReminderCtrl:saveReminders: Exit");
       } else{
+        $ionicPopup.alert({
+          title: "Reminders were not saved properly. User credentials missing",
+          subTitle: "Please contact your friendly CareBank customer support for help"
+        });
         fileloggerService.error("ReminderCtrl:saveReminders: Cannot make REST call in Reminders because user credentials are undefined.");
       }
     };
@@ -128,7 +136,7 @@ angular.module('careWheels')
     //Handle the REST call to custom server API
     $scope.CallRest = function (rem1, rem2, rem3) {
       //restViewModel.fetch(myUser.username, myUser.password, myUser.username, rem1, rem2, rem3);   //will handle generating error if necessary
-      fileloggerService.info("ReminderCtrl:CallRest: Enter");
+      //fileloggerService.info("ReminderCtrl:CallRest: Enter");
       var myUser = User.credentials();
       if (myUser != undefined) {
         var status = null;
@@ -153,6 +161,7 @@ angular.module('careWheels')
             template: 'All the Reminder times have been saved'
           });
         }, function errorCallback(response) {
+          User.hidePasswordDD(response);
           response.data += "Request failed";
           if (response.status != 200) {
             if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
@@ -164,6 +173,7 @@ angular.module('careWheels')
               template: 'Reminder times were not saved please contact your friendly CareWheels cusotmer support'
             });
           } else {
+            User.hidePasswordDD(response);
             fileloggerService.error("ReminderCtrl:CallRest: Rest status = 200 so there is some other issue. Details: " + JSON.stringify(response));
             var confirmPopup = $ionicPopup.alert({
               title: 'Reminder set',
@@ -171,11 +181,10 @@ angular.module('careWheels')
             });
           }
         })
-        fileloggerService.info("ReminderCtrl:CallRest: Exit");
+        //fileloggerService.info("ReminderCtrl:CallRest: Exit");
       } else{
         fileloggerService.error("ReminderCtrl:CallRest: Cannot make REST call in Reminders because user credentials are undefined.");
       }
     };
+    fileloggerService.info("Reminder Controller Exited");
   }));
-
-

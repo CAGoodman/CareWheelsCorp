@@ -19,6 +19,9 @@ angular.module('careWheels')
       function ($scope, $state, $ionicPopup, GroupInfo, PaymentService,
                   fileloggerService, Download, User, loginDependencies) {
 
+  fileloggerService.info("Individual Status controller Entered");
+
+/* BACKGROUND Hooks
   $scope.$on('onPaused', function(event, args) {
     console.log("IS: OnPause got it!!");
   });
@@ -26,6 +29,7 @@ angular.module('careWheels')
   $scope.$on('onResumed', function(event, args) {
     console.log("IS: onResume got it!!");
   })
+  */
 
     /**
      * grabs the analysis of the member selected on the previous view
@@ -124,8 +128,8 @@ angular.module('careWheels')
      * This function returns the color for the call button.
      */
     $scope.getCallButtonColor = function () {
-      var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
-      fileloggerService.info("IndividualStatus: GetCallButtonColor()" + msg);
+      //var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
+      //fileloggerService.info("IS:getCallButtonColor " + msg);
 
       $scope.showCallButton = true;
 
@@ -174,8 +178,9 @@ angular.module('careWheels')
      * that the number needs to be placed in the system.
      */
     $scope.getPhoneNumber = function () {
-      var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
-      fileloggerService.info("IndividualStatus: GetPhoneNumber() hit" + msg);
+      //var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
+      //fileloggerService.info("IS:getPhoneNumber " + msg);
+
       var cyclosPhoneNumber = analysis.phoneNumber;
 
       if (cyclosPhoneNumber == null) {
@@ -186,8 +191,7 @@ angular.module('careWheels')
       var callString = "tel:";
       callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) +
        "-" + cyclosPhoneNumber.substring(8);
-      var msg = "Username: " + analysis.username + " Balance: " + analysis.balance;
-      fileloggerService.info("IndividualStatus: " + msg);
+
       var alertNumFridge = analysis.analysisData.fridgeAlertLevel;
       var alertNumMeds = analysis.analysisData.medsAlertLevel;
       //
@@ -214,7 +218,7 @@ angular.module('careWheels')
     $scope.checkPhoneError = function () {
       if (phoneNumberError) {
         displayError();
-        fileloggerService.error("There is no phone number for " + analysis.name);
+        fileloggerService.error("IS:checkPhoneError:There is no phone number for " + analysis.name);
       }
       else if ($scope.alertLevel != '') {
         PaymentService.call(analysis.username, $scope.alertLevel);
@@ -225,7 +229,7 @@ angular.module('careWheels')
     $scope.doRefresh = function () {
       Download.DownloadData(function(){
         //$scope.$broadcast('scroll.refreshComplete');
-        fileloggerService.info("IndividualStatus: Pull down refresh done!");
+        fileloggerService.info("IS: Pull down refresh done!");
 
         //
         // Back and forward arrows help to go back/forward the the immidiate past or future screen.
@@ -246,7 +250,7 @@ angular.module('careWheels')
       phoneNumberError = true;
       var alertPopup = $ionicPopup.alert({
         title: '<div class="errorTitle">There is no phone number for this member.</div>',
-        template: '<div class="errorTemplate">Please contact the system administrator.</div>',
+        template: '<div class="errorTemplate">Please contact your friendly CareBank customer support for help.</div>',
         buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
           text: 'Okay',
           type: 'button-calm'
@@ -256,4 +260,5 @@ angular.module('careWheels')
 
       });
     }
+    fileloggerService.info("Individual Status controller Exited");
   });

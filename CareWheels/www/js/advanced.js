@@ -11,6 +11,9 @@ angular.module('careWheels')
 .controller('AdvancedController', function ($rootScope, $scope, $state, $interval,
             $ionicPopup, Download, User, fileloggerService) {
 
+  fileloggerService.info("Advance Controller Entered");
+
+/* BACKGROUND Hooks
   $rootScope.$on('onPaused', function(event, args) {
     console.log("adv: root - OnPause got it!!");
   });
@@ -26,10 +29,10 @@ angular.module('careWheels')
   $scope.$on('onResumed', function(event, args) {
     console.log("adv: onResume got it!!");
   });
+*/
 
   $scope.ScreenRefresh = function () {
-    fileloggerService.info("AdvCtrl:ScreenRefresh: Enter");
-    User.waitForDataDownload();  // Blocking the user till the data download is done
+    User.waitForDataDownload("Screen refresh under progress: ");  // Blocking the user till the data download is done
     Download.DownloadData(function () {
       User.completedDataDownload();       // DataDownload completed
       fileloggerService.info("AdvCtrl:ScreenRefresh: Exit");
@@ -42,11 +45,11 @@ angular.module('careWheels')
   }
 
   $scope.ClearMemory = function () {
-    fileloggerService.info("AdvCtrl:ClearMemory: Enter");
+    //fileloggerService.info("AdvCtrl:ClearMemory: Enter");
     window.applicationCache.abort();
     window.caches.delete(100);
     window.localStorage.clear();
-    fileloggerService.info("AdvCtrl:ClearMemory: Exit");
+    //fileloggerService.info("AdvCtrl:ClearMemory: Exit");
     $ionicPopup.alert({
        title: "Data and cache memory cleared!!",
        subTitle: ""
@@ -64,13 +67,13 @@ angular.module('careWheels')
   $scope.UploadLogfile= function () {
     var creds = User.credentials();
     $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
-    fileloggerService.info("AdvCtrl:UploadLogfile: Enter");
-    fileloggerService.logUpload(creds.username, creds.password);
+    //fileloggerService.info("AdvCtrl:UploadLogfile: Enter");
+    fileloggerService.logUpload(creds.username, creds.password, "UploadLogfile");
     $ionicPopup.alert({
       title: "Logfile has been uploaded to the CareWheels server!!",
       subTitle: "A friendly customer service professional will get back to you soon"
     });
-    fileloggerService.info("AdvCtrl:UploadLogfile: Exit");
+    //fileloggerService.info("AdvCtrl:UploadLogfile: Exit");
   }
 
   //
@@ -79,9 +82,9 @@ angular.module('careWheels')
   //
 
    $scope.DeleteLogfile= function () {
-    fileloggerService.info("AdvCtrl:DeleteLogfile: Enter");
+    //fileloggerService.info("AdvCtrl:DeleteLogfile: Enter");
     fileloggerService.deleteLogFile();
-    fileloggerService.info("AdvCtrl:DeleteLogfile: Exit");
+    //fileloggerService.info("AdvCtrl:DeleteLogfile: Exit");
     $ionicPopup.alert({
       title: "Logfile has been deleted",
       subTitle: "A new logfile automatically starts building up which you can upload anytime"
@@ -97,7 +100,7 @@ angular.module('careWheels')
   //
 
   $scope.EnableDebug = function (dbgLevel) {
-    fileloggerService.info("AdvCtrl:EnableDebug: Enter");
+    //fileloggerService.info("AdvCtrl:EnableDebug: Enter");
     switch(dbgLevel) {
       case "0":
       case "1":
@@ -123,6 +126,7 @@ angular.module('careWheels')
         subTitle: "Do a Screen Refresh to restore default data"
       });
     }
-    fileloggerService.info("AdvCtrl:EnableDebug: Exit");
+    //fileloggerService.info("AdvCtrl:EnableDebug: Exit");
   }
+  fileloggerService.info("Advance Controller Exited");
 })

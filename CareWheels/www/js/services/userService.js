@@ -22,7 +22,7 @@ angular.module('careWheels')
 	//
 
 	userService.login = function (uname, passwd, rmbr) {
-		userService.waitForDataDownload();	// Blocking the user till the data download is done
+		userService.waitForDataDownload("Credentials download in progress: ");	// Blocking the user till the data download is done
 		return $http({
 			url: API.userAndGroupInfo,
 			method: 'POST',
@@ -40,19 +40,19 @@ angular.module('careWheels')
 			} else {
 				window.localStorage.removeItem('loginCredentials');
 			}
-				//store user info
-				//store groupMember info
+			//store user info
+			//store groupMember info
 
-				user = {username: uname, password: passwd};
+			user = {username: uname, password: passwd};
 
-				GroupInfo.initGroupInfo(response.data);
-				userService.completedDataDownload();       // DataDownload completed
-		}, function errorCallback(response) {
-			//present login failed
+			GroupInfo.initGroupInfo(response.data);
 			userService.completedDataDownload();       // DataDownload completed
-			var errorMsg = "userService.login: Login failed:  ";
+		}, function errorCallback(response) {
+			userService.hidePasswordDD(response);
+			userService.completedDataDownload();       // DataDownload completed
+			var errorMsg = "Login failed. There might be a network problem:  ";
 
-			fileloggerService.error(errorMsgStatus + "Status: " + response.status);
+			fileloggerService.error(errorMsg + "Status: " + response.status);
 
 			if (failCount >= 3) {
 				errorMsg += "Exceeding invalid login attempts. Please Contact admin";
@@ -60,7 +60,7 @@ angular.module('careWheels')
 				switch(response.status) {
 					case -1:
 					    if (response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
-				            User.getHttpErrorCode("userService.login: ", response);
+				            userService.getHttpErrorCode("userService.login: ", response);
 				        }
 					case 400:
 						errorMsg += "Please check your credentials! ";
@@ -80,24 +80,24 @@ angular.module('careWheels')
 							title: 'Login failed!',
 							template: [errorMsg + response.data]
 						});
-						fileloggerService.error(errorMsg + JSON.stringify(response));
+						fileloggerService.error("userService.login: " + errorMsg + JSON.stringify(response));
 						return;
 				} // switch
 				var alertPopup = $ionicPopup.alert({
 					title: 'Login failed!',
 					template: [errorMsg + response.data]
 				});
-				fileloggerService.error(errorMsg + JSON.stringify(response));
+				fileloggerService.error("userService.login: " + errorMsg + JSON.stringify(response));
 			} // else
 			user.errorCode = response.status;
 			$state.go($state.current, {}, {reload:true})
 		})
 	};	// userService.login
 
-    userService.waitForDataDownload = function() {
+    userService.waitForDataDownload = function(args) {
         $ionicLoading.show({      //pull up loading overlay so user knows App hasn't frozen
           template: '<ion-spinner></ion-spinner>' +
-          '<p>Contacting Server...</p>'
+          args + '<p>Contacting Server...</p>'
         });
     }
 
@@ -123,7 +123,7 @@ angular.module('careWheels')
     };
 
     userService.setOnVacation = function (uname, passwd, onVacationSetting) {
-		userService.waitForDataDownload();	// Blocking the user till the data download is done
+		userService.waitForDataDownload("Vacation setting under process: ");	// Blocking the user till the data download is done
 		return $http({
 			url: API.updateSettings,
 			method: 'POST',
@@ -137,7 +137,7 @@ angular.module('careWheels')
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		}).then(function successCallback(response) {
-			fileloggerService.info("userService.setOnVacation: Successfully updated vacatoin settings!");
+			fileloggerService.info("userService.setOnVacation: Successfully updated vacation settings!");
 			userService.completedDataDownload();       // DataDownload completed
 			return true;
 		},function errorCallback(response) {
@@ -174,6 +174,22 @@ angular.module('careWheels')
 	      	fileloggerService.error(funcName + "Unknown Error Code: " + errorCode + "Error: Some unknown network related error");
 	    }
 	} // userService.getHttpErrorCode
+
+	// "password=testalice&username=testalice&usernametofind=testalice" --> DownLoad
+	// "password=testalice&reminder1=+&reminder2=21:00:00&reminder3=19:00:00&username=testalice&usernametoupdate=testalice" --> Reminder
+	userService.hidePasswordDD = function(response){
+    	var pos = response.config.data.indexOf("&");  //positioned at the first & which is start of the username
+        response.config.data = response.config.data.slice(pos+1); // password is suppressed!!
+	} // userService.hidePasswordDD
+
+	// "alertlevel=na&callpayment=False&membersummarypayment=True&password=testalice&sensordataviewpayment=False&username=testalice&usernametocredit=testalice&usernametodebt="
+	userService.hidePasswordPS = function(response){
+		var str = response.config.data;				// Ref: W3 Schools, string manipulation in AngualrJS
+		var sln, pos1, pos2, str1, str2;
+		sln = str.length; pos1 = str.indexOf("pass"); pos2 = str.indexOf("sensor");
+	    str1 = str.substring(0, pos1); str2 = str.substr(pos2, sln);
+        response.config.data = str1 + str2; // password is suppressed!!
+	} // userService.hidePasswordPS
 
 	return userService;
 }); // factory

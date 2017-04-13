@@ -115,6 +115,10 @@ angular.module('careWheels')
    */
   notifications.Reminder_As_String = function(id){
     if(id>2){
+      $ionicPopup.alert({
+        title: "Reminder notification could not be set",
+        subTitle: "Please contact your friendly CareBank customer support for help"
+      });
       fileloggerService.warn("Incorrect attempt to create notification for id #" + reminderNum);
       fileloggerService.error("Reminder Notification Attempted to print Reminder id " + id + ", but there are only 3 reminders!");
     } else {

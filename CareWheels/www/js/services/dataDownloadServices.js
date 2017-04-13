@@ -43,16 +43,19 @@ angular.module('careWheels')
           }
         // success
         }).then(function successCallback(response) {
-          var pos = response.config.data.indexOf("&");  //positioned at the first & which is start of the username
-          response.config.data = response.config.data.slice(pos+1); // password is suppressed!!
+          User.hidePasswordDD(response);
+          //
           // Five users have to be hard coded here as we come here for the first time.
           // Since this constant changing is a rare thing will not out this in ngConstants.js for now
+          // The sensor data change occassionally so to avoid repeating the data we log it only if there is a change
+
           if (ddIndex == 5) {   // If we have saved away all 5 users we are done intializing
             ddInit = true;
             ddIndex = 0;
           }
           if (!ddInit){   //Initially save away the data to an array
             dd[ddIndex] = response;
+            ddInit
             fileloggerService.info("DataDownLoad: " + response.config.data + ": " + JSON.stringify(response));
           } else {    // After the first download all control will come here
             for (i = 0; i < 5; i++) {   // Check if the config.data's match
@@ -132,8 +135,7 @@ angular.module('careWheels')
           }
 
         }, function errorCallback(response) {     // Most common error code is -1 = ERR_NETWORK_IO_SUSPENDED
-          var pos = response.config.data.indexOf("&");  //positioned at the first & which is start of the username
-          response.config.data = response.config.data.slice(pos+1); // password is suppressed!!
+          User.hidePasswordDD(response);
           if (response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
             User.getHttpErrorCode("getData", response);
           }

@@ -58,21 +58,28 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
-        fileloggerService.info('PaymentService.call(): Rest Status success = ' + response.status);
+        fileloggerService.info('PS:call(): Rest Status success = ' + response.status);
       }, function errorCallback(response) {
+        User.hidePasswordPS(response);
         var data = response.data || "Request failed";
         if (response.status != 200) {
           if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
             User.getHttpErrorCode("PaymentService.call", response);
           }
-          fileloggerService.warn("PaymentService.call: Incorrect attempt to create notification for id #" + reminderNum);
-          fileloggerService.error("PaymentService.call: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-          fileloggerService.error("PaymentService.call: " + JSON.stringify(response));
-        } else fileloggerService.info("PaymentService.call: Success: " + "CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+          $ionicPopup.alert({
+            title: "Proper credit for your Call could not be made due to network or other issues",
+            subTitle: "Please contact your friendly CareBank customer support for help"
+          });
+          fileloggerService.error("PS:call: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+          fileloggerService.error("PS:call: " + JSON.stringify(response));
+        } else fileloggerService.info("PS:call: Success: " + "CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
       })
     } else {
-      fileloggerService.warn("PaymentService.call: Incorrect attempt to create notification for id #" + reminderNum);
-      fileloggerService.error("PaymentService.call: Cannot make REST call for Call  Payment because user credentials are undefined.");
+    $ionicPopup.alert({
+        title: "Proper credit for your Call could not be made as there is a problem with your credentials",
+        subTitle: "Please contact your friendly CareBank customer support for help"
+      });
+      fileloggerService.error("PS:call:Cannot make REST call for Call  Payment because user credentials are undefined.");
     }
   };    // PaymentService.call
 
@@ -105,23 +112,30 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
-        fileloggerService.info('PaymentService.sensorDataView(): Rest Status = ' + response.status);
+        fileloggerService.info('PS:sensorDataView(): Rest Status = ' + response.status);
       }, function errorCallback(response) {
+        User.hidePasswordPS(response);
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
           if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
             User.getHttpErrorCode("PaymentService.sensorDataView: ", response);
           }
-          fileloggerService.warn("PaymentService.sensorDataView: Incorrect attempt to create notification for id #" + reminderNum);
-          fileloggerService.error("PaymentService.sensorDataView: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-          fileloggerService.error("PaymentService.sensorDataView: " + JSON.stringify(response));
-        } else fileloggerService.info("PaymentService.sensorDataView: Success: " + "CreditPosted: " + data.creditPosted +
+          $ionicPopup.alert({
+            title: "Sensor data view did not get the proper credit",
+            subTitle: "Please contact your friendly CareBank customer support for help"
+          });
+          fileloggerService.error("PS:sensorDataView: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+          fileloggerService.error("PS:sensorDataView: " + JSON.stringify(response));
+        } else fileloggerService.info("PS:sensorDataView: Success: " + "CreditPosted: " + data.creditPosted +
                 "ReasonCode: " + data.reasonCode);
       })
     } else {
-      fileloggerService.warn("PaymentService.sensorDataView: Incorrect attempt to create notification for id #" + reminderNum);
-      fileloggerService.error("PaymentService.sensorDataView: Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
+       $ionicPopup.alert({
+        title: "Sensor data view did not get the proper credit because there was some credential issues",
+        subTitle: "Please contact your friendly CareBank customer support for help"
+      });
+      fileloggerService.error("PS:sensorDataView: Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
     }
   };  // PaymentService.sensorDataView
 
@@ -153,21 +167,30 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
-        fileloggerService.info("PaymentService.memberSummary: " + JSON.stringify(response));
+        User.hidePasswordPS(response);
+        fileloggerService.info("PS:memberSummary: " + JSON.stringify(response));
       }, function errorCallback(response) {
+        User.hidePasswordPS(response);
         var data = response.data || "Request failed";
         if (response.status != 200) {
           if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
             User.getHttpErrorCode("PaymentService.sensorDataView: ", response);
           }
-          fileloggerService.warn("Incorrect attempt to create notification for id #" + reminderNum);
-          fileloggerService.error("PaymentService.memberSummary: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-          fileloggerService.error("PaymentService.memberSummary: " + JSON.stringify(response));
-        } else fileloggerService.info("PaymentService.memberSummary: Success: " + "CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+          $ionicPopup.alert({
+            title: "Member summary was not updated correclty",
+            subTitle: "Please contact your friendly CareBank customer support for help"
+          });
+          fileloggerService.error("PS:memberSummary: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+          fileloggerService.error("PS:memberSummary: " + JSON.stringify(response));
+        } else fileloggerService.info("PS: memberSummary: Success: " + "CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
       })
     } else  {
-      fileloggerService.warn("PaymentService.memberSummary: Incorrect attempt to create notification for id #" + reminderNum);
-      fileloggerService.error("PaymentService.memberSummary: Cannot make REST call for memberSummary Payment because user credentials are undefined.");
+      $ionicPopup.alert({
+        title: "Member summary was not updated correclty sue to bad credentials",
+        subTitle: "Please contact your friendly CareBank customer support for help"
+      });
+      fileloggerService.warn("PS:memberSummary: Incorrect attempt to create notification for id #" + reminderNum);
+      fileloggerService.error("PS:memberSummary: Cannot make REST call for memberSummary Payment because user credentials are undefined.");
     }
   };
   return PaymentService;

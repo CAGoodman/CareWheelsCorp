@@ -57,7 +57,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       $timeout(function(){
         ilcthis.setLogLocation(logFileName);
         $fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
-      }, 5000);
+      }, 0); //5000);
     };
 
     this.deleteLogFile = function () {
@@ -66,7 +66,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         $fileLogger.deleteLogfile().then(function () {
           dlfthis.info("The log file " + logFileName + " is deleted!");
         });
-      }, 3000);   // Fixed reccommended timeout for file deletion
+      }, 0); //3000);   // Fixed reccommended timeout for file deletion
     };
 
     this.printLogfile = function() {
@@ -76,20 +76,28 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           console.log(l);
           console.log('********************Logfile content end**********************');
         });
-      }, 5000);
+      }, 0); //5000);
     }
 
     //
     // logUpload() gets called during login or from Advance/Upload menu which loads the current existing lofile.
     //
 
-    this.logUpload = function (usernameIn, passwordIn) {
+    this.logUpload = function (usernameIn, passwordIn, callingFunc) {
+      $fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
       if (!$rootScope.isAndroid) {
+
+        //
         // Currently $cordovaFileTransfer.upload supports Android only. Hence we bail out. We do support $fileLogger.log
         // The point to note is the logfile is available for other means of retrival later
-        $fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
+
         $rootScope.fileUploaded = true;
-        this.error("ERROR: ERROR: LoggingService: Not a Android Device " + "Please contact your friendly CareWheels Customer Support");
+        $ionicPopup.alert({
+          title: "This is not a Android device. " + usernameIn + " please note no logfile will be created",
+          subTitle: "Please contact your friendly CareBank customer support for help"
+        });
+        this.error("ERROR: LoggingService: Not a Android Device " + "Please contact your friendly CareWheels Customer Support");
+        $rootScope.$emit('logfileCreated', 'Not a Android system so Logfile will not be created');
         return;
       }
 
@@ -128,9 +136,9 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
             self.initLogComponent();    // Sets the correct logfile and also set the correct date format
             $timeout(function(){
               $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will allow the logfile to be written
-              self.info("-----New log file was created!"); // This operation will create the lofile.
               self.info(fullPkg); // This will get added to the newly created  logfile
-            }, 10000);
+              self.info("New log file was created!"); // This operation will create the lofile.
+            }, 0); //10000);
           } else {
             self.error("ERROR: LoggingService: CheckFile Failed: " + JSON.stringify(reason));
             self.error("ERROR: Full Package: " + fullPkg); // This will give more info
@@ -173,17 +181,17 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
 
         $timeout(function(){
           $rootScope.fileUploaded = true;   // LogFile has been uploaded and new logfile created
-          self.info("-----New log file was created!"); // This operation will create the lofile
+          $timeout(function(){
+            self.info(fullPkg); // This will get added to the current new logfile not to the one just uploaded now
+          }, 0); //10000);
+          self.info("New log file was created!"); // This operation will create the lofile
           var preLoginMsg = window.localStorage['preLogin.log']; //Read the saved messages
-          self.info("INFO", preLoginMsg); // Write it to the new log file at the top
-          self.info("INFO", "******Pre Login Log Messages End******\n");
-        }, 10000);
+          self.info(preLoginMsg); // Write it to the new log file at the top
+          self.info("******Pre Login Log Messages End******\n");
+        }, 0); //10000);
 
         window.localStorage.removeItem('preLogin.log'); // Delete the preLogin.log file
         window.localStorage['preLogin.log'] = "\n******Pre Login Log Messages Begin****** \n\n"; // Create a new one
-        $timeout(function(){
-          self.info(fullPkg); // This will get added to the current new logfile not to the one just uploaded now
-        }, 10000);
         //self.printLogfile();
       }
 
@@ -208,8 +216,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
             $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
         });
       }); // $ionicPlatform.ready()
-
-
+      if (callingFunc === 'login') $rootScope.$emit('logfileCreated', 'Logfile created and probably uploaded too');
     };  // logUpload()
 
     //
@@ -220,6 +227,8 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
 
     var logInternal = function (functionName, args) {
       if (!$rootScope.fileUploaded) {
+        var time = new Date();
+        args[0] = time.toLocaleString() + ": " + args[0];
         console[functionName].apply(console, args);
         window.localStorage['preLogin.log'] += args[0] + " \n";   // This will catch the earlier log messages
       } else {

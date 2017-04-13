@@ -24,7 +24,7 @@ angular.module('careWheels')
       loginDependencies){
 
     $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
-    fileloggerService.info("LoginCtrl:login: Enter");
+    fileloggerService.info("Login Controller Entered");
 
     //
     // When the app starts it enrters via app.js and then execution comes here.
@@ -86,52 +86,64 @@ angular.module('careWheels')
         if (User.credentials()) {
 
           //
+          // We wait for the logfile to be created and uploaded too before we start data dowloading
+          // This will prevent logfile corruption and dateTimeStamp work properly
+          //
+
+          $rootScope.$on('logfileCreated', function(event, args) {
+            User.completedDataDownload();
+            fileloggerService.info(args);
+            event.stopPropagation();        // Cancel the event
+
+            //
+            // Pull up loading overlay so user knows App hasn't frozen
+            // This is the twirling icon which says "Contacting Server..."
+            //
+
+            User.waitForDataDownload('Login in progress: ');  // Blocking the user till the data download is done
+
+            //
+            // Notification of user reminder is intialized here. That is if they
+            // have set reminders for themselves to take meds, meals etc ...
+            //
+
+            notifications.Init_Notifs();        // initialize notifications
+
+            //
+            // Here a time out is set and if the server does not come back in
+            // loginTimeoutPeriod time then we issue login failed message. This is non blocking
+            // and execution goes down does the DownloadData()
+            //
+
+            var loginPromise = $timeout(function(){
+              loginTimeout = true;
+              User.completedDataDownload();       // DataDownload completed
+              $state.reload();                    // reload the view (try again)
+              displayError(0);                    // pop-up error
+            }, loginDependencies.loginTimeoutPeriod);
+
+
+            // do the data download
+
+            Download.DownloadData(function(){
+              $timeout.cancel(loginPromise);       // resolve timeout promise
+              if (!loginTimeout){
+                scheduleDownload();               // spin up a download/analyze scheduler
+                User.completedDataDownload();       // This kills the loading screen created by waitForDataDownload()
+                $state.go('app.groupStatus');     // go to group view
+              }
+            });
+          }); // $on
+
+          //
           // do the log upload. This is where the app talks to the server for credentials authentication
           // The credentials remembering is within the app only the server is unaware of it
           // fileloggerService.info(() executed here will create the logfile
           //
 
-          fileloggerService.logUpload(uname, passwd);
-
-          //
-          // Pull up loading overlay so user knows App hasn't frozen
-          // This is the twirling icon which says "Contacting Server..."
-          //
-
-          User.waitForDataDownload();  // Blocking the user till the data download is done
-
-
-          //
-          // Notification of user reminder is intialized here. That is if they
-          // have set reminders for themselves to take meds, meals etc ...
-          //
-
-          notifications.Init_Notifs();        // initialize notifications
-
-          //
-          // Here a time out is set and if the server does not come back in
-          // loginTimeoutPeriod time then we issue login failed message
-          //
-
-          var loginPromise = $timeout(function(){
-            loginTimeout = true;
-            User.completedDataDownload();       // DataDownload completed
-            $state.reload();                    // reload the view (try again)
-            displayError(0);                    // pop-up error
-          }, loginDependencies.loginTimeoutPeriod);
-
-          // do the data download
-
-          Download.DownloadData(function(){
-            $timeout.cancel(loginPromise);       // resolve timeout promise
-            if (!loginTimeout){
-              scheduleDownload();               // spin up a download/analyze scheduler
-              User.completedDataDownload();       // DataDownload completed
-              $state.go('app.groupStatus');     // go to group view
-            }
-          });
+          fileloggerService.logUpload(uname, passwd, "login");
+          User.waitForDataDownload('Log file upload in progress: ');  // Blocking the user till the data download is done
         }
-        fileloggerService.info("LoginCtrl:login: Exit");
       });
     };
 
@@ -192,4 +204,5 @@ angular.module('careWheels')
     if (credentials)
       $scope.login(credentials.username, credentials.password, true);
     */
+    fileloggerService.info("Login Controller Exited");
 });
