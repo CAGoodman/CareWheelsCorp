@@ -100,9 +100,17 @@ goto VERSION_DONE
 start cordova-update-config --appversion %apkVersion%
 pause
 IF "%1"=="-d" (
+del platforms\android\build\outputs\apk\*.apk
 start cordova build --debug android
+echo Did it build successfully?
+set /p ans=Enter y or n:
+cd platforms\android\build\outputs\apk
+ren android-armv7-debug.apk CareBank-armv7-%DS%-debug.apk
+ren android-x86-debug.apk CareBank-x86-%DS%-debug.apk
+echo Debug build done!!
 goto END
 ) ELSE (
+del platforms\android\build\outputs\apk\*.apk
 start cordova build --release android
 )
 REM At this point we get the file platforms\android\build\outputs\apk\android-release-unsigned.apk
@@ -159,10 +167,15 @@ echo It is going to ask you for a password: ZXCV(9vcxz
 
 
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% android-armv7-release-unsigned.apk CareBank_key_alias
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% android-x86-release-unsigned.apk CareBank_key_alias
+
+rem To verify a apk is signed or unsinged use the following command
+rem jarsigner -verify -verbose -certs
 
 :ALIGNIT
 del CareBank-armv7-%DS%.apk >nul 2>&1
 zipalign -v 4 android-armv7-release-unsigned.apk CareBank-armv7-%DS%.apk
+zipalign -v 4 android-x86-release-unsigned.apk CareBank-x86-%DS%.apk
 goto END
 
 :HELP
@@ -188,3 +201,4 @@ goto END
 :VER_ERR
 echo Usage: BuildApk -v "Version to reset"
 :END
+del android-armv7-debug-unaligned.apk android-armv7-release-unsigned.apk android-x86-debug-unaligned.apk android-x86-release-unsigned.apk
