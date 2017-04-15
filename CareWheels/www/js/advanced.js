@@ -35,12 +35,14 @@ angular.module('careWheels')
     User.waitForDataDownload("Screen refresh under progress: ");  // Blocking the user till the data download is done
     Download.DownloadData(function () {
       User.completedDataDownload();       // DataDownload completed
-      fileloggerService.info("AdvCtrl:ScreenRefresh: Exit");
+      //fileloggerService.info("AdvCtrl:ScreenRefresh: Exit");
+      fileloggerService.info("AdvCtrl:ScreenRefresh: Successfully refreshed screen");
       $state.go($rootScope.previousState, {}, {reload:true});
     });
   }
 
   $scope.InitiateLogout = function () {
+    fileloggerService.info("AdvCtrl:InitiateLogout: Successfully logged out");
     $rootScope.$broadcast('Logout');
   }
 
@@ -54,6 +56,7 @@ angular.module('careWheels')
        title: "Data and cache memory cleared!!",
        subTitle: ""
     });
+    fileloggerService.info("AdvCtrl:ClearMemory: Successfully cleared memory");
     $state.go($rootScope.previousState, {}, {reload:true});
   }
 
@@ -89,6 +92,7 @@ angular.module('careWheels')
       title: "Logfile has been deleted",
       subTitle: "A new logfile automatically starts building up which you can upload anytime"
     });
+    fileloggerService.info("AdvCtrl:DeleteLogfile: Successfully deleted logfile");
   }
 
   //

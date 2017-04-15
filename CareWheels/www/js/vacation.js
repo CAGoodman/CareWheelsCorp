@@ -23,6 +23,12 @@ angular.module('careWheels')
 
     $scope.data = {'currentVacationMode' :User.getVacationValue()};
 
+    if ($scope.data.currentVacationMode) {
+    	fileloggerService.info("Currenlty the user is on vacation");
+    } else {
+    	fileloggerService.info("Currenlty the user is NOT on vacation");
+    }
+
     //
     // After the above line execution the control goes back to menu.html and the Vaction Mode button is visible. When the user
     // clicks it and toggles the switch $scope.data.currentVacationMode value also toggles. Then control comes dow to
@@ -30,9 +36,8 @@ angular.module('careWheels')
     // between the HTML and JS
     //
 
-
     $scope.toggleVacationMode = function (currentVacationMode) {
-    	//fileloggerService.info("VacationCtrl:toggleVacationMode: Enter");
+    	fileloggerService.info("VacationCtrl:toggleVacationMode: Enter");
 		var creds = User.credentials();
 		User.setOnVacation(creds.username, creds.password, $scope.data.currentVacationMode).then(function(resultValue){
 			User.waitForDataDownload("Vacation data download in progress: ");  // Blocking the user till the data download is done
@@ -41,7 +46,7 @@ angular.module('careWheels')
 	            $state.go('app.groupStatus');     // go to group view
 	        });
     	});
-    	//fileloggerService.info("VacationCtrl:toggleVacationMode: Exit");
+    	fileloggerService.info("VacationCtrl:toggleVacationMode: Exit");
 	}
 	fileloggerService.info("Vacation Controller Exited");
 });

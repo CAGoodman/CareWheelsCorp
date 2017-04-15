@@ -28,7 +28,7 @@ angular.module('careWheels', [
 
 .run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $ionicPopup, $state, User, loginDependencies, fileloggerService) {
 
-
+  fileloggerService.info("Main App Entered");
   //
   // preLogin.log will save away the console.log messages we miss out in the main log file careWheelsLocalLogFile.log.
   //
@@ -36,6 +36,9 @@ angular.module('careWheels', [
   window.localStorage.removeItem('preLogin.log');
   window.localStorage['preLogin.log'] = "\n******Pre Login Log Messages Begin****** \n\n";
   $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
+
+
+  fileloggerService.info("Main App Entered");
 
   //
   // When ionic.serve is run this is the entry point to the application
@@ -126,6 +129,9 @@ angular.module('careWheels', [
     fileloggerService.info(args + " Initiated Logout");   // args contains the name of the function calling logout.
     $state.go('login', {}, {reload:true});
   });
+
+  fileloggerService.info("Main App Exited");
+
 })
 
 // API factory for making all php endpoints globally accessible.

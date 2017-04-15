@@ -137,14 +137,15 @@ angular.module('careWheels')
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		}).then(function successCallback(response) {
-			fileloggerService.info("userService.setOnVacation: Successfully updated vacation settings!");
+			userService.hidePasswordVM(response);
+			fileloggerService.info("userService.setOnVacation: Successfully updated vacation settings!", + JSON.stringify(response));
 			userService.completedDataDownload();       // DataDownload completed
 			return true;
 		},function errorCallback(response) {
 			userService.completedDataDownload();       // DataDownload completed
+			userService.hidePasswordVM(response);
 			var errorMsg = "userService.setOnVacation: ";
-
-			fileloggerService.info("userService.setOnVacation: Vacation setting failed. Status: " + response.status);
+			fileloggerService.info("userService.setOnVacation: Vacation setting failed. Status: " + JSON.stringify(response));
 			for (var i = 0; i < response.data.length; i++) {
 				fileloggerService.info("userService.setOnVacation: Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
 			}
@@ -191,6 +192,14 @@ angular.module('careWheels')
         response.config.data = str1 + str2; // password is suppressed!!
 	} // userService.hidePasswordPS
 
+	//"onvacation=false&password=testalice&username=testalice&usernametoupdate=testalice"
+	userService.hidePasswordVM = function(response){
+		var str = response.config.data;				// Ref: W3 Schools, string manipulation in AngualrJS
+		var sln, pos1, pos2, str1, str2;
+		sln = str.length; pos1 = str.indexOf("pass"); pos2 = str.indexOf("username");
+	    str1 = str.substring(0, pos1); str2 = str.substr(pos2, sln);
+        response.config.data = str1 + str2; // password is suppressed!!
+	}
 	return userService;
 }); // factory
 

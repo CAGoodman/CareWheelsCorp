@@ -15,6 +15,7 @@ angular.module('careWheels')
     User, API, notifications, fileloggerService) {
     var data = notifications.getData();
 
+    fileloggerService.info("Reminder Controller Entered");
     $scope.reminders = [    //array of live definitions; to be displayed to user
       {
         /* Reminder 0 */
@@ -92,7 +93,7 @@ angular.module('careWheels')
           $state.go($state.current, {}, {reload: true});    //reset view so changes are immediately visible
 	     }
       });
-    };
+    }; //confirmReset
 
     //Push live Reminder values to all other locations
     $scope.saveReminders = function () {
@@ -131,7 +132,7 @@ angular.module('careWheels')
         });
         fileloggerService.error("ReminderCtrl:saveReminders: Cannot make REST call in Reminders because user credentials are undefined.");
       }
-    };
+    };  // saveReminders
 
     //Handle the REST call to custom server API
     $scope.CallRest = function (rem1, rem2, rem3) {
@@ -160,6 +161,8 @@ angular.module('careWheels')
             title: 'Reminder set',
             template: 'All the Reminder times have been saved'
           });
+          User.hidePasswordDD(response);
+          fileloggerService.info("ReminderCtrl:CallRest:Succesfully updated " + response.config.data);
         }, function errorCallback(response) {
           User.hidePasswordDD(response);
           response.data += "Request failed";
@@ -187,4 +190,4 @@ angular.module('careWheels')
       }
     };
     fileloggerService.info("Reminder Controller Exited");
-  }));
+  }));  // CallRest

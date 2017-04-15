@@ -58,7 +58,8 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
-        fileloggerService.info('PS:call(): Rest Status success = ' + response.status);
+        User.hidePasswordPS(response);
+        fileloggerService.info('PS:call():Call PaymentCredit: ' + JSON.stringify(response));
       }, function errorCallback(response) {
         User.hidePasswordPS(response);
         var data = response.data || "Request failed";
@@ -112,7 +113,8 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
-        fileloggerService.info('PS:sensorDataView(): Rest Status = ' + response.status);
+        User.hidePasswordPS(response);
+        fileloggerService.info('PS:sensorDataView():IS PaymentCredit: ' + JSON.stringify(response));
       }, function errorCallback(response) {
         User.hidePasswordPS(response);
         var data = response.data || "Request failed";
@@ -168,7 +170,7 @@ angular.module('careWheels')
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
         User.hidePasswordPS(response);
-        fileloggerService.info("PS:memberSummary: " + JSON.stringify(response));
+        fileloggerService.info("PS:memberSummary:Group Status PaymentCredit: " + JSON.stringify(response));
       }, function errorCallback(response) {
         User.hidePasswordPS(response);
         var data = response.data || "Request failed";
