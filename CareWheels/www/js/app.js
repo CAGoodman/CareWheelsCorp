@@ -88,6 +88,11 @@ angular.module('careWheels', [
 
 })
 
+.config(function($ionicConfigProvider) {
+  // Explicitly center NavBar title to avoid crowding especially in Individual Status
+  $ionicConfigProvider.navBar.alignTitle('center');
+})
+
 // API factory for making all php endpoints globally accessible.
 .factory('API', function (cbUrls) {
   var api = {
