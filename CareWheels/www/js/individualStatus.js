@@ -19,7 +19,7 @@ angular.module('careWheels')
       function ($scope, $state, $ionicPopup, GroupInfo, PaymentService,
                   fileloggerService, Download, User, loginDependencies) {
 
-  fileloggerService.info("Individual Status controller Entered");
+  fileloggerService.info("ISCtrl: Individual Status controller Entered");
 
 /* BACKGROUND Hooks
   $scope.$on('onPaused', function(event, args) {
@@ -218,7 +218,7 @@ angular.module('careWheels')
     $scope.checkPhoneError = function () {
       if (phoneNumberError) {
         displayError();
-        fileloggerService.error("IS:checkPhoneError:There is no phone number for " + analysis.name);
+        fileloggerService.error("ISCtrl: checkPhoneError:There is no phone number for " + analysis.name);
       }
       else if ($scope.alertLevel != '') {
         PaymentService.call(analysis.username, $scope.alertLevel);
@@ -229,7 +229,7 @@ angular.module('careWheels')
     $scope.doRefresh = function () {
       Download.DownloadData(function(){
         //$scope.$broadcast('scroll.refreshComplete');
-        fileloggerService.info("IS: Pull down refresh done!");
+        fileloggerService.info("ISCtrl: Pull down refresh done!");
 
         //
         // Back and forward arrows help to go back/forward the the immidiate past or future screen.
@@ -260,5 +260,5 @@ angular.module('careWheels')
 
       });
     }
-    fileloggerService.info("Individual Status controller Exited");
+    fileloggerService.info("ISCtrl: Individual Status controller Exited");
   });

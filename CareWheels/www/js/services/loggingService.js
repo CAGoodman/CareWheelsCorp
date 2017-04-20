@@ -31,7 +31,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       // create the file right now because we want the old one from previous run to
       // be uploaded first. Hence the first $fileLogger.log() is in login.js
       //
-      this.info("Log file name: " + fileName + " was initialized");
+      this.info("LogServ: Log file name: " + fileName + " was initialized");
     };
 
     this.getCurrentDateTime = function () {
@@ -64,10 +64,14 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       var dlfthis = this;
       $timeout(function(){
         $fileLogger.deleteLogfile().then(function () {
-          dlfthis.info("The log file " + logFileName + " is deleted!");
+          dlfthis.info("LogServ: The log file " + logFileName + " is deleted!");
         });
       }, 0); //3000);   // Fixed reccommended timeout for file deletion
     };
+
+    //
+    // Currently used of for debug purpose only
+    //
 
     this.printLogfile = function() {
       $timeout(function(){
@@ -96,7 +100,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           title: "This is not a Android device. " + usernameIn + " please note no logfile will be created",
           subTitle: "Please contact your friendly CareBank customer support for help"
         });
-        this.error("ERROR: LoggingService: Not a Android Device " + "Please contact your friendly CareWheels Customer Support");
+        this.error("LogServ: ERROR: Not a Android Device " + "Please contact your friendly CareWheels Customer Support");
         $rootScope.$emit('logfileCreated', 'Not a Android system so Logfile will not be created');
         return;
       }
@@ -105,7 +109,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
 
       // save the reference to this
       var self = this;
-      self.info("LoggingService: Running on Android platform");
+      self.info("LogServ: Running on Android platform");
       var getFullPkg = function () {
         username = usernameIn;
         password = passwordIn;
@@ -122,10 +126,10 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         // If this is not the very first login than a Logfile from from the pervious login will exist
         //
         return $fileLogger.checkFile().then(function (checked) {
-          self.info("LoggingService: CheckFile() " + "Passed");
+          self.info("LogServ: CheckFile() " + "Passed");
           var fileURL = checked.localURL;
-          self.info("LoggingService: CheckFileResponse: " + JSON.stringify(checked));
-          self.info("LoggingService: URL: " + fileURL);
+          self.info("LogServ: CheckFileResponse: " + JSON.stringify(checked));
+          self.info("LogServ: URL: " + fileURL);
           return fileURL;
         }).catch(function(reason) {
           //
@@ -136,13 +140,13 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
             self.initLogComponent();    // Sets the correct logfile and also set the correct date format
             $timeout(function(){
               $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will allow the logfile to be written
-              self.info(fullPkg); // This will get added to the newly created  logfile
-              self.info("New log file was created!"); // This operation will create the lofile.
+              self.info("LogServ: " + fullPkg); // This will get added to the newly created  logfile
+              self.info("LogServ: New log file was created!"); // This operation will create the lofile.
             }, 0); //10000);
           } else {
-            self.error("ERROR: LoggingService: CheckFile Failed: " + JSON.stringify(reason));
-            self.error("ERROR: Full Package: " + fullPkg); // This will give more info
-            self.error("ERROR: *********LOGFILE WAS NOT CREATED!!!!***********");
+            self.error("LogServ: ERROR: CheckFile Failed: " + JSON.stringify(reason));
+            self.error("LogServ: ERROR: Full Package: " + fullPkg); // This will give more info
+            self.error("LogServ: ERROR: *********LOGFILE WAS NOT CREATED!!!!***********");
           }
           //self.printLogfile();
           throw reason;   // This is caught by the catch below, uplod() does not get called.
@@ -160,7 +164,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           params: {'username': username, 'password': password, 'fileName': fileNameUp}
         };
         options.headers = {'headerParam': 'headerValue'};
-        self.info("LoggingService: UploadFileName: " + fileNameUp);
+        self.info("LogServ: UploadFileName: " + fileNameUp);
         var uri = encodeURI(API.loggingServices8080);
         // Second parameter is a URL for the storage file location - fileURL or the file itself - uploadFile
         return $cordovaFileTransfer.upload(uri, fileURL, options);
@@ -168,12 +172,12 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
 
       var cleanUp = function (result) {
 
-        self.info("LoggingService: Inside FileTransfer Upload");
-        self.info("SUCCESS: " + JSON.stringify(result.response));
-        self.info("Code = " + result.responseCode);
-        self.info("Response = " + result.response);
-        self.info("Sent = " + result.bytesSent);
-        self.info("Done uploading log file!. username: " + usernameIn);
+        self.info("LogServ: Inside FileTransfer Upload");
+        self.info("LogServ: SUCCESS: " + JSON.stringify(result.response));
+        self.info("LogServ: Code = " + result.responseCode);
+        self.info("LogServ: Response = " + result.response);
+        self.info("LogServ: Sent = " + result.bytesSent);
+        self.info("LogServ: Done uploading log file!. username: " + usernameIn);
 
         // delete old log file and create a new one
         self.deleteLogFile();
@@ -184,14 +188,14 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           $timeout(function(){
             self.info(fullPkg); // This will get added to the current new logfile not to the one just uploaded now
           }, 0); //10000);
-          self.info("New log file was created!"); // This operation will create the lofile
+          self.info("LogServ: New log file was created!"); // This operation will create the lofile
           var preLoginMsg = window.localStorage['preLogin.log']; //Read the saved messages
           self.info(preLoginMsg); // Write it to the new log file at the top
-          self.info("******Pre Login Log Messages End******\n");
+          self.info("LogServ: ******Pre Login Log Messages End******\n");
         }, 0); //10000);
 
         window.localStorage.removeItem('preLogin.log'); // Delete the preLogin.log file
-        window.localStorage['preLogin.log'] = "\n******Pre Login Log Messages Begin****** \n\n"; // Create a new one
+        window.localStorage['preLogin.log'] = "\nLogServ: ******Pre Login Log Messages Begin****** \n\n"; // Create a new one
         //self.printLogfile();
       }
 
@@ -203,16 +207,16 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       //
 
       $ionicPlatform.ready(function () {
-        self.info("LoggingService: Ionic Platform is ready");
+        self.info("LogServ: Ionic Platform is ready");
         getFullPkg()
           .then(getFileURL)
           .then(upload)
           .then(cleanUp)
           .catch(function (error) {                                         // $cordovaFileTransfer.upload()
-            self.error("ERROR: Logfile failed to load: " + JSON.stringify(error));
-            self.error("ERROR: Code = " + error.code);
-            self.error("ERROR: Error source " + error.source);
-            self.error("ERROR: Error target " + error.target);
+            self.error("LogServ: ERROR: Logfile failed to load: " + JSON.stringify(error));
+            self.error("LogServ: ERROR: Code = " + error.code);
+            self.error("LogServ: ERROR: Error source " + error.source);
+            self.error("LogServ: ERROR: Error target " + error.target);
             $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
         });
       }); // $ionicPlatform.ready()
@@ -226,6 +230,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     //
 
     var logInternal = function (functionName, args) {
+      if (!passMessage(args, "")) return;
       if (!$rootScope.fileUploaded) {
         var time = new Date();
         args[0] = time.toLocaleString() + ": " + args[0];
@@ -251,4 +256,12 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     this.error = function () {
       logInternal('error', arguments);
     }
+
+    var passMessage = function (args, msg){
+      if (!args) return false;
+      if (msg == "") return true;
+      if (args[0].indexOf(msg) == 0) return true;
+      return false;
+    }
   })
+

@@ -24,7 +24,7 @@ angular.module('careWheels')
       loginDependencies){
 
     $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
-    fileloggerService.info("Login Controller Entered");
+    fileloggerService.info("Login: Login Controller Entered");
 
     //
     // When the app starts it enrters via app.js and then execution comes here.
@@ -61,7 +61,7 @@ angular.module('careWheels')
     }
 
     $scope.TappedOrClicked = function() {
-      fileloggerService.info("TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
+      fileloggerService.info("Login: TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
       $scope.showHelp = true;
     }
 
@@ -82,6 +82,7 @@ angular.module('careWheels')
       // It checks with the server and returns the creds or errors out
       //
       User.login(uname, passwd, rmbr).then(function(response) {
+      fileloggerService.info("Login: Login function Entered");
 
         if (User.credentials()) {
 
@@ -90,10 +91,11 @@ angular.module('careWheels')
           // This will prevent logfile corruption and dateTimeStamp work properly
           //
 
-          $rootScope.$on('logfileCreated', function(event, args) {
+          var removeHandler = $rootScope.$on('logfileCreated', function(event, args) {
+            removeHandler();          // We have to remove the handler first
             User.completedDataDownload();
-            fileloggerService.info(args);
-            event.stopPropagation();        // Cancel the event
+            fileloggerService.info("Login: " + args);
+            event.stopPropagation();        // Then stop the event propogation
 
             //
             // Pull up loading overlay so user knows App hasn't frozen
@@ -126,6 +128,7 @@ angular.module('careWheels')
             // do the data download
 
             Download.DownloadData(function(){
+              fileloggerService.info("Login: First time DownloadData function called");
               $timeout.cancel(loginPromise);       // resolve timeout promise
               if (!loginTimeout){
                 scheduleDownload();               // spin up a download/analyze scheduler
@@ -144,6 +147,7 @@ angular.module('careWheels')
           fileloggerService.logUpload(uname, passwd, "login");
           User.waitForDataDownload('Log file upload in progress: ');  // Blocking the user till the data download is done
         }
+        fileloggerService.info("Login: Login function Exited");
       });
     };
 
@@ -159,7 +163,7 @@ angular.module('careWheels')
     */
 
     function scheduleDownload(){
-      User.stopDownloadPromise = $interval(function(){
+      $rootScope.stopDownloadPromise = $interval(function(){
         Download.DownloadData(function(){
           if ($state.current.name == "app.groupStatus") {
             $rootScope.autoRefresh = true;
@@ -204,5 +208,5 @@ angular.module('careWheels')
     if (credentials)
       $scope.login(credentials.username, credentials.password, true);
     */
-    fileloggerService.info("Login Controller Exited");
+    fileloggerService.info("Login: Login Controller Exited");
 });

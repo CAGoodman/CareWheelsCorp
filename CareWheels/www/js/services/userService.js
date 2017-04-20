@@ -52,7 +52,7 @@ angular.module('careWheels')
 			userService.completedDataDownload();       // DataDownload completed
 			var errorMsg = "Login failed. There might be a network problem:  ";
 
-			fileloggerService.error(errorMsg + "Status: " + response.status);
+			fileloggerService.error("UserServ: " + errorMsg + "Status: " + response.status);
 
 			if (failCount >= 3) {
 				errorMsg += "Exceeding invalid login attempts. Please Contact admin";
@@ -80,14 +80,14 @@ angular.module('careWheels')
 							title: 'Login failed!',
 							template: [errorMsg + response.data]
 						});
-						fileloggerService.error("userService.login: " + errorMsg + JSON.stringify(response));
+						fileloggerService.error("UserServ: login: " + errorMsg + JSON.stringify(response));
 						return;
 				} // switch
 				var alertPopup = $ionicPopup.alert({
 					title: 'Login failed!',
 					template: [errorMsg + response.data]
 				});
-				fileloggerService.error("userService.login: " + errorMsg + JSON.stringify(response));
+				fileloggerService.error("UserServ: login: " + errorMsg + JSON.stringify(response));
 			} // else
 			user.errorCode = response.status;
 			$state.go($state.current, {}, {reload:true})
@@ -138,16 +138,16 @@ angular.module('careWheels')
 			}
 		}).then(function successCallback(response) {
 			userService.hidePasswordVM(response);
-			fileloggerService.info("userService.setOnVacation: Successfully updated vacation settings!", + JSON.stringify(response));
+			fileloggerService.info("UserServ: setOnVacation: Successfully updated vacation settings!", + JSON.stringify(response));
 			userService.completedDataDownload();       // DataDownload completed
 			return true;
 		},function errorCallback(response) {
 			userService.completedDataDownload();       // DataDownload completed
 			userService.hidePasswordVM(response);
 			var errorMsg = "userService.setOnVacation: ";
-			fileloggerService.info("userService.setOnVacation: Vacation setting failed. Status: " + JSON.stringify(response));
+			fileloggerService.info("UserServ: setOnVacation: Vacation setting failed. Status: " + JSON.stringify(response));
 			for (var i = 0; i < response.data.length; i++) {
-				fileloggerService.info("userService.setOnVacation: Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
+				fileloggerService.info("UserServ: setOnVacation: Username: " + response.data[i].username + " Balance: " + response.data[i].balance);
 			}
 
 			if (response.status != 200) {
@@ -172,7 +172,7 @@ angular.module('careWheels')
 	      	response.statusText = "ERR_NETWORK_IO_SUSPENDED";
 	        break;
 	      default:
-	      	fileloggerService.error(funcName + "Unknown Error Code: " + errorCode + "Error: Some unknown network related error");
+	      	fileloggerService.error("UserServ: " + funcName + "Unknown Error Code: " + errorCode + "Error: Some unknown network related error");
 	    }
 	} // userService.getHttpErrorCode
 

@@ -12,7 +12,7 @@ angular.module('careWheels')
 
 .controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkDependencies, User, fileloggerService) {
 
-    fileloggerService.info("Menu Controller Entered");
+    fileloggerService.info("MenuCtrl: Menu Controller Entered");
 
     $scope.versionNumber = apkDependencies.apkVersion;
 
@@ -118,11 +118,11 @@ angular.module('careWheels')
 
     $scope.clickAbout = function () {
 
-        fileloggerService.info('Name: ' + apkDependencies.apkName);
-        fileloggerService.info('Company: ' + apkDependencies.apkCompany);
-        fileloggerService.info('Version: ' + apkDependencies.apkVersion);
-        fileloggerService.info('Apk: ' + apkDependencies.apkPackage);
-        fileloggerService.info('Date: ' + apkDependencies.apkDate);
+        fileloggerService.info('MenuCtrl: Name: ' + apkDependencies.apkName);
+        fileloggerService.info('MenuCtrl: Company: ' + apkDependencies.apkCompany);
+        fileloggerService.info('MenuCtrl: Version: ' + apkDependencies.apkVersion);
+        fileloggerService.info('MenuCtrl: Apk: ' + apkDependencies.apkPackage);
+        fileloggerService.info('MenuCtrl: Date: ' + apkDependencies.apkDate);
         var aboutEntries = [
             { label: 'Name', value: apkDependencies.apkName },
             { label: 'Company', value: apkDependencies.apkCompany },
@@ -160,7 +160,7 @@ angular.module('careWheels')
                 "intentstart": "startActivity"
             })
             .start(function() {
-                fileloggerService.info("Sen.Se Pocketmother application Entered");
+                fileloggerService.info("MenuCtrl: Sen.Se Pocketmother application Entered");
             }, function(error) {
                 $ionicPopup.alert({
                     title: 'Error',
@@ -182,7 +182,7 @@ angular.module('careWheels')
                 "intentstart": "startActivity"
             })
             .start(function() {
-                fileloggerService.info("Cyclos application Entered");
+                fileloggerService.info("MenuCtrl: Cyclos application Entered");
             }, function(error) {
                 $ionicPopup.alert({
                     title: 'Error',
@@ -191,5 +191,5 @@ angular.module('careWheels')
             })
         , false);
     };
-    fileloggerService.info("Menu Controller Exited");
+    fileloggerService.info("MenuCtrl: Menu Controller Exited");
 });

@@ -21,6 +21,13 @@ angular.module('careWheels')
     //
     DownloadService.DownloadData = function (finalCallback) {
 
+      $rootScope.$on('Logout', function(event, args) {
+        fileloggerService.info("DataDownLoad: Logout broadcast caught", args);   // args contains the name of the function calling logout.
+        dd = [], ddIndex = 0, ddInit = false;   // Clear memory before logging out
+        return DownloadService;
+      });
+
+
       // getData() gets defined here and we need to call it for all the members.
       // We want to do it asynchronously i.e., in parallel. Hence we queue it using $q
       var getData = function (member) {
@@ -55,7 +62,6 @@ angular.module('careWheels')
           }
           if (!ddInit){   //Initially save away the data to an array
             dd[ddIndex] = response;
-            ddInit
             fileloggerService.info("DataDownLoad: " + response.config.data + ": " + JSON.stringify(response));
           } else {    // After the first download all control will come here
             for (i = 0; i < 5; i++) {   // Check if the config.data's match
@@ -139,7 +145,7 @@ angular.module('careWheels')
           if (response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
             User.getHttpErrorCode("getData", response);
           }
-          fileloggerService.error("DataDownLoad:getData(): Request failed " + JSON.stringify(response));
+          fileloggerService.error("DataDownLoad: getData(): Request failed " + JSON.stringify(response));
         })
       };    // getData();
 
@@ -156,7 +162,7 @@ angular.module('careWheels')
       $q.all(theseMembers.map(function (member) {
         return getData(member);
       })).then(function(){
-        fileloggerService.info("DataDownLoad:getData(): Data download completed!!");
+        fileloggerService.info("DataDownLoad: getData(): Data download completed!!");
         return finalCallback();
       });
     };

@@ -152,18 +152,18 @@ goto SIGNIT
 :CREATE_KEY
 REM Delete old key and create a new key
 del *.keystore >nul 2>&1
-echo It is going to ask you for a password: ZXCV\(9vcxz
+echo It is going to ask you for a password:
 keytool -genkey -v -keystore CareBank_%DS%_key.keystore -alias CareBank_key_alias -keyalg RSA -keysize 2048 -validity 10000
 REM Delte the old saved key and copy new key for subsequent use
 del ..\..\..\..\..\*.key >nul 2>&1
 move CareBank_%DS%_key.keystore ..\..\..\..\..\ >nul 2>&1
 REM We will keep the alias as same and not date stamp it
-echo It is going to ask you for a password: ZXCV(9vcxz
+echo It is going to ask you for a password:
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore CareBank_%DS%_key.keystore android-armv7-release-unsigned.apk CareBank_key_alias
 goto ALIGNIT
 
 :SIGNIT
-echo It is going to ask you for a password: ZXCV(9vcxz
+echo It is going to ask you for a password:
 
 
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% android-armv7-release-unsigned.apk CareBank_key_alias

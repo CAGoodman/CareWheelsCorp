@@ -14,7 +14,7 @@ angular.module('careWheels')
 .controller('vacationController',
 	function($scope, $state, $controller, $ionicLoading, GroupInfo, User, Download, fileloggerService) {
 
-   	fileloggerService.info("Vacation Controller Entered");
+   	fileloggerService.info("VacCtrl: Vacation Controller Entered");
 
 	//
 	// From menu.html the control comes here and the pbject $scope.data.currentVacationMode gets initialized
@@ -24,9 +24,9 @@ angular.module('careWheels')
     $scope.data = {'currentVacationMode' :User.getVacationValue()};
 
     if ($scope.data.currentVacationMode) {
-    	fileloggerService.info("Currenlty the user is on vacation");
+    	fileloggerService.info("VacCtrl: Currenlty the user is on vacation");
     } else {
-    	fileloggerService.info("Currenlty the user is NOT on vacation");
+    	fileloggerService.info("VacCtrl: Currenlty the user is NOT on vacation");
     }
 
     //
@@ -37,7 +37,7 @@ angular.module('careWheels')
     //
 
     $scope.toggleVacationMode = function (currentVacationMode) {
-    	fileloggerService.info("VacationCtrl:toggleVacationMode: Enter");
+    	fileloggerService.info("VacCtrl: toggleVacationMode: Enter");
 		var creds = User.credentials();
 		User.setOnVacation(creds.username, creds.password, $scope.data.currentVacationMode).then(function(resultValue){
 			User.waitForDataDownload("Vacation data download in progress: ");  // Blocking the user till the data download is done
@@ -46,7 +46,7 @@ angular.module('careWheels')
 	            $state.go('app.groupStatus');     // go to group view
 	        });
     	});
-    	fileloggerService.info("VacationCtrl:toggleVacationMode: Exit");
+    	fileloggerService.info("VacCtrl: toggleVacationMode: Exit");
 	}
-	fileloggerService.info("Vacation Controller Exited");
+	fileloggerService.info("VacCtrl: Vacation Controller Exited");
 });

@@ -18,7 +18,7 @@ angular.module('careWheels')
 
   notifications.getData = function(){
     data = angular.fromJson(window.localStorage['Reminders']); // The produces an object called data
-    fileloggerService.info('Reminder Data:' + JSON.stringify(data));
+    fileloggerService.info('NotifyServ: Reminder Data:' + JSON.stringify(data));
     return angular.fromJson(window.localStorage['Reminders']);;
   };
 
@@ -30,7 +30,7 @@ angular.module('careWheels')
   //and calls Create_Notif for each of them
   notifications.Init_Notifs = function() {
     data = angular.fromJson(window.localStorage['Reminders']);
-    fileloggerService.info('Reminder data: ' + JSON.stringify(data));
+    fileloggerService.info('NotifyServ: Reminder data: ' + JSON.stringify(data));
     if(data==null){   //have notifications been initialized before?
       data = [];    //data param needs to be initialized before indices can be added
       data[0] = new notifications.Time();
@@ -86,12 +86,12 @@ angular.module('careWheels')
         } else {    //need to deschedule notification if it has been turned off
           if(isAndroid){
             $cordovaLocalNotification.cancel(reminderNum, function() {
-              fileloggerService.info("Reminder Notification" + reminderNum + " has been descheduled.");
+              fileloggerService.info("NotifyServ: Reminder Notification" + reminderNum + " has been descheduled.");
             });
           }
         }
     } else if(reminderNum >=4) {
-      fileloggerService.warn("Incorrect attempt to create notification for id #" + reminderNum);
+      fileloggerService.warn("NotifyServ: Incorrect attempt to create notification for id #" + reminderNum);
     }
   };
 
@@ -100,7 +100,7 @@ angular.module('careWheels')
     if(isAndroid){
       for(i=1; i<4; ++i){
         $cordovaLocalNotification.clear(i, function() {
-          fileloggerService.info("Reminder Notification" + i + " is cleared");
+          fileloggerService.info("NotifyServ: Reminder Notification" + i + " is cleared");
         });
       }
     }
@@ -119,8 +119,8 @@ angular.module('careWheels')
         title: "Reminder notification could not be set",
         subTitle: "Please contact your friendly CareBank customer support for help"
       });
-      fileloggerService.warn("Incorrect attempt to create notification for id #" + reminderNum);
-      fileloggerService.error("Reminder Notification Attempted to print Reminder id " + id + ", but there are only 3 reminders!");
+      fileloggerService.warn("NotifyServ: Incorrect attempt to create notification for id #" + reminderNum);
+      fileloggerService.error("NotifyServ: Reminder Notification Attempted to print Reminder id " + id + ", but there are only 3 reminders!");
     } else {
       var hour = data[id].hours;
       if(hour<10) hour = 0 + String(hour);

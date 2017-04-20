@@ -20,7 +20,7 @@ angular.module('careWheels').controller('groupStatusController',
 function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fileloggerService,
 	GroupInfo, User, PaymentService, Download, loginDependencies) {
 
-	fileloggerService.info("Group Status controller Entered");
+	fileloggerService.info("GSCtrl: Group Status controller Entered");
 
 /* BACKGROUND Hooks
     $rootScope.$on('onPaused', function(event, args) {
@@ -62,7 +62,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 			$rootScope.autoRefresh = false;
 		}
 		else {
-			fileloggerService.info("GSCtrl:runOnStateChange: Crediting user for group summary view " + "Username: " + creds.username);
+			fileloggerService.info("GSCtrl: runOnStateChange: Crediting user for group summary view " + "Username: " + creds.username);
 			PaymentService.memberSummary();
 		}
 
@@ -133,7 +133,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 		            title: "Vacation mode not set. Status: " + status + " Alert level undetected for Username: " + creds.username,
 		            subTitle: "Please contact your friendly CareBank customer support for help"
 	        	});
-				fileloggerService.error("GSCtrl:checkCenterUserAlertLevel:Bad alert status: " + status + "Username: " + creds.username);
+				fileloggerService.error("GSCtrl: checkCenterUserAlertLevel:Bad alert status: " + status + "Username: " + creds.username);
 				$scope.showBarVM = false;
 		}	// switch()
 		if (i > loginDependencies.userCount) {
@@ -141,7 +141,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 	            title: "Vacation mode not set. " + i + " user count exceeds expected user count " + loginDependencies.userCount,
 	            subTitle: "Please contact your friendly CareBank customer support for help"
 	    	});
-			fileloggerService.error("GSCtrl:checkCenterUserAlertLevel:Username: " + creds.username + " is missing");
+			fileloggerService.error("GSCtrl: checkCenterUserAlertLevel:Username: " + creds.username + " is missing");
 		}
 		//fileloggerService.info("GSCtrl:checkCenterUserAlertLevel: Exit");
 		return;
@@ -231,6 +231,8 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 
     /* click/press events */
     $scope.clickCenter = function () {
+    		    $rootScope.$broadcast('Logout', "groupStatus:getLoggedInUser()");
+
 		clickUser(0);
     };
     $scope.clickTopLeft = function () {
@@ -250,7 +252,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
     $scope.doRefresh = function () {
         Download.DownloadData(function(){
             //$scope.$broadcast('scroll.refreshComplete');
-            fileloggerService.info("GSCtrl:doRefresh: Pull down refresh done!");
+            fileloggerService.info("GSCtrl: doRefresh: Pull down refresh done!");
             $state.go($state.current, {}, {reload: true});
         });
      };	// doRefresh()
@@ -284,7 +286,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 	            subTitle: "Please contact your friendly CareBank customer support for help"
 		    })
 	    }
-	    fileloggerService.error("getLoggedInUser(): Unknown username: " + user.username);
+	    fileloggerService.error("GSCtrl: getLoggedInUser(): Unknown username: " + user.username);
 	    $rootScope.$broadcast('Logout', "groupStatus:getLoggedInUser()");
 	    return false;
 	}	// getLoggedInUser()
@@ -442,5 +444,5 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 			}
 		}
     };	// checkGroupHealth();
-    fileloggerService.info("Group Status controller Exited");
+    fileloggerService.info("GSCtrl: Group Status controller Exited");
  });

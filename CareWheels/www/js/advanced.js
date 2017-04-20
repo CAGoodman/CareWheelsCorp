@@ -11,7 +11,7 @@ angular.module('careWheels')
 .controller('AdvancedController', function ($rootScope, $scope, $state, $interval,
             $ionicPopup, Download, User, fileloggerService) {
 
-  fileloggerService.info("Advance Controller Entered");
+  fileloggerService.info("AdvCtrl: Advance Controller Entered");
 
 /* BACKGROUND Hooks
   $rootScope.$on('onPaused', function(event, args) {
@@ -36,14 +36,15 @@ angular.module('careWheels')
     Download.DownloadData(function () {
       User.completedDataDownload();       // DataDownload completed
       //fileloggerService.info("AdvCtrl:ScreenRefresh: Exit");
-      fileloggerService.info("AdvCtrl:ScreenRefresh: Successfully refreshed screen");
+      fileloggerService.info("AdvCtrl: ScreenRefresh: Successfully refreshed screen");
       $state.go($rootScope.previousState, {}, {reload:true});
     });
   }
 
   $scope.InitiateLogout = function () {
-    fileloggerService.info("AdvCtrl:InitiateLogout: Successfully logged out");
-    $rootScope.$broadcast('Logout');
+    fileloggerService.info("AdvCtrl: InitiateLogout: Successfully logged out");
+    $state.go($rootScope.previousState, {}, {reload:false});
+    $rootScope.$broadcast('Logout', "Advance InitiateLogout");
   }
 
   $scope.ClearMemory = function () {
@@ -56,7 +57,7 @@ angular.module('careWheels')
        title: "Data and cache memory cleared!!",
        subTitle: ""
     });
-    fileloggerService.info("AdvCtrl:ClearMemory: Successfully cleared memory");
+    fileloggerService.info("AdvCtrl: ClearMemory: Successfully cleared memory");
     $state.go($rootScope.previousState, {}, {reload:true});
   }
 
@@ -92,7 +93,7 @@ angular.module('careWheels')
       title: "Logfile has been deleted",
       subTitle: "A new logfile automatically starts building up which you can upload anytime"
     });
-    fileloggerService.info("AdvCtrl:DeleteLogfile: Successfully deleted logfile");
+    fileloggerService.info("AdvCtrl: DeleteLogfile: Successfully deleted logfile");
   }
 
   //
@@ -132,5 +133,5 @@ angular.module('careWheels')
     }
     //fileloggerService.info("AdvCtrl:EnableDebug: Exit");
   }
-  fileloggerService.info("Advance Controller Exited");
+  fileloggerService.info("AdvCtrl: Advance Controller Exited");
 })

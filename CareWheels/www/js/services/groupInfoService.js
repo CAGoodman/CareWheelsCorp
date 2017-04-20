@@ -367,8 +367,8 @@ angular.module('careWheels')
         return groupInfo[i];
       }
     }
-    fileloggerService.error("GetMember(): Could not find username " + Username);
-    fileloggerService.error("GetMember(): Found the following usernames:");
+    fileloggerService.error("GIServ: GetMember(): Could not find username " + Username);
+    fileloggerService.error("GIServ: GetMember(): Found the following usernames:");
     var unameList = groupInfo[0].username + " ";
     for (i = 1; i < groupInfo.length; ++i) {
       unameList += groupInfo[i].username + " ";
@@ -377,7 +377,7 @@ angular.module('careWheels')
       title: "Username is missing or undefined",
       subTitle: "Please contact your friendly CareBank customer support for help"
     });
-    fileloggerService.error("SetMember(): Could not find username: " + Username + " in the username list: " + unameList);
+    fileloggerService.error("GIServ: SetMember(): Could not find username: " + Username + " in the username list: " + unameList);
     $rootScope.$broadcast('Logout', "groupInfoService.getMember");
   };
 
@@ -392,7 +392,7 @@ angular.module('careWheels')
       title: "Username is missing or undefined",
       subTitle: "Please contact your friendly CareBank customer support for help"
     });
-    fileloggerService.error("groupInfoService.getMember: Could not find username " + groupInfoMember.username);
+    fileloggerService.error("GIServ: groupInfoService.getMember: Could not find username " + groupInfoMember.username);
     $rootScope.$broadcast('Logout', "groupInfoService.setMember");
     return false;
   };

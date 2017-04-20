@@ -71,16 +71,16 @@ angular.module('careWheels')
             title: "Proper credit for your Call could not be made due to network or other issues",
             subTitle: "Please contact your friendly CareBank customer support for help"
           });
-          fileloggerService.error("PS:call: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-          fileloggerService.error("PS:call: " + JSON.stringify(response));
-        } else fileloggerService.info("PS:call: Success: " + "CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+          fileloggerService.error("PaymentServ: call: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+          fileloggerService.error("PaymentServ: call: " + JSON.stringify(response));
+        } else fileloggerService.info("PaymentServ: call: Success: " + "CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
       })
     } else {
     $ionicPopup.alert({
         title: "Proper credit for your Call could not be made as there is a problem with your credentials",
         subTitle: "Please contact your friendly CareBank customer support for help"
       });
-      fileloggerService.error("PS:call:Cannot make REST call for Call  Payment because user credentials are undefined.");
+      fileloggerService.error("PaymentServ: call:Cannot make REST call for Call  Payment because user credentials are undefined.");
     }
   };    // PaymentService.call
 
@@ -114,7 +114,7 @@ angular.module('careWheels')
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
         User.hidePasswordPS(response);
-        fileloggerService.info('PS:sensorDataView():IS PaymentCredit: ' + JSON.stringify(response));
+        fileloggerService.info('PaymentServ: sensorDataView():IS PaymentCredit: ' + JSON.stringify(response));
       }, function errorCallback(response) {
         User.hidePasswordPS(response);
         var data = response.data || "Request failed";
@@ -170,7 +170,7 @@ angular.module('careWheels')
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
         User.hidePasswordPS(response);
-        fileloggerService.info("PS:memberSummary:Group Status PaymentCredit: " + JSON.stringify(response));
+        fileloggerService.info("PaymentServ: memberSummary:Group Status PaymentCredit: " + JSON.stringify(response));
       }, function errorCallback(response) {
         User.hidePasswordPS(response);
         var data = response.data || "Request failed";
@@ -182,17 +182,17 @@ angular.module('careWheels')
             title: "Member summary was not updated correclty",
             subTitle: "Please contact your friendly CareBank customer support for help"
           });
-          fileloggerService.error("PS:memberSummary: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
-          fileloggerService.error("PS:memberSummary: " + JSON.stringify(response));
-        } else fileloggerService.info("PS: memberSummary: Success: " + "CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+          fileloggerService.error("PaymentServ: memberSummary: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
+          fileloggerService.error("PaymentServ: memberSummary: " + JSON.stringify(response));
+        } else fileloggerService.info("PaymentServ: memberSummary: Success: " + "CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
       })
     } else  {
       $ionicPopup.alert({
         title: "Member summary was not updated correclty sue to bad credentials",
         subTitle: "Please contact your friendly CareBank customer support for help"
       });
-      fileloggerService.warn("PS:memberSummary: Incorrect attempt to create notification for id #" + reminderNum);
-      fileloggerService.error("PS:memberSummary: Cannot make REST call for memberSummary Payment because user credentials are undefined.");
+      fileloggerService.warn("PaymentServ: memberSummary: Incorrect attempt to create notification for id #" + reminderNum);
+      fileloggerService.error("PaymentServ: memberSummary: Cannot make REST call for memberSummary Payment because user credentials are undefined.");
     }
   };
   return PaymentService;
