@@ -159,12 +159,12 @@ del ..\..\..\..\..\*.key >nul 2>&1
 move CareBank_%DS%_key.keystore ..\..\..\..\..\ >nul 2>&1
 REM We will keep the alias as same and not date stamp it
 echo It is going to ask you for a password:
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore CareBank_%DS%_key.keystore android-armv7-release-unsigned.apk CareBank_key_alias
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\CareBank_%DS%_key.keystore android-armv7-release-unsigned.apk CareBank_key_alias
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\CareBank_%DS%_key.keystore android-x86-release-unsigned.apk CareBank_key_alias
 goto ALIGNIT
 
 :SIGNIT
 echo It is going to ask you for a password:
-
 
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% android-armv7-release-unsigned.apk CareBank_key_alias
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% android-x86-release-unsigned.apk CareBank_key_alias

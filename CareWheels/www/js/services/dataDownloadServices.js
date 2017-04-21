@@ -21,13 +21,6 @@ angular.module('careWheels')
     //
     DownloadService.DownloadData = function (finalCallback) {
 
-      $rootScope.$on('Logout', function(event, args) {
-        fileloggerService.info("DataDownLoad: Logout broadcast caught", args);   // args contains the name of the function calling logout.
-        dd = [], ddIndex = 0, ddInit = false;   // Clear memory before logging out
-        return DownloadService;
-      });
-
-
       // getData() gets defined here and we need to call it for all the members.
       // We want to do it asynchronously i.e., in parallel. Hence we queue it using $q
       var getData = function (member) {

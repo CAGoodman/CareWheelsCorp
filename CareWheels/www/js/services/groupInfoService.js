@@ -378,7 +378,7 @@ angular.module('careWheels')
       subTitle: "Please contact your friendly CareBank customer support for help"
     });
     fileloggerService.error("GIServ: SetMember(): Could not find username: " + Username + " in the username list: " + unameList);
-    $rootScope.$broadcast('Logout', "groupInfoService.getMember");
+    $rootScope.$emit('Logout', "groupInfoService.getMember");
   };
 
   groupInfoService.setMember = function (groupInfoMember) {     // Sets the groupInfo array index that contains the same username as the username parameter to the value of the groupInfoMember paramemter.
@@ -393,7 +393,7 @@ angular.module('careWheels')
       subTitle: "Please contact your friendly CareBank customer support for help"
     });
     fileloggerService.error("GIServ: groupInfoService.getMember: Could not find username " + groupInfoMember.username);
-    $rootScope.$broadcast('Logout', "groupInfoService.setMember");
+    $rootScope.$emit('Logout', "groupInfoService.setMember");
     return false;
   };
   return groupInfoService;

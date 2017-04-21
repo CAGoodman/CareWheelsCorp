@@ -67,7 +67,7 @@ angular.module('careWheels', [
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
 
-    fileloggerService.info("App:StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next:" + next.name);
+    fileloggerService.info("App: StateChangeStart: State change Start " + "From: " + fromState.name + " Next:" + next.name);
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then
@@ -98,7 +98,7 @@ angular.module('careWheels', [
   $rootScope.$on('$stateChangeSuccess', function(event, next, toParams, from, fromState) {
       $rootScope.previousState = from.name;
       $rootScope.currentState = next.name;
-      fileloggerService.info("App:StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
+      fileloggerService.info("App: StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
 
   });
 
@@ -124,7 +124,7 @@ angular.module('careWheels', [
   //
 
   $rootScope.$on('Logout', function(event, args) {
-    fileloggerService.info("App:Logout broadcast caught", args);   // args contains the name of the function calling logout.
+    fileloggerService.info("App: Logout broadcast caught", args);   // args contains the name of the function calling logout.
     $interval.cancel($rootScope.stopDownloadPromise);
     $rootScope.stopDownloadPromise = undefined;
     $state.go('login', {}, {reload:true});

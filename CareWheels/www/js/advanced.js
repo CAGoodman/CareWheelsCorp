@@ -43,8 +43,7 @@ angular.module('careWheels')
 
   $scope.InitiateLogout = function () {
     fileloggerService.info("AdvCtrl: InitiateLogout: Successfully logged out");
-    $state.go($rootScope.previousState, {}, {reload:false});
-    $rootScope.$broadcast('Logout', "Advance InitiateLogout");
+    $rootScope.$emit('Logout', "Advance InitiateLogout");
   }
 
   $scope.ClearMemory = function () {

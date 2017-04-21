@@ -54,19 +54,15 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
 
     this.initLogComponent = function () {
       var ilcthis = this;
-      $timeout(function(){
         ilcthis.setLogLocation(logFileName);
         $fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
-      }, 0); //5000);
     };
 
     this.deleteLogFile = function () {
       var dlfthis = this;
-      $timeout(function(){
         $fileLogger.deleteLogfile().then(function () {
           dlfthis.info("LogServ: The log file " + logFileName + " is deleted!");
         });
-      }, 0); //3000);   // Fixed reccommended timeout for file deletion
     };
 
     //
@@ -74,13 +70,11 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     //
 
     this.printLogfile = function() {
-      $timeout(function(){
         $fileLogger.getLogfile().then(function(l) {
           console.log('********************Logfile content start**********************');
           console.log(l);
           console.log('********************Logfile content end**********************');
         });
-      }, 0); //5000);
     }
 
     //
@@ -138,11 +132,9 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           //
           if (reason.message == "NOT_FOUND_ERR") { // First login
             self.initLogComponent();    // Sets the correct logfile and also set the correct date format
-            $timeout(function(){
               $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will allow the logfile to be written
               self.info("LogServ: " + fullPkg); // This will get added to the newly created  logfile
               self.info("LogServ: New log file was created!"); // This operation will create the lofile.
-            }, 0); //10000);
           } else {
             self.error("LogServ: ERROR: CheckFile Failed: " + JSON.stringify(reason));
             self.error("LogServ: ERROR: Full Package: " + fullPkg); // This will give more info
@@ -183,16 +175,12 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         self.deleteLogFile();
         self.initLogComponent();
 
-        $timeout(function(){
           $rootScope.fileUploaded = true;   // LogFile has been uploaded and new logfile created
-          $timeout(function(){
             self.info(fullPkg); // This will get added to the current new logfile not to the one just uploaded now
-          }, 0); //10000);
           self.info("LogServ: New log file was created!"); // This operation will create the lofile
           var preLoginMsg = window.localStorage['preLogin.log']; //Read the saved messages
           self.info(preLoginMsg); // Write it to the new log file at the top
           self.info("LogServ: ******Pre Login Log Messages End******\n");
-        }, 0); //10000);
 
         window.localStorage.removeItem('preLogin.log'); // Delete the preLogin.log file
         window.localStorage['preLogin.log'] = "\nLogServ: ******Pre Login Log Messages Begin****** \n\n"; // Create a new one

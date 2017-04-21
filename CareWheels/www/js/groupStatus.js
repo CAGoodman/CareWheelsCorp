@@ -231,8 +231,6 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 
     /* click/press events */
     $scope.clickCenter = function () {
-    		    $rootScope.$broadcast('Logout', "groupStatus:getLoggedInUser()");
-
 		clickUser(0);
     };
     $scope.clickTopLeft = function () {
@@ -287,7 +285,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 		    })
 	    }
 	    fileloggerService.error("GSCtrl: getLoggedInUser(): Unknown username: " + user.username);
-	    $rootScope.$broadcast('Logout', "groupStatus:getLoggedInUser()");
+	    $rootScope.$emit('Logout', "groupStatus:getLoggedInUser()");
 	    return false;
 	}	// getLoggedInUser()
 
