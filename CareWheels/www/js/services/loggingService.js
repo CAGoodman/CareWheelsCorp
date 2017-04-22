@@ -15,7 +15,7 @@
 
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
   .service('fileloggerService', function ($rootScope, $timeout, $interval, $q, $fileLogger, $filter, $ionicPlatform,
-    $ionicPopup, $cordovaFile, $cordovaFileTransfer,  $cordovaAppVersion, API, apkDependencies) {
+    $ionicPopup, $ionicLoading, $cordovaFile, $cordovaFileTransfer,  $cordovaAppVersion, API, apkDependencies) {
 
     var logFileName = "careWheelsLocalLogFile.log";
     var username, password;
@@ -95,6 +95,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           subTitle: "Please contact your friendly CareBank customer support for help"
         });
         this.error("LogServ: ERROR: Not a Android Device " + "Please contact your friendly CareWheels Customer Support");
+        $ionicLoading.hide();               // kill the loading screen, Login: Log file upload completed
         $rootScope.$emit('logfileCreated', 'Not a Android system so Logfile will not be created');
         return;
       }
@@ -208,7 +209,10 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
             $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
         });
       }); // $ionicPlatform.ready()
-      if (callingFunc === 'login') $rootScope.$emit('logfileCreated', 'Logfile created and probably uploaded too');
+      if (callingFunc === 'login') {    // This can be called from advance controller or login controller we do it for login only
+        $ionicLoading.hide();               // kill the loading screen, Login: Log file upload completed
+        $rootScope.$emit('logfileCreated', 'Logfile created and probably uploaded too');
+      }
     };  // logUpload()
 
     //

@@ -22,7 +22,7 @@ angular.module('careWheels')
 	//
 
 	userService.login = function (uname, passwd, rmbr) {
-		userService.waitForDataDownload("Credentials download in progress: ");	// Blocking the user till the data download is done
+		userService.waitForDataDownload("Credentials authentication in progress: ");	// Blocking the user till the creds download is done
 		return $http({
 			url: API.userAndGroupInfo,
 			method: 'POST',
@@ -35,6 +35,9 @@ angular.module('careWheels')
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		}).then(function successCallback(response) {
+
+			fileloggerService.info("UserServ: login: Successfully downloaded credentials", + JSON.stringify(response));
+
 			if (rmbr) {		// credentials are saved in local storage. In login.js it is retrived
 				window.localStorage['loginCredentials'] = angular.toJson({"username": uname, "password": passwd});
 			} else {
@@ -46,13 +49,13 @@ angular.module('careWheels')
 			user = {username: uname, password: passwd};
 
 			GroupInfo.initGroupInfo(response.data);
-			userService.completedDataDownload();       // DataDownload completed
+			userService.completedDataDownload("login: Credentials authentication completed");
 		}, function errorCallback(response) {
 			userService.hidePasswordDD(response);
-			userService.completedDataDownload();       // DataDownload completed
+			userService.completedDataDownload("login: Credentials authentication completed");
 			var errorMsg = "Login failed. There might be a network problem:  ";
 
-			fileloggerService.error("UserServ: " + errorMsg + "Status: " + response.status);
+			fileloggerService.error("UserServ: login:  " + errorMsg + "Status: " + response.status);
 
 			if (failCount >= 3) {
 				errorMsg += "Exceeding invalid login attempts. Please Contact admin";
@@ -101,7 +104,8 @@ angular.module('careWheels')
         });
     }
 
-	userService.completedDataDownload = function() {
+	userService.completedDataDownload = function(args) {
+		fileloggerService.info("UserServ: " + args);
   		$ionicLoading.hide();               // kill the loading screen
     }
 
@@ -139,10 +143,10 @@ angular.module('careWheels')
 		}).then(function successCallback(response) {
 			userService.hidePasswordVM(response);
 			fileloggerService.info("UserServ: setOnVacation: Successfully updated vacation settings!", + JSON.stringify(response));
-			userService.completedDataDownload();       // DataDownload completed
+			userService.completedDataDownload("setOnVacation: Vacation setting completed");       // DataDownload completed
 			return true;
 		},function errorCallback(response) {
-			userService.completedDataDownload();       // DataDownload completed
+			userService.completedDataDownload("setOnVacation: Vacation setting completed");       // DataDownload completed
 			userService.hidePasswordVM(response);
 			var errorMsg = "userService.setOnVacation: ";
 			fileloggerService.info("UserServ: setOnVacation: Vacation setting failed. Status: " + JSON.stringify(response));

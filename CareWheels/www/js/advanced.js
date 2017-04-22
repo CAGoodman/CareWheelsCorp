@@ -34,7 +34,7 @@ angular.module('careWheels')
   $scope.ScreenRefresh = function () {
     User.waitForDataDownload("Screen refresh under progress: ");  // Blocking the user till the data download is done
     Download.DownloadData(function () {
-      User.completedDataDownload();       // DataDownload completed
+      User.completedDataDownload("ScreenRefresh: Screen refresh completed");       // Screen refresh completed
       //fileloggerService.info("AdvCtrl:ScreenRefresh: Exit");
       fileloggerService.info("AdvCtrl: ScreenRefresh: Successfully refreshed screen");
       $state.go($rootScope.previousState, {}, {reload:true});
@@ -43,7 +43,7 @@ angular.module('careWheels')
 
   $scope.InitiateLogout = function () {
     fileloggerService.info("AdvCtrl: InitiateLogout: Successfully logged out");
-    $rootScope.$emit('Logout', "Advance InitiateLogout");
+    $rootScope.$emit("Logout", "Advance InitiateLogout");
   }
 
   $scope.ClearMemory = function () {

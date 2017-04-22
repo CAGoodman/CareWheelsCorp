@@ -61,7 +61,6 @@ angular.module('careWheels')
     }
 
     $scope.TappedOrClicked = function() {
-      fileloggerService.info("Login: TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
       $scope.showHelp = true;
     }
 
@@ -77,12 +76,14 @@ angular.module('careWheels')
      *         (user will have to manually input credentials at this point)
      * */
     $scope.login = function(uname, passwd, rmbr) {
+
+      fileloggerService.info("Login: Login function Entered");
+
       //
       // The control passes from here to userService.js/userService.login()
       // It checks with the server and returns the creds or errors out
       //
       User.login(uname, passwd, rmbr).then(function(response) {
-      fileloggerService.info("Login: Login function Entered");
 
         if (User.credentials()) {
 
@@ -93,7 +94,6 @@ angular.module('careWheels')
 
           var removeHandler = $rootScope.$on('logfileCreated', function(event, args) {
             removeHandler();          // We have to remove the handler first
-            User.completedDataDownload();
             fileloggerService.info("Login: " + args);
             event.stopPropagation();        // Then stop the event propogation
 
@@ -102,7 +102,7 @@ angular.module('careWheels')
             // This is the twirling icon which says "Contacting Server..."
             //
 
-            User.waitForDataDownload('Login in progress: ');  // Blocking the user till the data download is done
+            User.waitForDataDownload("Login in progress: ");  // Blocking the user till the data download is done
 
             //
             // Notification of user reminder is intialized here. That is if they
@@ -119,7 +119,7 @@ angular.module('careWheels')
 
             var loginPromise = $timeout(function(){
               loginTimeout = true;
-              User.completedDataDownload();       // DataDownload completed
+              User.completedDataDownload("ERROR: Login: Login completed");       // DataDownload completed
               $state.reload();                    // reload the view (try again)
               displayError(0);                    // pop-up error
             }, loginDependencies.loginTimeoutPeriod);
@@ -132,7 +132,7 @@ angular.module('careWheels')
               $timeout.cancel(loginPromise);       // resolve timeout promise
               if (!loginTimeout){
                 scheduleDownload();               // spin up a download/analyze scheduler
-                User.completedDataDownload();       // This kills the loading screen created by waitForDataDownload()
+                User.completedDataDownload("Login: Login completed");       // This kills the loading screen created by waitForDataDownload()
                 $state.go('app.groupStatus');     // go to group view
               }
             });
@@ -144,11 +144,11 @@ angular.module('careWheels')
           // fileloggerService.info(() executed here will create the logfile
           //
 
+          User.waitForDataDownload("Log file upload in progress: ");  // Blocking the user till logfile upload is done
           fileloggerService.logUpload(uname, passwd, "login");
-          User.waitForDataDownload('Log file upload in progress: ');  // Blocking the user till the data download is done
         }
-        fileloggerService.info("Login: Login function Exited");
       });
+      fileloggerService.info("Login: Login function Exited");
     };
 
     /**
