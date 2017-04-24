@@ -20,14 +20,9 @@ Science and Technology on Independence, Technology, and Connection in Older Age.
 TeleCare remote sensor monitoring and TimeBanking to convert our surplus human capital into shared social capital, 
 empowering people to live interdependently, take better care of each other, and uphold the social determinants of health.
 
-PSU CareWheels/Capstone project was official closed by end of August  
-The students did a fantastic job and produced a Minimum Viable Product(MVP)  
-This product has not been released  
-Two Intel Encore Fellows have been recruited to take the MVP to a Alpha releasble level  
-A new repository CareWheelsCorp is being created to house the new changes  
-As a first step the contents of Capstone repository is cloned in to CareWheelsCorp ASIS  
-Capstone will be the baseline for the CareBank Alpha release.  
-As the work progrresses sources in CareWheelsCorp = Capstone + Bug fixes + New features  
+<p align="center">
+  <img src="http://carewheels.org/images/CareBank/SmartPhone-Alice82.png" alt="CareBank: Method for Social Care Networking – US 62/383,565"/>
+</p>
 
 For more information, please visit http://carewheels.org/carebank
 
