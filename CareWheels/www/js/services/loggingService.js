@@ -5,12 +5,7 @@
 
  Authors: Capstone students PSU Aug 2016
  Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
- When the application is launched in logfileNme set to careWheelsLocalLogFile.log and
- isAndroid is initialized to true if mobile else false. Control goes to aself.js
- and all other services excpeting paymentservice is initialized and login screen is splashed.
- Login.js calls initLogComponent() --> setLogLocation(careWheelsLocalLogFile.log) --> FileLogger gets started
- Upload happens only on login. So if we want uplaod logfile in the middle we have to manually induce
- Chrome internally stores it at "C:\Users\<Your Username>\AppData\Local\Google\Chrome\User Data\Default\Local Storage"
+ Rewrote the whole file almost as it had many timing and otherissues. - NB & AV 05/03/2017
 --*/
 
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
@@ -21,7 +16,6 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     var username, password;
     var fullPkg;
     $fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
-
 
    //checks to see if cordova is available on this platform;
     $rootScope.isAndroid = window.cordova !== undefined;
@@ -42,26 +36,6 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       var IDPkg       = "Serial Number: " + window.device.serial + " UUID: " + window.device.uuid + "\n";
       fullPkg = headerPkg + cordovaPkg + apkPkg + datePkg + osPkg + hardwarePkg + IDPkg;
       return fullPkg;
-    };
-
-    this.initLogComponent = function () {
-      var ilcthis = this;
-      $fileLogger.setStorageFilename(logFileName);
-      //
-      // Right now the name of the file and time stamp is done but the file itself
-      // is not created. The first $fileLogger.log() will create it. We dont want to
-      // create the file right now because we want the old one from previous run to
-      // be uploaded first. Hence the first $fileLogger.log() is in login.js
-      //
-      ilcthis.info("LogServ: Log file name: " + logFileName + " was initialized");
-        //$fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
-    };
-
-    this.deleteLogFile = function () {
-      var dlfthis = this;
-        $fileLogger.deleteLogfile().then(function () {
-          dlfthis.info("LogServ: The log file " + logFileName + " is deleted!");
-        });
     };
 
     //
@@ -116,7 +90,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           // 2. There is a problem with the file
           //
           if (reason.message == "NOT_FOUND_ERR") { // First login
-            self.initLogComponent();    // Sets the correct logfile and also set the correct date format
+            $fileLogger.setStorageFilename(logFileName);  // Sets the correct logfile and also set the correct date format
             $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will allow the logfile to be written
             self.info(fullPkg); // This will get added to the newly created  logfile
             self.info("LogServ: New log file was created!"); // This operation will create the lofile.
@@ -157,15 +131,15 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         self.info("LogServ: Done uploading log file!. username: " + usernameIn);
 
         // delete old log file and create a new one
-        self.deleteLogFile();   // Deletes careWheelsLogFile.log
-        $fileLogger.setStorageFilename(); // set it to default messages.log
-        $fileLogger.deleteLogfile()       // delete messages.log. We dont use it so just want it gone
-        self.initLogComponent();  // This will point it back to careWheelsLogFile.log
-
-        $rootScope.fileUploaded = true;   // LogFile has been uploaded and new logfile created allow the new logfile to log
-        self.info(fullPkg); // This will get added to the current new logfile not to the one just uploaded now
-        self.info("LogServ: New log file was created!"); // This operation will create the lofile
-        preLoginUpload();
+        $fileLogger.deleteLogfile().then(function() {
+          $fileLogger.setStorageFilename(); // set it to default messages.log
+          $fileLogger.deleteLogfile()       // delete messages.log. We dont use it so just want it gone
+          $fileLogger.setStorageFilename(logFileName); // This will point it back to careWheelsLogFile.log
+          $rootScope.fileUploaded = true;   // LogFile has been uploaded and new logfile created allow the new logfile to log
+          self.info(fullPkg); // This will get added to the current new logfile not to the one just uploaded now
+          self.info("LogServ: New log file was created!"); // This operation will create the lofile
+          preLoginUpload();
+        });
       }
 
       var preLoginUpload = function() {
