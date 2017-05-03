@@ -12,24 +12,8 @@ angular.module('careWheels')
             $ionicPopup, Download, User, fileloggerService) {
 
   fileloggerService.info("AdvCtrl: Advance Controller Entered");
+  $rootScope.loginstate = false;     // This is set true in login state and false in any other state
 
-/* BACKGROUND Hooks
-  $rootScope.$on('onPaused', function(event, args) {
-    console.log("adv: root - OnPause got it!!");
-  });
-
-  $scope.$on('onPaused', function(event, args) {
-    console.log("adv: OnPause got it!!");
-  });
-
-  $rootScope.$on('onResumed', function(event, args) {
-    console.log("adv: root - onResume got it!!");
-  });
-
-  $scope.$on('onResumed', function(event, args) {
-    console.log("adv: onResume got it!!");
-  });
-*/
 
   $scope.ScreenRefresh = function () {
     User.waitForDataDownload("Screen refresh under progress: ");  // Blocking the user till the data download is done
@@ -69,30 +53,13 @@ angular.module('careWheels')
 
   $scope.UploadLogfile= function () {
     var creds = User.credentials();
-    $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
     //fileloggerService.info("AdvCtrl:UploadLogfile: Enter");
-    fileloggerService.logUpload(creds.username, creds.password, "UploadLogfile");
+    fileloggerService.logUpload(creds.username, creds.password);
     $ionicPopup.alert({
       title: "Logfile has been uploaded to the CareWheels server!!",
       subTitle: "A friendly customer service professional will get back to you soon"
     });
     //fileloggerService.info("AdvCtrl:UploadLogfile: Exit");
-  }
-
-  //
-  // Logfiles can grow to horrendous so once in a while it is better to delete it.
-  // During debug, validation and testing it is helpful to have a small logfile to manage.
-  //
-
-   $scope.DeleteLogfile= function () {
-    //fileloggerService.info("AdvCtrl:DeleteLogfile: Enter");
-    fileloggerService.deleteLogFile();
-    //fileloggerService.info("AdvCtrl:DeleteLogfile: Exit");
-    $ionicPopup.alert({
-      title: "Logfile has been deleted",
-      subTitle: "A new logfile automatically starts building up which you can upload anytime"
-    });
-    fileloggerService.info("AdvCtrl: DeleteLogfile: Successfully deleted logfile");
   }
 
   //

@@ -28,16 +28,18 @@ angular.module('careWheels', [
 
 .run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $ionicPopup, $state, User, loginDependencies, fileloggerService) {
 
-  fileloggerService.info("App: Main App Entered");
-
   //
   // preLogin.log will save away the console.log messages we miss out in the main log file careWheelsLocalLogFile.log.
   //
 
   window.localStorage.removeItem('preLogin.log');
   window.localStorage['preLogin.log'] = "\n******Pre Login Log Messages Begin****** \n\n";
-  $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
+  $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets stored in preLogin.log
+  fileloggerService.info("App: Main App Entered");
 
+  var statePaused = false;     // This is the actual state when it goes to pause mode. Pushing app to BG does not put the app in Pause mode
+  var pauseData = undefined;
+  var curState = undefined;
 
   //
   // When ionic.serve is run this is the entry point to the application
@@ -45,29 +47,50 @@ angular.module('careWheels', [
 
   $rootScope.autoRefresh = false;
 
-/* BACKGROUND hooks
   document.addEventListener("pause", function() {
-    $ionicPopup.alert({
-      title: "Application will go to background",
-      subTitle: "Testing development underway"
-    });
-    fileloggerService.info("Application will go to background!!!");
-    $rootScope.$broadcast('onPaused');
+    statePaused = true;       // Now this has really entered to pause mode
+    window.localStorage["background"] = angular.toJson({"curState": curState, "loginstate": $rootScope.loginstate, "loggedIn": $rootScope.loggedIn, "statePaused": statePaused});
+    pauseData = angular.fromJson(window.localStorage["background"])
+    fileloggerService.info("App: App Paused: " + JSON.stringify(pauseData));
   }, false);
 
   document.addEventListener("resume", function() {
-    $ionicPopup.alert({
-      title: "Application is back on the foreground",
-      subTitle: "Testing development underway"
-    });
-    fileloggerService.info("Application is back on the foreground!!!");
-    $rootScope.$broadcast('onResumed');
+    window.localStorage.removeItem("background");
+    fileloggerService.info("App: App Resumed from Background: " + JSON.stringify(pauseData));
   }, false);
-*/
+
+  //
+  // When the app goes to background or when the screen locker kicks in user manually pushes the app to background
+  // it is just out of sight only, it is in "paused" state. It will be running as usual and you can bring it
+  // forward which is called -"resume". This can keep happening and this will not affect the app working.
+  // However when more and more apps gets pushed to background at some point the app will have relinquish its memory
+  // at that point the app gets logged out. So when the user pulls it foreground the app will not be at the screen
+  // where the user left it. It will be at login screen. With the following fix the user will be at GS screen
+  // Scenario1: It can go to BG when it is in login screen. Then when it is pulled to FG we should just display login prompt
+  // Scenario2: It can go to BG from any other controller states but on resume it has to return to GS becasue the
+  // whole structure of the code is centralized around GS
+  //
+  //
+
+  pauseData = angular.fromJson(window.localStorage["background"]) ;  // We have resumed so read the saved state
+  window.localStorage.removeItem("background");
+  if (pauseData != undefined && pauseData.statePaused) {  // If it had not been paused then we just skip
+    if ($rootScope.loggedIn == undefined) {   // It could have paused while sitting at login screen then just ignore
+      if (!pauseData.loginstate) {   // It went from loginState to some other controller state
+        var credentials = angular.fromJson(window.localStorage['loginCredentials']);
+        if (credentials) {
+          fileloggerService.info("App: App Resumed from Reset: " + JSON.stringify(pauseData));
+          $rootScope.resumeInitiatedLogin = true;
+          $state.go('login', {}, {reload:true});  // We go to login.js and then boot up to GS
+        }
+      }
+    }
+  }
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
 
     fileloggerService.info("App: StateChangeStart: State change Start " + "From: " + fromState.name + " Next:" + next.name);
+    curState = next.name;
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then

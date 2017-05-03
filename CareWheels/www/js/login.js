@@ -25,6 +25,14 @@ angular.module('careWheels')
 
     $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
     fileloggerService.info("Login: Login Controller Entered");
+    //
+    // loginstate is set true in login state and false in any other state. loginstate is set when the login screen
+    // is put across during reset and during logout when again the login screen is displayed. The moment you login
+    // and go Group Status screen loginstate is set false
+    // loggedIn is set true during reset and remains on for ever indicating the system was logged in once.
+    //
+    $rootScope.loginstate = true;
+    $rootScope.loggedIn = true;
 
     //
     // When the app starts it enrters via app.js and then execution comes here.
@@ -87,69 +95,51 @@ angular.module('careWheels')
 
         if (User.credentials()) {
 
-          //
-          // We wait for the logfile to be created and uploaded too before we start data dowloading
-          // This will prevent logfile corruption and dateTimeStamp work properly
-          //
-
-          var removeHandler = $rootScope.$on('logfileCreated', function(event, args) {
-            removeHandler();          // We have to remove the handler first
-            fileloggerService.info("Login: " + args);
-            event.stopPropagation();        // Then stop the event propogation
-
-            //
-            // Pull up loading overlay so user knows App hasn't frozen
-            // This is the twirling icon which says "Contacting Server..."
-            //
-
-            User.waitForDataDownload("Login in progress: ");  // Blocking the user till the data download is done
-
-            //
-            // Notification of user reminder is intialized here. That is if they
-            // have set reminders for themselves to take meds, meals etc ...
-            //
-
-            notifications.Init_Notifs();        // initialize notifications
-
-            //
-            // Here a time out is set and if the server does not come back in
-            // loginTimeoutPeriod time then we issue login failed message. This is non blocking
-            // and execution goes down does the DownloadData()
-            //
-
-            var loginPromise = $timeout(function(){
-              loginTimeout = true;
-              User.completedDataDownload("ERROR: Login: Login completed");       // DataDownload completed
-              $state.reload();                    // reload the view (try again)
-              displayError(0);                    // pop-up error
-            }, loginDependencies.loginTimeoutPeriod);
-
-
-            // do the data download
-
-            Download.DownloadData(function(){
-              fileloggerService.info("Login: First time DownloadData function called");
-              $timeout.cancel(loginPromise);       // resolve timeout promise
-              if (!loginTimeout){
-                scheduleDownload();               // spin up a download/analyze scheduler
-                User.completedDataDownload("Login: Login completed");       // This kills the loading screen created by waitForDataDownload()
-                $state.go('app.groupStatus');     // go to group view
-              }
-            });
-          }); // $on
+          fileloggerService.logUpload(uname, passwd);   // User is authenticated let us load the log file
 
           //
-          // do the log upload. This is where the app talks to the server for credentials authentication
-          // The credentials remembering is within the app only the server is unaware of it
-          // fileloggerService.info(() executed here will create the logfile
+          // Pull up loading overlay so user knows App hasn't frozen
+          // This is the twirling icon which says "Contacting Server..."
           //
 
-          User.waitForDataDownload("Log file upload in progress: ");  // Blocking the user till logfile upload is done
-          fileloggerService.logUpload(uname, passwd, "login");
-        }
-      });
+          User.waitForDataDownload("Login in progress: ");  // Blocking the user till the data download is done
+
+          //
+          // Notification of user reminder is intialized here. That is if they
+          // have set reminders for themselves to take meds, meals etc ...
+          //
+
+          notifications.Init_Notifs();        // initialize notifications
+
+          //
+          // Here a time out is set and if the server does not come back in
+          // loginTimeoutPeriod time then we issue login failed message. This is non blocking
+          // and execution goes down does the DownloadData()
+          //
+
+          var loginPromise = $timeout(function(){
+            loginTimeout = true;
+            User.completedDataDownload("ERROR: Login: Login completed");       // DataDownload completed
+            $state.reload();                    // reload the view (try again)
+            displayError(0);                    // pop-up error
+          }, loginDependencies.loginTimeoutPeriod);
+
+
+          // do the data download
+
+          Download.DownloadData(function(){
+            fileloggerService.info("Login: First time DownloadData function called");
+            $timeout.cancel(loginPromise);       // resolve timeout promise
+            if (!loginTimeout){
+              scheduleDownload();                 // Every 5 minutes data is downloaded
+              User.completedDataDownload("Login: Login completed");       // This kills the loading screen created by waitForDataDownload()
+              $state.go('app.groupStatus');     // go to group view
+            }
+          }); // DownloadData()
+        } // if (User.credentials)
+      }); // User.login()
       fileloggerService.info("Login: Login function Exited");
-    };
+    };  // login)()
 
     /**
       * This gets scheduled as the last operation of the login process
@@ -198,15 +188,18 @@ angular.module('careWheels')
           $scope.connectionError = false;
       });
     }
-    /*
+
     //
     // When the app is put in background it gets automatically logged off. When it is brought to
     // foreground we need to automatically login. This will happen only if the user had saved
-    // credentials. The only issue with this is the user cannot just logoff and be logged off
-    // because the below script will log them back. So they have to clean memory and then logout or Force Shutdown.
+    // credentials. resumeInitiatedLogin will safeguard that this does not happen for normal login
     //
-    if (credentials)
-      $scope.login(credentials.username, credentials.password, true);
-    */
+
+    if ($rootScope.resumeInitiatedLogin) {  // If it had not been paused then we just skip
+      $rootScope.resumeInitiatedLogin = false;
+      if (credentials) {
+        $scope.login(credentials.username, credentials.password, true);   // The login process begins
+      }
+    }
     fileloggerService.info("Login: Login Controller Exited");
 });

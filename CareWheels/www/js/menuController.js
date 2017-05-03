@@ -10,11 +10,12 @@
 //
 angular.module('careWheels')
 
-.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkDependencies, User, fileloggerService) {
+.controller('menu', function ($rootScope, $scope, $state, $ionicHistory, $ionicPopup, apkDependencies, User, fileloggerService) {
 
     fileloggerService.info("MenuCtrl: Menu Controller Entered");
 
     $scope.versionNumber = apkDependencies.apkVersion;
+    $rootScope.loginstate = false;     // This is set true in login state and false in any other state
 
     $scope.navHistory = function() {
       if($ionicHistory.backView() != null) {

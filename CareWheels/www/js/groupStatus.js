@@ -17,28 +17,11 @@
 --*/
 
 angular.module('careWheels').controller('groupStatusController',
-function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fileloggerService,
+function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $log, fileloggerService,
 	GroupInfo, User, PaymentService, Download, loginDependencies) {
 
 	fileloggerService.info("GSCtrl: Group Status controller Entered");
-
-/* BACKGROUND Hooks
-    $rootScope.$on('onPaused', function(event, args) {
-		console.log("GS: root - OnPause got it!!");
-	});
-
-	$scope.$on('onPaused', function(event, args) {
-		console.log("GS: OnPause got it!!");
-	});
-
-	$rootScope.$on('onResumed', function(event, args) {
-		console.log("GS: root - onResume got it!!");
-	});
-
-	$scope.$on('onResumed', function(event, args) {
-		console.log("GS: onResume got it!!");
-  	})
-*/
+  	$rootScope.loginstate = false;     // This is set true in login state and false in any other state
 
 	//
 	// Any time the main screen i.e. group status screen is to be displayed this groupStatusController()
@@ -58,14 +41,6 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 	function runOnStateChange() {
 		//fileloggerService.info("GSCtrl:runOnStateChange: Entering Group Status screen");
 		var creds = User.credentials();
-		if ($rootScope.autoRefresh) {			//Skipping crediting user for group summary view because of auto-refresh
-			$rootScope.autoRefresh = false;
-		}
-		else {
-			fileloggerService.info("GSCtrl: runOnStateChange: Crediting user for group summary view " + "Username: " + creds.username);
-			PaymentService.memberSummary();
-		}
-
 
 		// The groupInfo object is not available immediately, spin until available
 		// It is happening in back ground with the server hence wait for 50 mili seconds
@@ -73,13 +48,22 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, fil
 		// Note: Any call enclosed between $interval() does not just fall through when stepping.
 		// groupArray[0] to grou[[4] has users in the same order irrespective of the user logged in
 
-			var initGroupInfoPromise = $interval(function () {
+		var initGroupInfoPromise = $interval(function () {
 			var groupArray = GroupInfo.groupInfo();
 			if (groupArray[0] != null) {			// [0] has to be filled in so its full indicates work is done
 				$interval.cancel(initGroupInfoPromise);		// Clear the timer
-				getLoggedInUser(groupArray);
+				if (!getLoggedInUser(groupArray)) {
+					return;
+				}
 				setGroupArray(groupArray);			// This is a critical call which sets the group of 5
 				checkCenterUserAlertLevel();
+			}
+			if ($rootScope.autoRefresh) {			//Skipping crediting user for group summary view because of auto-refresh
+				$rootScope.autoRefresh = false;
+			}
+			else {
+				fileloggerService.info("GSCtrl: runOnStateChange: Crediting user for group summary view " + "Username: " + creds.username);
+				PaymentService.memberSummary();
 			}
 		}, loginDependencies.downloadTime); 	// 50 mili sec delay to allow the download to happen
 

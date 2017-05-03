@@ -12,9 +12,10 @@
 angular.module('careWheels')
 
 .controller('vacationController',
-	function($scope, $state, $controller, $ionicLoading, GroupInfo, User, Download, fileloggerService) {
+	function($rootScope, $scope, $state, $controller, $ionicLoading, GroupInfo, User, Download, fileloggerService) {
 
    	fileloggerService.info("VacCtrl: Vacation Controller Entered");
+    $rootScope.loginstate = false;     // This is set true in login state and false in any other state
 
 	//
 	// From menu.html the control comes here and the pbject $scope.data.currentVacationMode gets initialized

@@ -23,7 +23,7 @@ echo Please ensure platform folder is free for deletion. Command prompt or explo
 echo Please note the folder platform will be deleted and recreated so ensure that the folder is not being used
 echo You have to run BuildApk -a to add the platform.
 pause
-ionic state reset
+ionic state reset                                                                                                        
 goto END
 :ADD_PLATFORM
 cordova platform add android
@@ -71,7 +71,7 @@ REM bumpConstants creates a new file ngconstants.js which gets bundled with the 
 REM ngconstants.js has all the source/binary controls
 
 IF "%1"=="-d" (
-start gulp resetVersion --version "9.9.8"
+start /min gulp resetVersion --version "9.9.8"
 pause
 )
 start gulp bumpAll
@@ -83,12 +83,12 @@ goto END
 :APK_BUILD
 REM We get the bumped up Version from package.json and update config.xml
 IF "%1"=="-d" (
-start cordova-update-config --appname "CareBank-BetaDbg"
+start /min cordova-update-config --appname "CareBank-BetaDbg"
 ) ELSE (
-start cordova-update-config --appname "CareBank-BetaRel"
+start /min cordova-update-config --appname "CareBank-BetaRel"
 )
 pause
-start cordova-update-config --appid "org.carewheels.carebank"
+start /min cordova-update-config --appid "org.carewheels.carebank1"
 pause
 @FOR /F "eol=; tokens=1,2* delims=, " %%i in (package.json) do (
 @IF %%i=="apkVersion": (
@@ -97,7 +97,7 @@ goto VERSION_DONE
 )
 )
 :VERSION_DONE
-start cordova-update-config --appversion %apkVersion%
+start /min cordova-update-config --appversion %apkVersion%
 pause
 IF "%1"=="-d" (
 del platforms\android\build\outputs\apk\*.apk

@@ -8,7 +8,7 @@
 //
 angular.module('careWheels')
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
-.factory("notifications", function($log, $cordovaLocalNotification, fileloggerService){
+.factory("notifications", function($cordovaLocalNotification, fileloggerService){
 
   var isAndroid = window.cordova !== undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
   var data;   //needs to be called outside the functions so it persists for all of them

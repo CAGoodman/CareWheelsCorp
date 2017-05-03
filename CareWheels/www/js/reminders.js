@@ -11,11 +11,13 @@
 
 angular.module('careWheels')
 
-  .controller('remindersController', (function ($scope, $controller, $ionicPopup, $http, $state, $httpParamSerializerJQLike,
+  .controller('remindersController', (function ($rootScope, $scope, $controller, $ionicPopup, $http, $state, $httpParamSerializerJQLike,
     User, API, notifications, fileloggerService) {
     var data = notifications.getData();
 
     fileloggerService.info("RemCtrl: Reminder Controller Entered");
+    $rootScope.loginstate = false;     // This is set true in login state and false in any other state
+
     $scope.reminders = [    //array of live definitions; to be displayed to user
       {
         /* Reminder 0 */

@@ -16,249 +16,241 @@
 
 angular.module('careWheels')
   .controller('individualStatusController',
-      function ($scope, $state, $ionicPopup, GroupInfo, PaymentService,
+      function ($rootScope, $scope, $state, $ionicPopup, GroupInfo, PaymentService,
                   fileloggerService, Download, User, loginDependencies) {
 
   fileloggerService.info("ISCtrl: Individual Status controller Entered");
+  $rootScope.loginstate = false;     // This is set true in login state and false in any other state
 
-/* BACKGROUND Hooks
-  $scope.$on('onPaused', function(event, args) {
-    console.log("IS: OnPause got it!!");
-  });
+  /*
+  /**
+   * grabs the analysis of the member selected on the previous view
+   */
+  var analysis = GroupInfo.getSelectedMemberIndex();
+  $scope.GroupInfo = GroupInfo;
+  var timeNow = new Date().getHours();
+  var phoneNumberError = false;
 
-  $scope.$on('onResumed', function(event, args) {
-    console.log("IS: onResume got it!!");
-  })
-  */
+  $scope.alertLevel = '';
 
-    /**
-     * grabs the analysis of the member selected on the previous view
-     */
-    var analysis = GroupInfo.getSelectedMemberIndex();
-    $scope.GroupInfo = GroupInfo;
-    var timeNow = new Date().getHours();
-    var phoneNumberError = false;
+  function convertMedsOrMealsAlertLevelToColor(sensorArray) {
 
-    $scope.alertLevel = '';
+    var coloredArray = [];
 
-    function convertMedsOrMealsAlertLevelToColor(sensorArray) {
+    for (var i = 0; i < sensorArray.length; i++) {
 
-      var coloredArray = [];
-
-      for (var i = 0; i < sensorArray.length; i++) {
-
-        if (sensorArray[i] == 0) {
-          coloredArray[i] = "blue";
-        }
-
-        if (sensorArray[i] == 1) {
-          coloredArray[i] = "yellow";
-        }
-
-        if (sensorArray[i] >= 2) {
-          coloredArray[i] = "red";
-        }
+      if (sensorArray[i] == 0) {
+        coloredArray[i] = "blue";
       }
 
-      return coloredArray;
+      if (sensorArray[i] == 1) {
+        coloredArray[i] = "yellow";
+      }
+
+      if (sensorArray[i] >= 2) {
+        coloredArray[i] = "red";
+      }
     }
 
-    function convertPresenceAlertLevelToColor(sensorArray) {
-      var coloredArray = [];
+    return coloredArray;
+  }
 
-      for (var i = 0; i < sensorArray.length; i++) {
+  function convertPresenceAlertLevelToColor(sensorArray) {
+    var coloredArray = [];
 
-        if (sensorArray[i] == false) {
-          coloredArray[i] = "grey";
+    for (var i = 0; i < sensorArray.length; i++) {
+
+      if (sensorArray[i] == false) {
+        coloredArray[i] = "grey";
+      }
+
+      if (sensorArray[i] == true) {
+        coloredArray[i] = "blue";
+      }
+    }
+    return coloredArray;
+  }
+
+  function convertHitsToString(hitsArray) {
+
+    var stringArray = [];
+    var hitIndicator = "";
+
+    for (var i = 0; i < hitsArray.length; i++) {
+
+      for (var j = 0; j < hitsArray[i]; j++) {
+        if (j > loginDependencies.maxHitIndicator) {    // 5
+          break;
         }
 
-        if (sensorArray[i] == true) {
-          coloredArray[i] = "blue";
-        }
+        hitIndicator += "X";
       }
-      return coloredArray;
+
+      stringArray[i] = hitIndicator;
+      hitIndicator = "";
     }
 
-    function convertHitsToString(hitsArray) {
+    return stringArray;
+  }
 
-      var stringArray = [];
-      var hitIndicator = "";
+  $scope.currentHour = new Date().getHours();
+  $scope.getNumber = function (num) {
+    return new Array(num);
+  }
 
-      for (var i = 0; i < hitsArray.length; i++) {
+  $scope.data = {
 
-        for (var j = 0; j < hitsArray[i]; j++) {
-          if (j > loginDependencies.maxHitIndicator) {    // 5
-            break;
-          }
+    presence: {
+      value: convertPresenceAlertLevelToColor(analysis.analysisData.presenceByHour)
+    },
 
-          hitIndicator += "X";
-        }
+    meals: {
+      value: convertMedsOrMealsAlertLevelToColor(analysis.analysisData.fridgeRollingAlertLevel),
+      hits: convertHitsToString(analysis.analysisData.fridgeHitsByHour)
+    },
 
-        stringArray[i] = hitIndicator;
-        hitIndicator = "";
-      }
-
-      return stringArray;
+    meds: {
+      value: convertMedsOrMealsAlertLevelToColor(analysis.analysisData.medsRollingAlertLevel),
+      hits: convertHitsToString(analysis.analysisData.medsHitsByHour)
     }
 
-    $scope.currentHour = new Date().getHours();
-    $scope.getNumber = function (num) {
-      return new Array(num);
+  };
+
+  /**
+   * This function returns the color for the call button.
+   */
+  $scope.getCallButtonColor = function () {
+    //var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
+    //fileloggerService.info("IS:getCallButtonColor " + msg);
+
+    $scope.showCallButton = true;
+
+    // We disable Call button for logged in user
+
+    var user = User.credentials();
+    if (user.username == analysis.username) {
+       $scope.showCallButton = false;
+      return 'disableCallButton';
     }
 
-    $scope.data = {
+    // check for null params
+    if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)
+      return 'button-dark disableCallButton';
 
-      presence: {
-        value: convertPresenceAlertLevelToColor(analysis.analysisData.presenceByHour)
-      },
+    var fridge = parseInt(analysis.analysisData.fridgeAlertLevel);
+    var meds = parseInt(analysis.analysisData.medsAlertLevel);
 
-      meals: {
-        value: convertMedsOrMealsAlertLevelToColor(analysis.analysisData.fridgeRollingAlertLevel),
-        hits: convertHitsToString(analysis.analysisData.fridgeHitsByHour)
-      },
+    // this string must match the defined css class names
+    var returnString = '';
 
-      meds: {
-        value: convertMedsOrMealsAlertLevelToColor(analysis.analysisData.medsRollingAlertLevel),
-        hits: convertHitsToString(analysis.analysisData.medsHitsByHour)
+    // check for acceptable bounds or null phone number disable button if true
+    if (meds < 0 || fridge < 0 || analysis.phoneNumber == null) {
+      returnString += 'disableCallButton'; // error state
+    }
+
+    // check for color status of button
+    if (fridge >= 2 || meds >= 2) {
+      returnString += ' button-assertive';  // Red
+    }
+    else if (fridge == 1 || meds == 1) {
+      returnString += ' button-energized';  // Yellow
+    }
+    else {
+      returnString += ' button-dark disableCallButton';
+       $scope.showCallButton = false;
+    }
+    return returnString;
+  }; // getCallButtonColor()
+
+  /**
+   * This function takes the phone number string returned from Cyclos (which
+   * is in the incorrect format), and it changes the string to a format
+   * necessary for making a call. Note: if no phone number is put on the
+   * Cyclos server, the number (000) 000-0000 will be inserted. This indicates
+   * that the number needs to be placed in the system.
+   */
+  $scope.getPhoneNumber = function () {
+    //var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
+    //fileloggerService.info("IS:getPhoneNumber " + msg);
+
+    var cyclosPhoneNumber = analysis.phoneNumber;
+
+    if (cyclosPhoneNumber == null) {
+      cyclosPhoneNumber = "+00000000000";
+      phoneNumberError = true;             // this will trigger popup when phone button is pressed
+    }
+
+    var callString = "tel:";
+    callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) +
+     "-" + cyclosPhoneNumber.substring(8);
+
+    var alertNumFridge = analysis.analysisData.fridgeAlertLevel;
+    var alertNumMeds = analysis.analysisData.medsAlertLevel;
+    //
+    // Alert intervals are defined for time ranges- 6:00AM-10:59AM, 11:00AM-3:59PM and 4:00PM-9:59PM.
+    // If there are no events and the interval is enabled for alerts and the user is present the alert is raised.
+    // fridgeAlertLevel is raised by 1(yellow) and medsAlertLevel is raised by 2(red).
+    // If the same condition persists for the next time interval food alerts goes red.
+    // fridgeAlertLevel escalates by 1 and medsAlertLevle escalates by 2
+    //
+    //
+    var alertLevel = '';
+    if (alertNumMeds >= 2) {
+      alertLevel = 'red';
+    } else {
+      if (alertNumFridge == 1){
+        alertLevel = 'yellow';
       }
+    }
+    $scope.alertLevel = alertLevel;
+    return callString;
+  };  // getPhoneNumber()
 
-    };
+  // button press event
+  $scope.checkPhoneError = function () {
+    if (phoneNumberError) {
+      displayError();
+      fileloggerService.error("ISCtrl: checkPhoneError:There is no phone number for " + analysis.name);
+    }
+    else if ($scope.alertLevel != '') {
+      PaymentService.call(analysis.username, $scope.alertLevel);
+    }
+  };  // checkPhoneError()
 
-    /**
-     * This function returns the color for the call button.
-     */
-    $scope.getCallButtonColor = function () {
-      //var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
-      //fileloggerService.info("IS:getCallButtonColor " + msg);
+  // pulldown refresh event
+  $scope.doRefresh = function () {
+    Download.DownloadData(function(){
+      //$scope.$broadcast('scroll.refreshComplete');
+      fileloggerService.info("ISCtrl: Pull down refresh done!");
 
-      $scope.showCallButton = true;
-
-      // We disable Call button for logged in user
-
-      var user = User.credentials();
-      if (user.username == analysis.username) {
-         $scope.showCallButton = false;
-        return 'disableCallButton';
-      }
-
-      // check for null params
-      if (analysis.analysisData.fridgeAlertLevel == null || analysis.analysisData.medsAlertLevel == null)
-        return 'button-dark disableCallButton';
-
-      var fridge = parseInt(analysis.analysisData.fridgeAlertLevel);
-      var meds = parseInt(analysis.analysisData.medsAlertLevel);
-
-      // this string must match the defined css class names
-      var returnString = '';
-
-      // check for acceptable bounds or null phone number disable button if true
-      if (meds < 0 || fridge < 0 || analysis.phoneNumber == null) {
-        returnString += 'disableCallButton'; // error state
-      }
-
-      // check for color status of button
-      if (fridge >= 2 || meds >= 2) {
-        returnString += ' button-assertive';  // Red
-      }
-      else if (fridge == 1 || meds == 1) {
-        returnString += ' button-energized';  // Yellow
-      }
-      else {
-        returnString += ' button-dark disableCallButton';
-         $scope.showCallButton = false;
-      }
-      return returnString;
-    }; // getCallButtonColor()
-
-    /**
-     * This function takes the phone number string returned from Cyclos (which
-     * is in the incorrect format), and it changes the string to a format
-     * necessary for making a call. Note: if no phone number is put on the
-     * Cyclos server, the number (000) 000-0000 will be inserted. This indicates
-     * that the number needs to be placed in the system.
-     */
-    $scope.getPhoneNumber = function () {
-      //var msg = " Username: " + analysis.username + " Balance: " + analysis.balance;
-      //fileloggerService.info("IS:getPhoneNumber " + msg);
-
-      var cyclosPhoneNumber = analysis.phoneNumber;
-
-      if (cyclosPhoneNumber == null) {
-        cyclosPhoneNumber = "+00000000000";
-        phoneNumberError = true;             // this will trigger popup when phone button is pressed
-      }
-
-      var callString = "tel:";
-      callString = callString + cyclosPhoneNumber.substring(2, 5) + "-" + cyclosPhoneNumber.substring(5, 8) +
-       "-" + cyclosPhoneNumber.substring(8);
-
-      var alertNumFridge = analysis.analysisData.fridgeAlertLevel;
-      var alertNumMeds = analysis.analysisData.medsAlertLevel;
       //
-      // Alert intervals are defined for time ranges- 6:00AM-10:59AM, 11:00AM-3:59PM and 4:00PM-9:59PM.
-      // If there are no events and the interval is enabled for alerts and the user is present the alert is raised.
-      // fridgeAlertLevel is raised by 1(yellow) and medsAlertLevel is raised by 2(red).
-      // If the same condition persists for the next time interval food alerts goes red.
-      // fridgeAlertLevel escalates by 1 and medsAlertLevle escalates by 2
+      // Back and forward arrows help to go back/forward the the immidiate past or future screen.
+      // As we move from screen to screen back/forward an index is maintained. So if we ant to jump into
+      // the index then we use $stat.go. The current index is alwsys = 0.
       //
-      //
-      var alertLevel = '';
-      if (alertNumMeds >= 2) {
-        alertLevel = 'red';
-      } else {
-        if (alertNumFridge == 1){
-          alertLevel = 'yellow';
-        }
-      }
-      $scope.alertLevel = alertLevel;
-      return callString;
-    };  // getPhoneNumber()
 
-    // button press event
-    $scope.checkPhoneError = function () {
-      if (phoneNumberError) {
-        displayError();
-        fileloggerService.error("ISCtrl: checkPhoneError:There is no phone number for " + analysis.name);
-      }
-      else if ($scope.alertLevel != '') {
-        PaymentService.call(analysis.username, $scope.alertLevel);
-      }
-    };  // checkPhoneError()
+      $state.go($state.current, {}, {reload: true});
+    });
+  };
 
-    // pulldown refresh event
-    $scope.doRefresh = function () {
-      Download.DownloadData(function(){
-        //$scope.$broadcast('scroll.refreshComplete');
-        fileloggerService.info("ISCtrl: Pull down refresh done!");
-
-        //
-        // Back and forward arrows help to go back/forward the the immidiate past or future screen.
-        // As we move from screen to screen back/forward an index is maintained. So if we ant to jump into
-        // the index then we use $stat.go. The current index is alwsys = 0.
-        //
-
-        $state.go($state.current, {}, {reload: true});
-      });
-    };
-
-    $scope.name = analysis.name;
-    $scope.phoneNumber = analysis.phoneNumber;
+  $scope.name = analysis.name;
+  $scope.phoneNumber = analysis.phoneNumber;
 
 
-    // An error popup dialog
-    function displayError() {
-      phoneNumberError = true;
-      var alertPopup = $ionicPopup.alert({
-        title: '<div class="errorTitle">There is no phone number for this member.</div>',
-        template: '<div class="errorTemplate">Please contact your friendly CareBank customer support for help.</div>',
-        buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
-          text: 'Okay',
-          type: 'button-calm'
-        }]
-      });
-      alertPopup.then(function (res) {
+  // An error popup dialog
+  function displayError() {
+    phoneNumberError = true;
+    var alertPopup = $ionicPopup.alert({
+      title: '<div class="errorTitle">There is no phone number for this member.</div>',
+      template: '<div class="errorTemplate">Please contact your friendly CareBank customer support for help.</div>',
+      buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
+        text: 'Okay',
+        type: 'button-calm'
+      }]
+    });
+    alertPopup.then(function (res) {
 
-      });
-    }
-    fileloggerService.info("ISCtrl: Individual Status controller Exited");
-  });
+    });
+  }
+  fileloggerService.info("ISCtrl: Individual Status controller Exited");
+});
