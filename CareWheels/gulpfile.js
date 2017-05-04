@@ -110,7 +110,7 @@ gulp.task('bumpDispPatchVer', function(callback) {
 
 gulp.task('resetVersion', function () {
   return gulp.src('./package.json')
-    .pipe(replace(/"version*.*/, "\"version\": "  + "\"" + argv.version + "\","))
+    .pipe(replace(/"apkVersion*.*/, "\"apkVersion\": "  + "\"" + argv.version + "\","))
     .pipe(gulp.dest('./'));
 });
 

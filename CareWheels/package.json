@@ -2,9 +2,9 @@
   "apkDependencies": {
     "apkName": "CareBank-Application",
     "apkCompany": "CareWheels Corporation",
-    "apkVersion": "1.0.44",
-    "apkDate": "Wed Mar 22 2017 18:46:18 GMT-0700 (Pacific Daylight Time)",
-    "apkPackage": "CareBank-armv7-22Mar17.apk"
+    "apkVersion": "1.1.10",
+    "apkDate": "Thu May 04 2017 13:54:38 GMT-0700 (Pacific Daylight Time)",
+    "apkPackage": "CareBank-armv7-04May17.apk"
   },
   "dependencies": {
     "angular-moment": "^1.0.0-beta.6",
@@ -16,6 +16,7 @@
     "gulp-minify-css": "^0.3.0",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.0.4",
+    "http-status-codes": "^1.1.6",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
     "ng-webworker": "^0.2.3"

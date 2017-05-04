@@ -1,5 +1,5 @@
 @echo off & setlocal enableextensions
-REM Batch file building a releasable APK for ARMv7
+REM Batch file building a releasable APK for ARMv7 and x86
 REM CareWheels Corporation 2016
 REM Author: Ananda Vardhana Nov 22, 2016
 echo MAKE SURE YOU ARE AT THE HOME DIRECTORY EX: ....\CareWheelsCorp\CareWheels
@@ -23,7 +23,7 @@ echo Please ensure platform folder is free for deletion. Command prompt or explo
 echo Please note the folder platform will be deleted and recreated so ensure that the folder is not being used
 echo You have to run BuildApk -a to add the platform.
 pause
-ionic state reset
+ionic state reset                                                                                                        
 goto END
 :ADD_PLATFORM
 cordova platform add android
@@ -69,6 +69,11 @@ REM This calls bumpPatch, bumpDate, bumpConstants and finally calls getProperty
 REM bumpApk, bumpPatch, bumpDate all bump it up in the package.json only
 REM bumpConstants creates a new file ngconstants.js which gets bundled with the APK
 REM ngconstants.js has all the source/binary controls
+
+IF "%1"=="-d" (
+start /min gulp resetVersion --version "9.9.8"
+pause
+)
 start gulp bumpAll
 echo Did the bumpAll finish successfully?
 set /p ans=Enter y or n:
@@ -77,9 +82,13 @@ goto END
 
 :APK_BUILD
 REM We get the bumped up Version from package.json and update config.xml
-start cordova-update-config --appname "CareBank-Alpha"
+IF "%1"=="-d" (
+start /min cordova-update-config --appname "CareBank-BetaDbg"
+) ELSE (
+start /min cordova-update-config --appname "CareBank-BetaRel"
+)
 pause
-start cordova-update-config --appid "org.carewheels.carebank"
+start /min cordova-update-config --appid "org.carewheels.carebank1"
 pause
 @FOR /F "eol=; tokens=1,2* delims=, " %%i in (package.json) do (
 @IF %%i=="apkVersion": (
@@ -88,9 +97,22 @@ goto VERSION_DONE
 )
 )
 :VERSION_DONE
-start cordova-update-config --appversion %apkVersion%
+start /min cordova-update-config --appversion %apkVersion%
 pause
+IF "%1"=="-d" (
+del platforms\android\build\outputs\apk\*.apk
+start cordova build --debug android
+echo Did it build successfully?
+set /p ans=Enter y or n:
+cd platforms\android\build\outputs\apk
+ren android-armv7-debug.apk CareBank-armv7-%DS%-debug.apk
+ren android-x86-debug.apk CareBank-x86-%DS%-debug.apk
+echo Debug build done!!
+goto END
+) ELSE (
+del platforms\android\build\outputs\apk\*.apk
 start cordova build --release android
+)
 REM At this point we get the file platforms\android\build\outputs\apk\android-release-unsigned.apk
 echo Did it build successfully?
 set /p ans=Enter y or n:
@@ -120,35 +142,50 @@ cd platforms\android\build\outputs\apk
 
 REM During devleopemnt we build many times and it is possible the old APK is still there so need to delete it
 del CareBank-armv7-%DS%-release-unsigned.apk >nul 2>&1
-if %CareBank_Saved_key%=="" goto CREATE_KEY
+REM if %CareBank_Saved_key%=="" goto CREATE_KEY
+if %CareBank_Saved_key%=="" goto NO_KEY
 echo We have found a saved key %CareBank_Saved_key%
-echo Do you want to use the old key? If you say no then we will create a new key
-set /p ans=Enter y or n:
-IF "%ans%"=="n" goto CREATE_KEY
+REM echo Do you want to use the old key? If you say no then we will create a new key
+REM set /p ans=Enter y or n:
+REM IF "%ans%"=="n" goto CREATE_KEY
 goto SIGNIT
+
+REM****************************** KEY GENERATION SKIPPED BEGIN*************************************
+REM If you want to generate key uncomment above 4 lines of code and comment the NO_KEY line
+:NO_KEY
+echo No key store was found please contact Claude A Goodman for the keystore
+goto END
 
 :CREATE_KEY
 REM Delete old key and create a new key
 del *.keystore >nul 2>&1
-echo It is going to ask you for a password: ZXCV\(9vcxz
+echo It is going to ask you for a password:
 keytool -genkey -v -keystore CareBank_%DS%_key.keystore -alias CareBank_key_alias -keyalg RSA -keysize 2048 -validity 10000
 REM Delte the old saved key and copy new key for subsequent use
 del ..\..\..\..\..\*.key >nul 2>&1
 move CareBank_%DS%_key.keystore ..\..\..\..\..\ >nul 2>&1
 REM We will keep the alias as same and not date stamp it
-echo It is going to ask you for a password: ZXCV(9vcxz
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore CareBank_%DS%_key.keystore android-armv7-release-unsigned.apk CareBank_key_alias
+REM****************************** KEY GENERATION SKIPPED END*************************************
+
+:SKIP_KEY
+echo It is going to ask you for a password:
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\CareBank_%DS%_key.keystore android-armv7-release-unsigned.apk CareBank_key_alias
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\CareBank_%DS%_key.keystore android-x86-release-unsigned.apk CareBank_key_alias
 goto ALIGNIT
 
 :SIGNIT
-echo It is going to ask you for a password: ZXCV(9vcxz
-
+echo It is going to ask you for a password:
 
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% android-armv7-release-unsigned.apk CareBank_key_alias
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% android-x86-release-unsigned.apk CareBank_key_alias
+
+rem To verify a apk is signed or unsinged use the following command
+rem jarsigner -verify -verbose -certs
 
 :ALIGNIT
 del CareBank-armv7-%DS%.apk >nul 2>&1
 zipalign -v 4 android-armv7-release-unsigned.apk CareBank-armv7-%DS%.apk
+zipalign -v 4 android-x86-release-unsigned.apk CareBank-x86-%DS%.apk
 goto END
 
 :HELP
@@ -174,3 +211,4 @@ goto END
 :VER_ERR
 echo Usage: BuildApk -v "Version to reset"
 :END
+del android-armv7-debug-unaligned.apk android-armv7-release-unsigned.apk android-x86-debug-unaligned.apk android-x86-release-unsigned.apk
