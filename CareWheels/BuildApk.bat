@@ -1,5 +1,5 @@
 @echo off & setlocal enableextensions
-REM Batch file building a releasable APK for ARMv7
+REM Batch file building a releasable APK for ARMv7 and x86
 REM CareWheels Corporation 2016
 REM Author: Ananda Vardhana Nov 22, 2016
 echo MAKE SURE YOU ARE AT THE HOME DIRECTORY EX: ....\CareWheelsCorp\CareWheels
@@ -142,12 +142,19 @@ cd platforms\android\build\outputs\apk
 
 REM During devleopemnt we build many times and it is possible the old APK is still there so need to delete it
 del CareBank-armv7-%DS%-release-unsigned.apk >nul 2>&1
-if %CareBank_Saved_key%=="" goto CREATE_KEY
+REM if %CareBank_Saved_key%=="" goto CREATE_KEY
+if %CareBank_Saved_key%=="" goto NO_KEY
 echo We have found a saved key %CareBank_Saved_key%
-echo Do you want to use the old key? If you say no then we will create a new key
-set /p ans=Enter y or n:
-IF "%ans%"=="n" goto CREATE_KEY
+REM echo Do you want to use the old key? If you say no then we will create a new key
+REM set /p ans=Enter y or n:
+REM IF "%ans%"=="n" goto CREATE_KEY
 goto SIGNIT
+
+REM****************************** KEY GENERATION SKIPPED BEGIN*************************************
+REM If you want to generate key uncomment above 4 lines of code and comment the NO_KEY line
+:NO_KEY
+echo No key store was found please contact Claude A Goodman for the keystore
+goto END
 
 :CREATE_KEY
 REM Delete old key and create a new key
@@ -158,6 +165,9 @@ REM Delte the old saved key and copy new key for subsequent use
 del ..\..\..\..\..\*.key >nul 2>&1
 move CareBank_%DS%_key.keystore ..\..\..\..\..\ >nul 2>&1
 REM We will keep the alias as same and not date stamp it
+REM****************************** KEY GENERATION SKIPPED END*************************************
+
+:SKIP_KEY
 echo It is going to ask you for a password:
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\CareBank_%DS%_key.keystore android-armv7-release-unsigned.apk CareBank_key_alias
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\CareBank_%DS%_key.keystore android-x86-release-unsigned.apk CareBank_key_alias
