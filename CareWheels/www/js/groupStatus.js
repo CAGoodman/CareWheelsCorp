@@ -278,7 +278,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 		fridgeAlert = groupArray[loggedInUserIndex].analysisData.fridgeAlertLevel;
 		medsAlert = groupArray[loggedInUserIndex].analysisData.medsAlertLevel;
 		vacationMode = groupArray[loggedInUserIndex].analysisData.vacationMode;
-		$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode, currentUser);
+		$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode, currentUser); // HTML changed so that this user's "status" has no effect on display
 
 		currentUser++; // = 1 at this point
 		// put everyone else into the array
@@ -293,7 +293,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 					fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
 					medsAlert = groupArray[i].analysisData.medsAlertLevel;
 					vacationMode = groupArray[i].analysisData.vacationMode;
-					$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode, currentUser); //LoggedInUser status is not set
+					$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode, currentUser);
 				}
 				catch (Exception) {
 					$scope.group[currentUser].status = 'grey';
