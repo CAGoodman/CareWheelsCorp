@@ -88,15 +88,21 @@ angular.module('careWheels', [
   
   $ionicPlatform.ready(function() {
     document.addEventListener("pause", function() {
-	  window.localStorage["autologincredentials"] = angular.toJson(User.credentials());
-      console.log("The application is pausing");
+	  console.log($state.current.name);
+	  if ($state.current.name != 'login') {
+	    window.localStorage["autoLoginCredentials"] = angular.toJson(User.credentials());
+        console.log("The application is pausing from non-login state -- Saving " + angular.toJson(User.credentials()));
+	  } else {
+	    window.localStorage.removeItem("autoLoginCredentials");
+        console.log("The application is pausing from login state -- Removing Auto-login credentials for safety");	  
+	  }
     }, false);
   });
   
    $ionicPlatform.ready(function() {
     document.addEventListener("resume", function() {
-      window.localStorage.removeItem("autologincredentials");
-      console.log("The application is resuming");
+      window.localStorage.removeItem("autoLoginCredentials");
+      console.log("The application is resuming -- Removing Auto-login credentials");
     }, false);
   });
 

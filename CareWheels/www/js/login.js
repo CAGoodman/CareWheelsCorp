@@ -79,14 +79,7 @@ angular.module('careWheels')
       console.log("TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
       $scope.showHelp = true;
     }
-	
-	var autoLoginCredentials = angular.fromJson(window.localStorage['autoLoginCredentials']);
-	
-	if (autoLoginCredentials) {
-      console.log("Performing auto-login");
-      window.localStorage.removeItem("autoLoginCredentials");
-      $scope.login(autoLoginCredentials.username, autoLoginCredentials.password, $scope.rememberMe)
-	}
+
 
     /**
      * Login function is called from app.js. This method
@@ -205,4 +198,13 @@ angular.module('careWheels')
           $scope.connectionError = false;
       });
     }
+		
+	var autoLoginCredentials = angular.fromJson(window.localStorage['autoLoginCredentials']);
+	console.log("On startup. Auto-login credentials are " + window.localStorage['autoLoginCredentials']);
+	
+	if (autoLoginCredentials) {
+      console.log("Performing auto-login");
+      window.localStorage.removeItem("autoLoginCredentials");
+      $scope.login(autoLoginCredentials.username, autoLoginCredentials.password, $scope.rememberMe);
+	}
 });
