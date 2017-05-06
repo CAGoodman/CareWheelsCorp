@@ -90,7 +90,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 		// We cannot use $scope.group[] here becasue that has not been saved hence we use groupArray[]
 		//
 		status = getAlertColor(groupArray[loggedInUserIndex].analysisData.fridgeAlertLevel,
-			groupArray[loggedInUserIndex].analysisData.medsAlertLevel, User.getVacationValue(), loggedInUserIndex);
+			groupArray[loggedInUserIndex].analysisData.medsAlertLevel, User.getVacationValue());
 		switch (status) {
 			case "grey":
 				$scope.showBarVM = true;
@@ -165,7 +165,6 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 			username: '',
 			status: '',
 			image: '',
-			alertLevelColor: '',
 			error: false
 		},
 		{ // top left @ index 1
@@ -173,7 +172,6 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 			username: '',
 			status: '',
 			image: '',
-			alertLevelColor: '',
 			error: false
 		},
 		{ // top right @ index 2
@@ -181,7 +179,6 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 			username: '',
 			status: '',
 			image: '',
-			alertLevelColor: '',
 			error: false
 		},
 		{ // bottom left @ index 3
@@ -189,7 +186,6 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 			username: '',
 			status: '',
 			image: '',
-			alertLevelColor: '',
 			error: false
 		},
 		{ // bottom right @ index 4
@@ -197,7 +193,6 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 			username: '',
 			status: '',
 			image: '',
-			alertLevelColor: '',
 			error: false
 		}
     ];
@@ -278,7 +273,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 		fridgeAlert = groupArray[loggedInUserIndex].analysisData.fridgeAlertLevel;
 		medsAlert = groupArray[loggedInUserIndex].analysisData.medsAlertLevel;
 		vacationMode = groupArray[loggedInUserIndex].analysisData.vacationMode;
-		$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode, currentUser); // HTML changed so that this user's "status" has no effect on display
+		$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode); // HTML changed so that this user's "status" has no effect on display
 
 		currentUser++; // = 1 at this point
 		// put everyone else into the array
@@ -293,7 +288,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 					fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
 					medsAlert = groupArray[i].analysisData.medsAlertLevel;
 					vacationMode = groupArray[i].analysisData.vacationMode;
-					$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode, currentUser);
+					$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode);
 				}
 				catch (Exception) {
 					$scope.group[currentUser].status = 'grey';
@@ -316,7 +311,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 
     function clickUser(index) {
 		if (!$scope.group[index].error && !$scope.group[index].vacationMode) {
-			PaymentService.sensorDataView($scope.group[index].alertLevelColor, $scope.group[index].username);
+			PaymentService.sensorDataView($scope.group[index].status, $scope.group[index].username);
 			$scope.group[0].userSelected = $scope.group[index].name;
 			GroupInfo.setSelectedMemberIndex($scope.group[index].username);
 			$state.go('app.individualStatus');
@@ -344,7 +339,7 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
      * alert level. This string is used with ng-class, to
      * append the color class onto the div
      * */
-    getAlertColor = function (fridgeAlert, medsAlert, vacationMode, index) {
+    getAlertColor = function (fridgeAlert, medsAlert, vacationMode) {
 		if (vacationMode) {
  			alertString = 'grey';
  			return alertString;
@@ -363,7 +358,6 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 			alertString = 'yellow';
 		else if (fridge == 0 || meds == 0)
 			alertString = 'blue';
-		$scope.group[index].alertLevelColor = alertString;
 		return alertString;
     };	// getAlertColor();
 
