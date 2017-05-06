@@ -54,7 +54,7 @@ angular.module('careWheels')
     // Else it is removed. Here we unconditionally retrive the creds. We either get valid creds or null.
     //
 
-    var credentials = angular.fromJson(window.localStorage['loginCredentials']);
+	var credentials = angular.fromJson(window.localStorage['loginCredentials']);
 
     $ionicHistory.nextViewOptions({disableBack: true});
 
@@ -79,6 +79,14 @@ angular.module('careWheels')
       console.log("TappedOrClicked. username: " + $scope.username + " password: " + $scope.passwd);
       $scope.showHelp = true;
     }
+	
+	var autoLoginCredentials = angular.fromJson(window.localStorage['autoLoginCredentials']);
+	
+	if (autoLoginCredentials) {
+      console.log("Performing auto-login");
+      window.localStorage.removeItem("autoLoginCredentials");
+      $scope.login(autoLoginCredentials.username, autoLoginCredentials.password, $scope.rememberMe)
+	}
 
     /**
      * Login function is called from app.js. This method
