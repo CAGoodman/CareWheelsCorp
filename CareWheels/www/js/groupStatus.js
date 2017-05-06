@@ -275,6 +275,10 @@ function ($rootScope, $scope, $interval, $state, $fileLogger, $ionicHistory, fil
 		$scope.group[currentUser].credit = groupArray[loggedInUserIndex].analysisData.credit;
 		$scope.group[currentUser].debit = groupArray[loggedInUserIndex].analysisData.debit;
 		$scope.group[currentUser].vacationMode = groupArray[loggedInUserIndex].analysisData.vacationMode;
+		fridgeAlert = groupArray[loggedInUserIndex].analysisData.fridgeAlertLevel;
+		medsAlert = groupArray[loggedInUserIndex].analysisData.medsAlertLevel;
+		vacationMode = groupArray[loggedInUserIndex].analysisData.vacationMode;
+		$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode, currentUser);
 
 		currentUser++; // = 1 at this point
 		// put everyone else into the array
