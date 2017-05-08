@@ -26,7 +26,16 @@ angular.module('careWheels', [
 ])
 
 
-.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, User, loginDependencies) {
+.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $ionicPopup, $state, User, loginDependencies, fileloggerService) {
+
+  //
+  // preLogin.log will save away the console.log messages we miss out in the main log file careWheelsLocalLogFile.log.
+  //
+
+  window.localStorage.removeItem('preLogin.log');
+  window.localStorage['preLogin.log'] = "\n******Pre Login Log Messages Begin****** \n\n";
+  $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets stored in preLogin.log
+  fileloggerService.info("App: Main App Entered");
 
   //
   // When ionic.serve is run this is the entry point to the application
@@ -36,7 +45,8 @@ angular.module('careWheels', [
 
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
 
-    console.log("StateChangeStart: State change Start " + "From: " + fromState.name + " Next: " + next.name);
+    fileloggerService.info("App: StateChangeStart: State change Start " + "From: " + fromState.name + " Next:" + next.name);
+    curState = next.name;
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then
@@ -44,9 +54,9 @@ angular.module('careWheels', [
     // timer occurrence goes on accumalating.
     //
 
-    if ($rootScope.redAlertPromise !== angular.isundefined) {
+    if ($rootScope.redAlertPromise !== undefined) {
       $interval.cancel($rootScope.redAlertPromise);
-      $rootScope.redAlertPromise = angular.isundefined;
+      $rootScope.redAlertPromise = undefined;
     }
 
     if (User.credentials() === null) {
@@ -67,12 +77,12 @@ angular.module('careWheels', [
   $rootScope.$on('$stateChangeSuccess', function(event, next, toParams, from, fromState) {
       $rootScope.previousState = from.name;
       $rootScope.currentState = next.name;
-      console.log("StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
+      fileloggerService.info("App: StateChangeSuccess: State change Success " + "From: " + fromState.name + " Next: " + next.name);
 
   });
 
   $ionicPlatform.registerBackButtonAction(function (event) {
-    console.log("In Back button handler" + $ionicHistory.backTitle());
+    fileloggerService.info("In Back button handler" + $ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
   }, loginDependencies.backbuttonTimeout);
 
@@ -85,7 +95,7 @@ angular.module('careWheels', [
       StatusBar.styleDefault();
     }
   });
-  
+
   $ionicPlatform.ready(function() {
     document.addEventListener("pause", function() {
 	  console.log($state.current.name);
@@ -94,11 +104,11 @@ angular.module('careWheels', [
         console.log("The application is pausing from non-login state -- Saving " + angular.toJson(User.credentials()));
 	  } else {
 	    window.localStorage.removeItem("autoLoginCredentials");
-        console.log("The application is pausing from login state -- Removing Auto-login credentials for safety");	  
+        console.log("The application is pausing from login state -- Removing Auto-login credentials for safety");
 	  }
     }, false);
   });
-  
+
    $ionicPlatform.ready(function() {
     document.addEventListener("resume", function() {
       window.localStorage.removeItem("autoLoginCredentials");
@@ -106,12 +116,29 @@ angular.module('careWheels', [
     }, false);
   });
 
+  //
+  // Anywhere in the code if there is an error and we want to bail out all we
+  // have to do is broadcast('Logout'). This on will pick it up and safely log you out.
+  // Right now the event and args are place holders but will be used for debug trace
+  //
+
+  $rootScope.$on('Logout', function(event, args) {
+    fileloggerService.info("App: Logout broadcast caught", args);   // args contains the name of the function calling logout.
+    $interval.cancel($rootScope.stopDownloadPromise);
+    $rootScope.stopDownloadPromise = undefined;
+    $state.go('login', {}, {reload:true});
+  });
+
+  fileloggerService.info("App: Main App Exited");
+
 })
 
 .config(function($ionicConfigProvider) {
   // Explicitly center NavBar title to avoid crowding especially in Individual Status
   $ionicConfigProvider.navBar.alignTitle('center');
 })
+
+
 
 // API factory for making all php endpoints globally accessible.
 .factory('API', function (cbUrls) {

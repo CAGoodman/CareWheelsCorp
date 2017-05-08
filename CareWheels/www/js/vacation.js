@@ -12,7 +12,9 @@
 angular.module('careWheels')
 
 .controller('vacationController',
-	function($scope, $state, $controller, $ionicLoading, GroupInfo, User, Download) {
+	function($rootScope, $scope, $state, $controller, $ionicLoading, GroupInfo, User, Download, fileloggerService) {
+
+   	fileloggerService.info("VacCtrl: Vacation Controller Entered");
 
 	//
 	// From menu.html the control comes here and the pbject $scope.data.currentVacationMode gets initialized
@@ -21,6 +23,12 @@ angular.module('careWheels')
 
     $scope.data = {'currentVacationMode' :User.getVacationValue()};
 
+    if ($scope.data.currentVacationMode) {
+    	fileloggerService.info("VacCtrl: Currenlty the user is on vacation");
+    } else {
+    	fileloggerService.info("VacCtrl: Currenlty the user is NOT on vacation");
+    }
+
     //
     // After the above line execution the control goes back to menu.html and the Vaction Mode button is visible. When the user
     // clicks it and toggles the switch $scope.data.currentVacationMode value also toggles. Then control comes dow to
@@ -28,16 +36,17 @@ angular.module('careWheels')
     // between the HTML and JS
     //
 
-
     $scope.toggleVacationMode = function (currentVacationMode) {
-
+    	fileloggerService.info("VacCtrl: toggleVacationMode: Enter");
 		var creds = User.credentials();
 		User.setOnVacation(creds.username, creds.password, $scope.data.currentVacationMode).then(function(resultValue){
-			User.waitForDataDownload();  // Blocking the user till the data download is done
+			User.waitForDataDownload("Vacation data download in progress: ");  // Blocking the user till the data download is done
 	        Download.DownloadData(function(){
-	        	User.completedDataDownload();       // DataDownload completed
+	        	User.completedDataDownload("Vacation data download completed");       // DataDownload completed
 	            $state.go('app.groupStatus');     // go to group view
 	        });
     	});
+    	fileloggerService.info("VacCtrl: toggleVacationMode: Exit");
 	}
+	fileloggerService.info("VacCtrl: Vacation Controller Exited");
 });

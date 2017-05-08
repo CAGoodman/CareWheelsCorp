@@ -5,39 +5,20 @@
 
  Authors: Capstone students PSU Aug 2016
  Revision: Changed the URL to point to a particular IP for devlopement - AV 10/27/16
- When the application is launched in logfileNme set to careWheelsLocalLogFile.log and
- isAndroid is initialized to true if mobile else false. Control goes to aself.js
- and all other services excpeting paymentservice is initialized and login screen is splashed.
- Login.js calls initLogComponent() --> setLogLocation(careWheelsLocalLogFile.log) --> FileLogger gets started
- Upload happens only on login. So if we want uplaod logfile in the middle we have to manually induce
- Chrome internally stores it at "C:\Users\<Your Username>\AppData\Local\Google\Chrome\User Data\Default\Local Storage"
+ Rewrote the whole file almost as it had many timing and otherissues. - NB & AV 05/03/2017
 --*/
 
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
-  .service('fileloggerService', function ($rootScope, $timeout, $q, $fileLogger, $filter, $ionicPlatform,
+  .service('fileloggerService', function ($rootScope, $timeout, $interval, $q, $fileLogger, $filter, $ionicPlatform,
     $ionicPopup, $cordovaFile, $cordovaFileTransfer,  $cordovaAppVersion, API, apkDependencies) {
 
-    var logFileName = "careWheelsLocalLogFile.log";
+    var logFileName = "careWheelsLogFile.log";
     var username, password;
+    var fullPkg;
+    $fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
 
    //checks to see if cordova is available on this platform;
-    $rootScope.isAndroid = window.cordova != undefined;
-
-    this.setLogLocation = function (fileName) {
-      $fileLogger.setStorageFilename(fileName);
-      //
-      // Right now the name of the file and time stamp is done but the file itself
-      // is not created. The first $fileLogger.log() will create it. We dont want to
-      // create the file right now because we want the old one from previous run to
-      // be uploaded first. Hence the first $fileLogger.log() is in login.js
-      //
-      this.execTrace("Log file name: " + fileName + " was initialized");
-    };
-
-    this.getCurrentDate = function () {
-      var today = new Date();
-      return $filter('date')(today, 'yyyy-MM-dd');
-    };
+    $rootScope.isAndroid = window.cordova !== undefined;
 
     this.getCurrentDateTime = function () {
       var today = new Date();
@@ -54,19 +35,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       var hardwarePkg = "Model and Manufacturer: " + window.device.model + " " + window.device.manufacturer + "\n";
       var IDPkg       = "Serial Number: " + window.device.serial + " UUID: " + window.device.uuid + "\n";
       fullPkg = headerPkg + cordovaPkg + apkPkg + datePkg + osPkg + hardwarePkg + IDPkg;
-      return(fullPkg);
-    };
-
-    this.initLogComponent = function () {
-      this.setLogLocation(logFileName);
-      $fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
-    };
-
-    this.deleteLogFile = function () {
-      var dlfthis = this;
-      $fileLogger.deleteLogfile().then(function () {
-        dlfthis.execTrace("The log file " + logFileName + " is deleted!");
-      });
+      return fullPkg;
     };
 
     //
@@ -74,57 +43,64 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     //
 
     this.logUpload = function (usernameIn, passwordIn) {
-      //
-      // uploadMsg.log will save away the
-      // console.log messages we miss out in the main log file careWheelsLocalLogFile.log. When we replace
-      // cordova.fileTransfer() then all we need to do is remove isAndroid() check
-      //
-      window.localStorage.removeItem('uploadMsg.log');
-      window.localStorage['uploadMsg.log'] = "***Log messages before uploading the LogFile careWheelsLocalLogFile.log*** \n"
       if (!$rootScope.isAndroid) {
-        // no log uploading for web but will support $fileLogger.log
-        // The point to note is the logfile is available
-        $fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
-        $rootScope.fileUploaded = true;
-        this.execTrace("LoggingService: Not a Android Device " + "Please contact your friendly CareWheels Customer Support");
+
+        //
+        // Currently $cordovaFileTransfer.upload supports Android only. Hence we bail out. We do support $fileLogger.log
+        // The point to note is the logfile is available for other means of retrival later
+
+        $rootScope.fileUploaded = true; // This is not a Android platform so we will allow the file log to continue
+        $ionicPopup.alert({
+          title: "This is not a Android device. " + usernameIn + " please note no logfile will be created",
+          subTitle: "Please contact your friendly CareBank customer support for help"
+        });
+        this.error("LogServ: ERROR: Not a Android Device " + "Please contact your friendly CareWheels Customer Support");
         return;
       }
 
-      $rootScope.fileUploaded = false;   // This will ensure the logfile does not get deleted before upload
+      $rootScope.fileUploaded = false;   // This has been already set in app.js and login.js this is just as an insurance
 
       // save the reference to this
       var self = this;
-
+      self.info("LogServ: Running on Android platform");
       var getFullPkg = function () {
         username = usernameIn;
         password = passwordIn;
-        var fullPkg;
 
-        self.initLogComponent();    // Set the correct logfile and also set the correct date format
-        fullPkg = self.getUserInfo();
         // $q is a service that helps you run functions asynchronously, and use their return
         // values (or exceptions) when they are done processing. getFullPkg() gets called first
         // as part of logUpload() and then all the rest functions get called. These functions
         // execute asynchronously, but $q gurantees that the get used in the order listed.
-        return $q.resolve();
+        return $q.resolve(self.getUserInfo());
       } // getFullPkg()
 
-      var getFileURL = function () {
+      var getFileURL = function (fullPkg) {
+        //
+        // If this is not the very first login than a Logfile from from the pervious login will exist
+        //
         return $fileLogger.checkFile().then(function (checked) {
-          self.execTrace("LoggingService: CheckFile() " + "Passed");
+          self.info("LogServ: CheckFile() " + "Passed");
           var fileURL = checked.localURL;
-          self.execTrace("LoggingService: CheckFileResponse: " + JSON.stringify(checked));
-          self.execTrace("LoggingService: URL: " + fileURL);
+          self.info("LogServ: CheckFileResponse: " + JSON.stringify(checked));
+          self.info("LogServ: URL: " + fileURL);
           return fileURL;
         }).catch(function(reason) {
-          $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
-          $fileLogger.log("INFO", fullPkg); // This will get added to the current new logfile not to the one just uploaded now
-          if (reason.message == "NOT_FOUND_ERR") {
-            self.FirstLogin = true;
+          //
+          // This means either 1.the file does not exist meaning this is a first login or
+          // 2. There is a problem with the file
+          //
+          if (reason.message == "NOT_FOUND_ERR") { // First login
+            $fileLogger.setStorageFilename(logFileName);  // Sets the correct logfile and also set the correct date format
+            $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will allow the logfile to be written
+            self.info(fullPkg); // This will get added to the newly created  logfile
+            self.info("LogServ: New log file was created!"); // This operation will create the lofile.
+            preLoginUpload();
           } else {
-            self.execTrace("LoggingService: CheckFile Failed: " + JSON.stringify(reason));
+            self.error("LogServ: ERROR: CheckFile Failed: " + JSON.stringify(reason));
+            self.error("LogServ: ERROR: Full Package: " + fullPkg); // This will give more info
+            self.error("LogServ: ERROR: *********LOGFILE WAS NOT CREATED!!!!***********");
           }
-          return;
+          throw reason;   // This is caught by the catch below, uplod() does not get called.
         })
       } // getFileURL()
 
@@ -132,7 +108,6 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         // generate file name for uploading base on current date and time
         var currentDateTime = self.getCurrentDateTime();
         var fileNameUp = username + '-' + currentDateTime + '.log';
-        self.execTrace("LoggingService: Running on Android platform");
         var options = {
           fileKey: "filetoupload",
           fileName: fileNameUp,
@@ -140,36 +115,39 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           params: {'username': username, 'password': password, 'fileName': fileNameUp}
         };
         options.headers = {'headerParam': 'headerValue'};
-        self.execTrace("LoggingService: UploadFileName: " + fileNameUp);
-
+        self.info("LogServ: UploadFileName: " + fileNameUp);
         var uri = encodeURI(API.loggingServices8080);
-
-        // upLoadMsg.log is not being loaded now will do it in the furture when we dont use cordovaFileTransfer
-        //var uploadMsg = window.localStorage['uploadMsg.log'];
-        //$fileLogger.log("INFO", uploadMsg);
-
         // Second parameter is a URL for the storage file location - fileURL or the file itself - uploadFile
-        if (fileURL != angular.undefined) {
-          return $cordovaFileTransfer.upload(uri, fileURL, options);
-        }
-
-
+        return $cordovaFileTransfer.upload(uri, fileURL, options);
       } // upload()
 
       var cleanUp = function (result) {
-        self.execTrace("LoggingService: Inside FileTransfer Upload");
-        self.execTrace("SUCCESS: " + JSON.stringify(result.response));
-        self.execTrace("Code = " + result.responseCode);
-        self.execTrace("Response = " + result.response);
-        self.execTrace("Sent = " + result.bytesSent);
-        self.execTrace("Done uploading log file!. username: " + usernameIn);
+
+        self.info("LogServ: Inside FileTransfer Upload");
+        self.info("LogServ: SUCCESS: " + JSON.stringify(result.response));
+        self.info("LogServ: Code = " + result.responseCode);
+        self.info("LogServ: Response = " + result.response);
+        self.info("LogServ: Sent = " + result.bytesSent);
+        self.info("LogServ: Done uploading log file!. username: " + usernameIn);
 
         // delete old log file and create a new one
-        self.deleteLogFile();
-        self.initLogComponent();
-        $fileLogger.log("INFO", "-----New log file was created!"); // This operation will create the lofile.
-        $fileLogger.log("INFO", fullPkg); // This will get added to the current new logfile not to the one just uploaded now
-        $rootScope.fileUploaded = true;   // LogFile has been uploaded and new logfile created
+        $fileLogger.deleteLogfile().then(function() {
+          $fileLogger.setStorageFilename(); // set it to default messages.log
+          $fileLogger.deleteLogfile()       // delete messages.log. We dont use it so just want it gone
+          $fileLogger.setStorageFilename(logFileName); // This will point it back to careWheelsLogFile.log
+          $rootScope.fileUploaded = true;   // LogFile has been uploaded and new logfile created allow the new logfile to log
+          self.info(fullPkg); // This will get added to the current new logfile not to the one just uploaded now
+          self.info("LogServ: New log file was created!"); // This operation will create the lofile
+          preLoginUpload();
+        });
+      }
+
+      var preLoginUpload = function() {
+        var preLoginMsg = window.localStorage['preLogin.log']; //Read the saved messages
+        self.info(preLoginMsg); // Write it to the new log file at the top
+        self.info("LogServ: ******Pre Login Log Messages End******\n");
+        window.localStorage.removeItem('preLogin.log'); // Delete the preLogin.log file
+        window.localStorage['preLogin.log'] = "\nLogServ: ******Pre Login Log Messages Begin****** \n\n"; // Create a new one
       }
 
       //
@@ -180,61 +158,59 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       //
 
       $ionicPlatform.ready(function () {
-        self.execTrace("LoggingService: Ionic Platform is ready");
+        self.info("LogServ: Ionic Platform is ready");
         getFullPkg()
           .then(getFileURL)
           .then(upload)
           .then(cleanUp)
           .catch(function (error) {                                         // $cordovaFileTransfer.upload()
-            if (self.FirstLogin == true) {
-              self.execTrace("LoggingService: This is a first login no logfile to upload");
-            } else {
-              self.execTrace("ERROR: " + JSON.stringify(error));
-              self.execTrace("An error has occurred!");
-              self.execTrace("Code = " + error.code);
-              self.execTrace("Error source " + error.source);
-              self.execTrace("Error target " + error.target);
-            }
-            $rootScope.fileUploaded = true;  // Logfile was not uploaded but we will let the app execute as normal
+            self.error("LogServ: ERROR: Logfile failed to load: " + JSON.stringify(error));
+            self.error("LogServ: ERROR: Code = " + error.code);
+            self.error("LogServ: ERROR: Error source " + error.source);
+            self.error("LogServ: ERROR: Error target " + error.target);
         });
-      }); // $ionicPlatform.ready()
-
-
+       }); // $ionicPlatform.ready()
     };  // logUpload()
 
     //
-    // The user sets the debug level which is saved in the local storage. Normally the traceLevel is set to 0 - Info
-    // If there is a need to debug then we bump it up to 1 - Verbose. In login.js the value is read off local
-    // storage and initialized to null. Errors are printed directly without the wrapper.
-    // Maximum flexiblity is given for the format of the 4 traces. If nothing else trace0 gets printed.
+    // $rootScope.fileUploaded is kept false till the logfile is uploaded. Else as and when the logfile is being
+    // uploaded it will get written and than will corrupt the logfile. From the start of the upload function
+    // till as such it is loaded nothing should be appended to it.
     //
 
-    this.execTrace = function(trace0, trace1){
-
-      if (!$rootScope.fileUploaded) {  // We have to wait for the old logfile to be uploaded else we will clobber it
-        if (trace1 == angular.isundefined) {
-          console.log(trace0);
-          window.localStorage['uploadMsg.log'] += trace0 + " \n";   // This will catch the earlier log messages
-        } else {
-          console.log(trace0 + trace1);
-          window.localStorage['uploadMsg.log'] += trace0 + trace1;
-        }
-        return;
+    var logInternal = function (functionName, args) {
+      if (!passMessage(args, "")) return;
+      if (!$rootScope.fileUploaded) {
+        var time = new Date();
+        args[0] = time.toLocaleString() + ": " + args[0];
+        console[functionName].apply(console, args);
+        window.localStorage['preLogin.log'] += args[0] + " \n";   // This will catch the earlier log messages
+      } else {
+        $fileLogger[functionName].apply($fileLogger, args);
       }
+    }
 
-      switch($fileLogger.traceLevel) {
-        case '0':
-          $fileLogger.log("INFO", trace0);
-          break;
-        case '1':                                   // This is a placeholder for now
-          if (trace1 != angular.isundefined ) {
-            $fileLogger.log("DEBUG", trace1);
-          } else {
-            $fileLogger.log("INFO", trace0);          // If trace 1 undefined print trace 0
-          }
-          break;
-         default:
-          $fileLogger.log("ERROR", "Unsupported execution trace level " + $fileLogger.traceLevel);
-      }
-    }; // execTrace()
+    this.log = function () {
+      logInternal('log', arguments);
+    }
+    this.debug = function () {
+      logInternal('debug', arguments);
+    }
+    this.info = function () {
+      logInternal('info', arguments);
+    }
+    this.warn = function () {
+      logInternal('warn', arguments);
+    }
+    this.error = function () {
+      logInternal('error', arguments);
+    }
+
+    var passMessage = function (args, msg){
+      if (!args) return false;
+      if (msg == "") return true;
+      if (args[0].indexOf(msg) == 0) return true;
+      return false;
+    }
   })
+

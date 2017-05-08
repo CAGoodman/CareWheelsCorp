@@ -10,7 +10,9 @@
 //
 angular.module('careWheels')
 
-.controller('menu', function ($scope, $state, $ionicHistory, $ionicPopup, apkDependencies, User, fileloggerService) {
+.controller('menu', function ($rootScope, $scope, $state, $ionicHistory, $ionicPopup, apkDependencies, User, fileloggerService) {
+
+    fileloggerService.info("MenuCtrl: Menu Controller Entered");
 
     $scope.versionNumber = apkDependencies.apkVersion;
 
@@ -50,6 +52,7 @@ angular.module('careWheels')
     };
 
     $scope.clickPocketMother = function() {
+        fileloggerService.info("MenuCtrl:clickPocketMother: Enter");
         $scope.isChecked.value = false;
         var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
         if (!noWarn) {
@@ -63,16 +66,20 @@ angular.module('careWheels')
                 if (res) {
                     if ($scope.isChecked.value)
                         window.localStorage["noLeaveAppWarn"] = angular.toJson($scope.isChecked.value);
+                    fileloggerService.info("MenuCtrl:clickPocketMother: Exit");
                     openSense();
                 }
             });
 
         }
-        else
+        else {
+            //fileloggerService.info("MenuCtrl:clickPocketMother: Exit");
             openSense();
+        }
     };
 
     $scope.clickCyclos = function() {
+        //fileloggerService.info("MenuCtrl:clickCyclos: Enter");
         $scope.isChecked.value = false;
         var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
         if (!noWarn) {
@@ -86,13 +93,16 @@ angular.module('careWheels')
                 if (res) {
                     if ($scope.isChecked.value)
                         window.localStorage["noLeaveAppWarn"] = angular.toJson($scope.isChecked.value);
+                    fileloggerService.info("MenuCtrl:clickCyclos: Exit");
                     openCyclos();
                 }
             });
 
         }
-        else
+        else {
+            //fileloggerService.info("MenuCtrl:clickCyclos: Exit");
             openCyclos();
+        }
     };
 
 	$scope.clickAdvanced = function () {
@@ -108,11 +118,11 @@ angular.module('careWheels')
 
     $scope.clickAbout = function () {
 
-        fileloggerService.execTrace('Name: ' + apkDependencies.apkName);
-        fileloggerService.execTrace('Company: ' + apkDependencies.apkCompany);
-        fileloggerService.execTrace('Version: ' + apkDependencies.apkVersion);
-        fileloggerService.execTrace('Apk: ' + apkDependencies.apkPackage);
-        fileloggerService.execTrace('Date: ' + apkDependencies.apkDate);
+        fileloggerService.info('MenuCtrl: Name: ' + apkDependencies.apkName);
+        fileloggerService.info('MenuCtrl: Company: ' + apkDependencies.apkCompany);
+        fileloggerService.info('MenuCtrl: Version: ' + apkDependencies.apkVersion);
+        fileloggerService.info('MenuCtrl: Apk: ' + apkDependencies.apkPackage);
+        fileloggerService.info('MenuCtrl: Date: ' + apkDependencies.apkDate);
         var aboutEntries = [
             { label: 'Name', value: apkDependencies.apkName },
             { label: 'Company', value: apkDependencies.apkCompany },
@@ -150,7 +160,7 @@ angular.module('careWheels')
                 "intentstart": "startActivity"
             })
             .start(function() {
-                fileloggerService.execTrace("Sen.Se Pocketmother application Entered");
+                fileloggerService.info("MenuCtrl: Sen.Se Pocketmother application Entered");
             }, function(error) {
                 $ionicPopup.alert({
                     title: 'Error',
@@ -172,7 +182,7 @@ angular.module('careWheels')
                 "intentstart": "startActivity"
             })
             .start(function() {
-                fileloggerService.execTrace("Cyclos application Entered");
+                fileloggerService.info("MenuCtrl: Cyclos application Entered");
             }, function(error) {
                 $ionicPopup.alert({
                     title: 'Error',
@@ -181,5 +191,5 @@ angular.module('careWheels')
             })
         , false);
     };
-
+    fileloggerService.info("MenuCtrl: Menu Controller Exited");
 });

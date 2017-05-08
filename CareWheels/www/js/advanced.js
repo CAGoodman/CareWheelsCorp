@@ -9,38 +9,36 @@
 //
 angular.module('careWheels')
 .controller('AdvancedController', function ($rootScope, $scope, $state, $interval,
-            $ionicPopup, Download, User, traceControls, fileloggerService) {
+            $ionicPopup, Download, User, fileloggerService) {
 
-  $scope.traceLevel = 0;
+  fileloggerService.info("AdvCtrl: Advance Controller Entered");
 
   $scope.ScreenRefresh = function () {
-    User.waitForDataDownload();  // Blocking the user till the data download is done
+    User.waitForDataDownload("Screen refresh under progress: ");  // Blocking the user till the data download is done
     Download.DownloadData(function () {
-      User.completedDataDownload();       // DataDownload completed
-      fileloggerService.execTrace("ScreenRefresh: Forced Screen Refresh finished");
+      User.completedDataDownload("ScreenRefresh: Screen refresh completed");       // Screen refresh completed
+      //fileloggerService.info("AdvCtrl:ScreenRefresh: Exit");
+      fileloggerService.info("AdvCtrl: ScreenRefresh: Successfully refreshed screen");
       $state.go($rootScope.previousState, {}, {reload:true});
     });
   }
 
-  //
-  // This clears the creds, stops the download scheduler and logsout the app
-  //
-
-  $scope.Logout = function () {
-    $interval.cancel(User.stopDownloadPromise);
-    fileloggerService.execTrace("Logout: Logged out");
-    $state.go('login', {}, {reload:true});
+  $scope.InitiateLogout = function () {
+    fileloggerService.info("AdvCtrl: InitiateLogout: Successfully logged out");
+    $rootScope.$emit("Logout", "Advance InitiateLogout");
   }
 
   $scope.ClearMemory = function () {
+    //fileloggerService.info("AdvCtrl:ClearMemory: Enter");
     window.applicationCache.abort();
     window.caches.delete(100);
     window.localStorage.clear();
-    fileloggerService.execTrace("ClearMemory: Local memory cleared");
+    //fileloggerService.info("AdvCtrl:ClearMemory: Exit");
     $ionicPopup.alert({
        title: "Data and cache memory cleared!!",
        subTitle: ""
     });
+    fileloggerService.info("AdvCtrl: ClearMemory: Successfully cleared memory");
     $state.go($rootScope.previousState, {}, {reload:true});
   }
 
@@ -53,26 +51,13 @@ angular.module('careWheels')
 
   $scope.UploadLogfile= function () {
     var creds = User.credentials();
+    //fileloggerService.info("AdvCtrl:UploadLogfile: Enter");
     fileloggerService.logUpload(creds.username, creds.password);
-    fileloggerService.execTrace("UploadLogfile: Logfile is being uploaded to the server");
     $ionicPopup.alert({
       title: "Logfile has been uploaded to the CareWheels server!!",
       subTitle: "A friendly customer service professional will get back to you soon"
     });
-  }
-
-  //
-  // Logfiles can grow to horrendous so once in a while it is better to delete it.
-  // During debug, validation and testing it is helpful to have a small logfile to manage.
-  //
-
-   $scope.DeleteLogfile= function () {
-    fileloggerService.deleteLogFile();
-    fileloggerService.execTrace("DeleteLogfile: Logfile deleted");
-    $ionicPopup.alert({
-      title: "Logfile has been deleted",
-      subTitle: "A new logfile automatically starts building up which you can upload anytime"
-    });
+    //fileloggerService.info("AdvCtrl:UploadLogfile: Exit");
   }
 
   //
@@ -84,6 +69,7 @@ angular.module('careWheels')
   //
 
   $scope.EnableDebug = function (dbgLevel) {
+    //fileloggerService.info("AdvCtrl:EnableDebug: Enter");
     switch(dbgLevel) {
       case "0":
       case "1":
@@ -97,7 +83,6 @@ angular.module('careWheels')
         });
         return;
     }
-
     $rootScope.dbgLevel = dbgLevel;
     if (dbgLevel != 0) {
       $ionicPopup.alert({
@@ -110,6 +95,7 @@ angular.module('careWheels')
         subTitle: "Do a Screen Refresh to restore default data"
       });
     }
-
+    //fileloggerService.info("AdvCtrl:EnableDebug: Exit");
   }
+  fileloggerService.info("AdvCtrl: Advance Controller Exited");
 })
