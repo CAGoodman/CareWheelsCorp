@@ -4,8 +4,7 @@ REM CareWheels Corporation 2016
 REM Author: Ananda Vardhana Nov 22, 2016
 echo MAKE SURE YOU ARE AT THE HOME DIRECTORY EX: ....\CareWheelsCorp\CareWheels
 echo It is recommended to run ionic reset once every 10 builds
-echo This builds apk for ARMv7 processors only
-echo Ensure your MAILTO in Control Panel --> Programs --> Default Program --> Assocaited is configured correclty
+echo This builds apk for ARMv7 and x86 architecture processors only
 
 IF "%1"=="-?" goto HELP
 IF "%1"=="-p" goto PROPERTY
@@ -82,20 +81,25 @@ goto END
 
 :APK_BUILD
 REM We get the bumped up Version from package.json and update config.xml
+@FOR /F "eol=; tokens=1,2* delims=, " %%i in (package.json) do (
+@IF %%i=="apkVersion": (
+set apkVersion=%%j
+)
+)
+REM Both of them work one is retained for future use
+set AppName=CareBank-%apkVersion:~1,-1%
+rem for /F %%a in (%apkVersion%) do set AppName=CareBank-%%a
+
 IF "%1"=="-d" (
 start /min cordova-update-config --appname "CareBank-BetaDbg"
 ) ELSE (
-start /min cordova-update-config --appname "CareBank-BetaRel"
+start /min cordova-update-config --appname %AppName%
 )
 pause
 start /min cordova-update-config --appid "org.carewheels.carebank1"
 pause
-@FOR /F "eol=; tokens=1,2* delims=, " %%i in (package.json) do (
-@IF %%i=="apkVersion": (
-set apkVersion=%%j
 goto VERSION_DONE
-)
-)
+
 :VERSION_DONE
 start /min cordova-update-config --appversion %apkVersion%
 pause
@@ -120,42 +124,18 @@ IF "%ans%"=="y" goto CHECK_KEY
 goto END
 
 :CHECK_KEY
-REM Let us get the Date Stamp for naming the APK
-
-REM Let us get the saved keystore file name
-set CareBank_Saved_key=""
-dir /B *.*keystore > KeyFileName.txt
-set /a N=0
-for /f "tokens=* delims= " %%a in (KeyFileName.txt) do (
-set /a N+=1
-set v[!N!]=%%a
-)
-
-del KeyFileName.txt >nul 2>&1
-
-REM If the keystore file is not there then CareBank_Saved_key will be empty
-REM if there are more then one keystore file we will get the alphabetically the last one.
-REM It is users responsibility to have a single file there
-set CareBank_Saved_key=%v[!N!]%
+echo For security reasons the USB secure drive will get dismounted automatically. Just pull it out and reinsert
+echo Force the USB secure key to mount as p: and the secure partition to load as f:? Also please wait for the password prompt to open the USB!!
+set /p ans=Enter y or n:
+IF "%ans%"=="n" goto NO_KEY
+p:DTVP30_Launcher.exe
+REM F: is the drive withiun P: and is always fixed is available for us now
 
 cd platforms\android\build\outputs\apk
 
-REM During devleopemnt we build many times and it is possible the old APK is still there so need to delete it
-del CareBank-armv7-%DS%-release-unsigned.apk >nul 2>&1
-REM if %CareBank_Saved_key%=="" goto CREATE_KEY
-if %CareBank_Saved_key%=="" goto NO_KEY
-echo We have found a saved key %CareBank_Saved_key%
-REM echo Do you want to use the old key? If you say no then we will create a new key
-REM set /p ans=Enter y or n:
-REM IF "%ans%"=="n" goto CREATE_KEY
 goto SIGNIT
 
 REM****************************** KEY GENERATION SKIPPED BEGIN*************************************
-REM If you want to generate key uncomment above 4 lines of code and comment the NO_KEY line
-:NO_KEY
-echo No key store was found please contact Claude A Goodman for the keystore
-goto END
-
 :CREATE_KEY
 REM Delete old key and create a new key
 del *.keystore >nul 2>&1
@@ -167,17 +147,10 @@ move CareBank_%DS%_key.keystore ..\..\..\..\..\ >nul 2>&1
 REM We will keep the alias as same and not date stamp it
 REM****************************** KEY GENERATION SKIPPED END*************************************
 
-:SKIP_KEY
-echo It is going to ask you for a password:
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\CareBank_%DS%_key.keystore android-armv7-release-unsigned.apk CareBank_key_alias
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\CareBank_%DS%_key.keystore android-x86-release-unsigned.apk CareBank_key_alias
-goto ALIGNIT
-
 :SIGNIT
 echo It is going to ask you for a password:
-
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% android-armv7-release-unsigned.apk CareBank_key_alias
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ..\..\..\..\..\%CareBank_Saved_key% android-x86-release-unsigned.apk CareBank_key_alias
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore f:\CareBank_*_key.keystore android-armv7-release-unsigned.apk CareBank_key_alias
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore f:\CareBank_*_key.keystore android-x86-release-unsigned.apk CareBank_key_alias
 
 rem To verify a apk is signed or unsinged use the following command
 rem jarsigner -verify -verbose -certs
@@ -186,6 +159,10 @@ rem jarsigner -verify -verbose -certs
 del CareBank-armv7-%DS%.apk >nul 2>&1
 zipalign -v 4 android-armv7-release-unsigned.apk CareBank-armv7-%DS%.apk
 zipalign -v 4 android-x86-release-unsigned.apk CareBank-x86-%DS%.apk
+goto END
+
+:NO_KEY
+echo Please contact Claude A Goodman for the secure USB with the keystore
 goto END
 
 :HELP
@@ -211,4 +188,4 @@ goto END
 :VER_ERR
 echo Usage: BuildApk -v "Version to reset"
 :END
-del android-armv7-debug-unaligned.apk android-armv7-release-unsigned.apk android-x86-debug-unaligned.apk android-x86-release-unsigned.apk
+del android-armv7-debug-unaligned.apk android-armv7-release-unsigned.apk android-x86-debug-unaligned.apk android-x86-release-unsigned.apk >nul 2>&1
