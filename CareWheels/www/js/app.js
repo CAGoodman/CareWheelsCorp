@@ -34,7 +34,7 @@ angular.module('careWheels', [
 
   $rootScope.autoRefresh = false;
 
-   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+  $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
 
     console.log("StateChangeStart: State change Start " + "From: " + fromState.name + " Next: " + next.name);
 
@@ -84,6 +84,26 @@ angular.module('careWheels', [
     if (window.StatusBar) {
       StatusBar.styleDefault();
     }
+  });
+  
+  $ionicPlatform.ready(function() {
+    document.addEventListener("pause", function() {
+	  console.log($state.current.name);
+	  if ($state.current.name != 'login') {
+	    window.localStorage["autoLoginCredentials"] = angular.toJson(User.credentials());
+        console.log("The application is pausing from non-login state -- Saving " + angular.toJson(User.credentials()));
+	  } else {
+	    window.localStorage.removeItem("autoLoginCredentials");
+        console.log("The application is pausing from login state -- Removing Auto-login credentials for safety");	  
+	  }
+    }, false);
+  });
+  
+   $ionicPlatform.ready(function() {
+    document.addEventListener("resume", function() {
+      window.localStorage.removeItem("autoLoginCredentials");
+      console.log("The application is resuming -- Removing Auto-login credentials");
+    }, false);
   });
 
 })
