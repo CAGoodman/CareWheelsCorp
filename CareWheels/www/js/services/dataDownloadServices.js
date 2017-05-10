@@ -10,19 +10,36 @@
 
 angular.module('careWheels')
   .factory('Download', function ($rootScope, $http, $httpParamSerializerJQLike, $q, GroupInfo, User, notifications, API,
-    fileloggerService) {
+    fileloggerService, loginDependencies) {
 
     var DownloadService = {};
     var dd = [], ddIndex = 0, ddInit = false;   // Variables to help log the download data only if there is a change
+
+    //
+    // After the logfile is uploaded this is called to reset. The idea being every logfile shall have  full set of
+    // downlaoded files.
+    //
+
+    DownloadService.InitddVar = function () {
+      ddIndex = 0;
+      ddInit = false;
+      dd = [];
+    }
+
     //
     // This is the last function called after login as part of download scheduling
     // Currently this gets called from groupStatus.js, IndividualStatus.js when the user pulls for a refresh.
     // This also gets called by Advanced.js when user clicks ScreenRefresh.
     //
+
     DownloadService.DownloadData = function (finalCallback) {
 
+      //
       // getData() gets defined here and we need to call it for all the members.
-      // We want to do it asynchronously i.e., in parallel. Hence we queue it using $q
+      // We want to do it asynchronously i.e., in parallel. Hence we queue it using $q.
+      // Scroll all the way down where this getData() gets called.
+      //
+
       var getData = function (member) {
         var usernametofind = member.username; //.toLowerCase();//for each group member
         var user = User.credentials();//from login
@@ -41,24 +58,19 @@ angular.module('careWheels')
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
           }
-        // success
         }).then(function successCallback(response) {
           User.hidePasswordDD(response);
-          //
-          // Five users have to be hard coded here as we come here for the first time.
-          // Since this constant changing is a rare thing will not out this in ngConstants.js for now
-          // The sensor data change occassionally so to avoid repeating the data we log it only if there is a change
 
-          if (ddIndex == 5) {   // If we have saved away all 5 users we are done intializing
-            ddInit = true;
-            ddIndex = 0;
-          }
+          //
+          // Since the downloaded data remains mostly unchanged we prevent logfile filling of repeated data.
+          //
+
           if (!ddInit){   //Initially save away the data to an array
             dd[ddIndex] = response;
             fileloggerService.info("DataDownLoad: " + response.config.data + ": " + JSON.stringify(response));
           } else {    // After the first download all control will come here
-            for (i = 0; i < 5; i++) {   // Check if the config.data's match
-              if (dd[i].config.data == response.config.data) {
+            for (i = 0; i < loginDependencies.userCount; i++) {
+              if (dd[i].config.data == response.config.data) {  // Check if the user names match
                 if (JSON.stringify(dd[i]) != JSON.stringify(response)) {  // Now check if the entire response does not match
                   dd[i] = response;       // It did not match so replace the old with the new data
                   fileloggerService.info("DataDownLoad: " + response.config.data + ": " + JSON.stringify(response)); // Log the new response data
@@ -68,6 +80,14 @@ angular.module('careWheels')
             }
           }
           ddIndex++;
+
+          // This initialization ensures as long we don't reset and do not upload logfile we dont log downloading
+          // of the same data
+
+          if (ddIndex == loginDependencies.userCount) {   // If we have saved away all users we are done intializing
+            ddInit = true;
+            ddIndex = 0;
+          }
 
           // **************** BEGIN Debug or Demo code instrumentation**************
           // presenceByHour -> True or false and is 24 element long

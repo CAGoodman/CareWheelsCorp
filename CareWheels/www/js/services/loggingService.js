@@ -129,6 +129,10 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         self.info("LogServ: Response = " + result.response);
         self.info("LogServ: Sent = " + result.bytesSent);
         self.info("LogServ: Done uploading log file!. username: " + usernameIn);
+        $ionicPopup.alert({
+          title: "Logfile has been uploaded to the CareWheels server!!",
+          subTitle: "Any concerns please contact one of our friendly customer service professional"
+        });
 
         // delete old log file and create a new one
         $fileLogger.deleteLogfile().then(function() {
@@ -168,6 +172,10 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
             self.error("LogServ: ERROR: Code = " + error.code);
             self.error("LogServ: ERROR: Error source " + error.source);
             self.error("LogServ: ERROR: Error target " + error.target);
+            $ionicPopup.alert({
+              title: "Logfile failed to upload!!",
+              subTitle: "Please contact one of our friendly customer service professional"
+            });
         });
        }); // $ionicPlatform.ready()
     };  // logUpload()

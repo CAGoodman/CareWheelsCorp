@@ -98,13 +98,13 @@ angular.module('careWheels', [
 
   $ionicPlatform.ready(function() {
     document.addEventListener("pause", function() {
-	  console.log($state.current.name);
+	  fileloggerService.info($state.current.name);
 	  if ($state.current.name != 'login') {
 	    window.localStorage["autoLoginCredentials"] = angular.toJson(User.credentials());
-        console.log("The application is pausing from non-login state -- Saving " + angular.toJson(User.credentials()));
+        fileloggerService.info("The application is pausing from non-login state -- Saving " + angular.toJson(User.credentials()));
 	  } else {
 	    window.localStorage.removeItem("autoLoginCredentials");
-        console.log("The application is pausing from login state -- Removing Auto-login credentials for safety");
+        fileloggerService.info("The application is pausing from login state -- Removing Auto-login credentials for safety");
 	  }
     }, false);
   });
@@ -112,21 +112,8 @@ angular.module('careWheels', [
    $ionicPlatform.ready(function() {
     document.addEventListener("resume", function() {
       window.localStorage.removeItem("autoLoginCredentials");
-      console.log("The application is resuming -- Removing Auto-login credentials");
+      fileloggerService.info("The application is resuming -- Removing Auto-login credentials");
     }, false);
-  });
-
-  //
-  // Anywhere in the code if there is an error and we want to bail out all we
-  // have to do is broadcast('Logout'). This on will pick it up and safely log you out.
-  // Right now the event and args are place holders but will be used for debug trace
-  //
-
-  $rootScope.$on('Logout', function(event, args) {
-    fileloggerService.info("App: Logout broadcast caught", args);   // args contains the name of the function calling logout.
-    $interval.cancel($rootScope.stopDownloadPromise);
-    $rootScope.stopDownloadPromise = undefined;
-    $state.go('login', {}, {reload:true});
   });
 
   fileloggerService.info("App: Main App Exited");

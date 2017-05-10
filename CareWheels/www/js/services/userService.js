@@ -10,8 +10,8 @@
 
 angular.module('careWheels')
 // User factory
-.factory('User', function (GroupInfo, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading,
-	fileloggerService) {
+.factory('User', function ($rootScope, GroupInfo, $http, API, $state, $httpParamSerializerJQLike, $ionicPopup, $ionicLoading,
+	$interval, fileloggerService) {
 	var user = {};
 	var userService = {};
 	var failCount = 0;
@@ -204,6 +204,14 @@ angular.module('careWheels')
 	    str1 = str.substring(0, pos1); str2 = str.substr(pos2, sln);
         response.config.data = str1 + str2; // password is suppressed!!
 	}
+
+	userService.logout = function(event){
+		fileloggerService.info("UserServ: Logout called by", event);   // args contains the name of the function calling logout.
+	    $interval.cancel($rootScope.stopDownloadPromise);
+	    $rootScope.stopDownloadPromise = undefined;
+	    $state.go('login', {}, {reload:true});
+    };
+
 	return userService;
 }); // factory
 

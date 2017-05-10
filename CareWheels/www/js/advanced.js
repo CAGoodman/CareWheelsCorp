@@ -17,23 +17,19 @@ angular.module('careWheels')
     User.waitForDataDownload("Screen refresh under progress: ");  // Blocking the user till the data download is done
     Download.DownloadData(function () {
       User.completedDataDownload("ScreenRefresh: Screen refresh completed");       // Screen refresh completed
-      //fileloggerService.info("AdvCtrl:ScreenRefresh: Exit");
       fileloggerService.info("AdvCtrl: ScreenRefresh: Successfully refreshed screen");
       $state.go($rootScope.previousState, {}, {reload:true});
     });
   }
 
   $scope.InitiateLogout = function () {
-    fileloggerService.info("AdvCtrl: InitiateLogout: Successfully logged out");
-    $rootScope.$emit("Logout", "Advance InitiateLogout");
+    User.logout("AdvCtrl: InitiateLogout: Successfully logged out");
   }
 
   $scope.ClearMemory = function () {
-    //fileloggerService.info("AdvCtrl:ClearMemory: Enter");
     window.applicationCache.abort();
     window.caches.delete(100);
     window.localStorage.clear();
-    //fileloggerService.info("AdvCtrl:ClearMemory: Exit");
     $ionicPopup.alert({
        title: "Data and cache memory cleared!!",
        subTitle: ""
@@ -51,13 +47,8 @@ angular.module('careWheels')
 
   $scope.UploadLogfile= function () {
     var creds = User.credentials();
-    //fileloggerService.info("AdvCtrl:UploadLogfile: Enter");
+    Download.InitddVar();
     fileloggerService.logUpload(creds.username, creds.password);
-    $ionicPopup.alert({
-      title: "Logfile has been uploaded to the CareWheels server!!",
-      subTitle: "A friendly customer service professional will get back to you soon"
-    });
-    //fileloggerService.info("AdvCtrl:UploadLogfile: Exit");
   }
 
   //
@@ -69,7 +60,6 @@ angular.module('careWheels')
   //
 
   $scope.EnableDebug = function (dbgLevel) {
-    //fileloggerService.info("AdvCtrl:EnableDebug: Enter");
     switch(dbgLevel) {
       case "0":
       case "1":
@@ -95,7 +85,6 @@ angular.module('careWheels')
         subTitle: "Do a Screen Refresh to restore default data"
       });
     }
-    //fileloggerService.info("AdvCtrl:EnableDebug: Exit");
   }
   fileloggerService.info("AdvCtrl: Advance Controller Exited");
 })

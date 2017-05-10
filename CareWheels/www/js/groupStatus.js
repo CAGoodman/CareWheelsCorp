@@ -263,7 +263,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 		    })
 	    }
 	    fileloggerService.error("GSCtrl: getLoggedInUser(): Unknown username: " + user.username);
-	    $rootScope.$emit('Logout', "groupStatus:getLoggedInUser()");
+    	User.logout("GSCtrl: ERROR: Unknown Username. Logging out");
 	    return false;
 	}	// getLoggedInUser()
 

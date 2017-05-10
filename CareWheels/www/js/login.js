@@ -87,7 +87,7 @@ angular.module('careWheels')
       User.login(uname, passwd, rmbr).then(function(response) {
 
         if (User.credentials()) {
-
+          Download.InitddVar();
           fileloggerService.logUpload(uname, passwd);   // User is authenticated let us load the log file
 
           //
@@ -181,10 +181,10 @@ angular.module('careWheels')
           $scope.connectionError = false;
       });
     }
-		
+
 	var autoLoginCredentials = angular.fromJson(window.localStorage['autoLoginCredentials']);
 	console.log("On startup. Auto-login credentials are " + window.localStorage['autoLoginCredentials']);
-	
+
 	if (autoLoginCredentials) {
       console.log("Performing auto-login");
       window.localStorage.removeItem("autoLoginCredentials");
