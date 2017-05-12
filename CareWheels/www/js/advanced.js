@@ -48,7 +48,7 @@ angular.module('careWheels')
   $scope.UploadLogfile= function () {
     var creds = User.credentials();
     Download.InitddVar();
-    fileloggerService.logUpload(creds.username, creds.password);
+    fileloggerService.logUpload(creds.username, creds.password, "advanced");
   }
 
   //

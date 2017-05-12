@@ -88,7 +88,7 @@ angular.module('careWheels')
 
         if (User.credentials()) {
           Download.InitddVar();
-          fileloggerService.logUpload(uname, passwd);   // User is authenticated let us load the log file
+          fileloggerService.logUpload(uname, passwd, "login");   // User is authenticated let us load the log file
 
           //
           // Pull up loading overlay so user knows App hasn't frozen

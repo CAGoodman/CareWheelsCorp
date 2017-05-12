@@ -29,8 +29,6 @@ angular.module('careWheels')
   $scope.GroupInfo = GroupInfo;
   var phoneNumberError = false;
 
-  $scope.alertLevel = '';
-
   function convertMedsOrMealsAlertLevelToColor(sensorArray) {
 
     var coloredArray = [];
@@ -200,7 +198,6 @@ angular.module('careWheels')
         alertLevel = 'yellow';
       }
     }
-    $scope.alertLevel = alertLevel;
     return callString;
   };  // getPhoneNumber()
 
@@ -211,7 +208,7 @@ angular.module('careWheels')
       fileloggerService.error("ISCtrl: checkPhoneError:There is no phone number for " + analysis.name);
     }
     else if ($scope.showCallButton != '') { // The call button was pressed and the call button does exist do the payment
-      PaymentService.call(analysis.username, $scope.alertLevel);
+      PaymentService.call(analysis.username, alertLevel);
     }
   };  // checkPhoneError()
 

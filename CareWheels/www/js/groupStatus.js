@@ -174,36 +174,31 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 			name: '',
 			username: '',
 			status: '',
-			image: '',
-			error: false
+			image: ''
 		},
 		{ // top left @ index 1
 			name: '',
 			username: '',
 			status: '',
-			image: '',
-			error: false
+			image: ''
 		},
 		{ // top right @ index 2
 			name: '',
 			username: '',
 			status: '',
-			image: '',
-			error: false
+			image: ''
 		},
 		{ // bottom left @ index 3
 			name: '',
 			username: '',
 			status: '',
-			image: '',
-			error: false
+			image: ''
 		},
 		{ // bottom right @ index 4
 			name: '',
 			username: '',
 			status: '',
-			image: '',
-			error: false
+			image: ''
 		}
     ];
 
@@ -311,11 +306,6 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 				$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode);
 				currentUser++;
 			}  // if()
-			// on the last element of the loop, now check health
-			if (i == loginDependencies.userCount - 1) {
-				if (!GroupInfo.getSensorError())
-					checkGroupHealth();
-			}
 		}	// for()
 		//fileloggerService.info("GSCtrl:setGroupArray: Exit");
     }	// setGroupArray();
@@ -376,44 +366,5 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 		return alertString;
     };	// getAlertColor();
 
-    checkGroupHealth = function () {
-		//create a template string
-		var errorList = [];
-		var errorCount = 0;
-		for (var i = 1; i < $scope.group.length; i++) {
-			if ($scope.group[i].error) {
-				errorCount++;
-				errorList.push(String($scope.group[i].name));
-			}
-			// on the last element now
-			if (i == $scope.group.length - 1) {
-				// no errors? then return
-				if (errorCount == 0) {
-					GroupInfo.setSensorError(false);
-					return true;
-				}
-				// error found! set the error variable
-				if (errorCount > 0)
-					GroupInfo.setSensorError(true);
-
-				//lets craft up a string to be displayed
-				var errorString = '';
-				for (var j = 0; j < errorList.length; j++) {
-					errorString += errorList[j];
-					if (j < errorList.length - 2)
-						errorString += ', ';
-					else if (j == errorList.length - 2)
-						errorString += ' and ';
-					else if (j == errorList.length - 1) {
-						// were done, display error message now
-						if (!$scope.group[0].displayedError) {
-							$scope.group[0].displayedError = true;
-							displayError(errorString);
-						}
-					}
-				}
-			}
-		}
-    };	// checkGroupHealth();
     fileloggerService.info("GSCtrl: Group Status controller Exited");
  });

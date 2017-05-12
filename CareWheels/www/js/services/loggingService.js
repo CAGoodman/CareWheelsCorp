@@ -42,13 +42,11 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     // logUpload() gets called during login or from Advance/Upload menu which loads the current existing lofile.
     //
 
-    this.logUpload = function (usernameIn, passwordIn) {
+    this.logUpload = function (usernameIn, passwordIn, callingDrv) {
       if (!$rootScope.isAndroid) {
-
         //
         // Currently $cordovaFileTransfer.upload supports Android only. Hence we bail out. We do support $fileLogger.log
         // The point to note is the logfile is available for other means of retrival later
-
         $rootScope.fileUploaded = true; // This is not a Android platform so we will allow the file log to continue
         $ionicPopup.alert({
           title: "This is not a Android device. " + usernameIn + " please note no logfile will be created",
@@ -59,7 +57,6 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       }
 
       $rootScope.fileUploaded = false;   // This has been already set in app.js and login.js this is just as an insurance
-
       // save the reference to this
       var self = this;
       self.info("LogServ: Running on Android platform");
@@ -129,16 +126,21 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         self.info("LogServ: Response = " + result.response);
         self.info("LogServ: Sent = " + result.bytesSent);
         self.info("LogServ: Done uploading log file!. username: " + usernameIn);
-        $ionicPopup.alert({
-          title: "Logfile has been uploaded to the CareWheels server!!",
-          subTitle: "Any concerns please contact one of our friendly customer service professional"
-        });
+        if (callingDrv == "advanced") {
+            $ionicPopup.alert({
+              title: "Logfile has been uploaded to the CareWheels server!!",
+              subTitle: "Any concerns please contact one of our friendly customer service professional"
+            });
+        }
+        self.info("LogServ:Logfile has been uploaded!!");
 
         // delete old log file and create a new one
         $fileLogger.deleteLogfile().then(function() {
-          $fileLogger.setStorageFilename(); // set it to default messages.log
+          /*
+          $fileLogger.setStorageFilename("messages.log"); // set it to default messages.log
           $fileLogger.deleteLogfile()       // delete messages.log. We dont use it so just want it gone
           $fileLogger.setStorageFilename(logFileName); // This will point it back to careWheelsLogFile.log
+          */
           $rootScope.fileUploaded = true;   // LogFile has been uploaded and new logfile created allow the new logfile to log
           self.info(fullPkg); // This will get added to the current new logfile not to the one just uploaded now
           self.info("LogServ: New log file was created!"); // This operation will create the lofile
@@ -172,12 +174,15 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
             self.error("LogServ: ERROR: Code = " + error.code);
             self.error("LogServ: ERROR: Error source " + error.source);
             self.error("LogServ: ERROR: Error target " + error.target);
-            $ionicPopup.alert({
-              title: "Logfile failed to upload!!",
-              subTitle: "Please contact one of our friendly customer service professional"
-            });
-        });
-       }); // $ionicPlatform.ready()
+            if (callingDrv == "advanced") {
+              $ionicPopup.alert({
+                title: "Logfile has been uploaded to the CareWheels server!!",
+                subTitle: "Any concerns please contact one of our friendly customer service professional"
+              });
+            }
+            self.error("LogServ: ERROR: Logfile failed to upload!!");
+          });
+      }); // $ionicPlatform.ready()
     };  // logUpload()
 
     //
