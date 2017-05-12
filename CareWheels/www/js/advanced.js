@@ -11,7 +11,7 @@ angular.module('careWheels')
 .controller('AdvancedController', function ($rootScope, $scope, $state, $interval,
             $ionicPopup, Download, User, fileloggerService) {
 
-  fileloggerService.info("AdvCtrl: Advance Controller Entered");
+  fileloggerService.info("AdvCtrl: Advanced Controller Entered");
 
   $scope.ScreenRefresh = function () {
     User.waitForDataDownload("Screen refresh under progress: ");  // Blocking the user till the data download is done
@@ -68,7 +68,7 @@ angular.module('careWheels')
         break;
       default:
         $ionicPopup.alert({
-          title: "Debug was not Enbaled, Currently supported level are 0 - Disable, 1 - DemoEnable, 2 - PullEnable, 3 - NA",
+          title: "Debug was not Enabled, Currently supported level are 0 - Disable, 1 - DemoEnable, 2 - PullEnable, 3 - NA",
           subTitle: "Please select a number below the Debug Enable button"
         });
         return;
@@ -86,5 +86,5 @@ angular.module('careWheels')
       });
     }
   }
-  fileloggerService.info("AdvCtrl: Advance Controller Exited");
+  fileloggerService.info("AdvCtrl: Advanced Controller Exited");
 })

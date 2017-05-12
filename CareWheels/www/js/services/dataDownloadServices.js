@@ -59,7 +59,7 @@ angular.module('careWheels')
             'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
           }
         }).then(function successCallback(response) {
-          User.hidePasswordDD(response);
+          User.hidePassword(response, 'DD');
 
           //
           // Since the downloaded data remains mostly unchanged we prevent logfile filling of repeated data.
@@ -154,7 +154,7 @@ angular.module('careWheels')
           }
 
         }, function errorCallback(response) {     // Most common error code is -1 = ERR_NETWORK_IO_SUSPENDED
-          User.hidePasswordDD(response);
+          User.hidePassword(response, 'DD');
           if (response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
             User.getHttpErrorCode("getData", response);
           }

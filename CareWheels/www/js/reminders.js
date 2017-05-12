@@ -162,10 +162,10 @@ angular.module('careWheels')
             title: 'Reminder set',
             template: 'All the Reminder times have been saved'
           });
-          User.hidePasswordDD(response);
+          User.hidePassword(response, 'DD');
           fileloggerService.info("RemCtrl: CallRest:Succesfully updated " + response.config.data);
         }, function errorCallback(response) {
-          User.hidePasswordDD(response);
+          User.hidePassword(response, 'DD');
           response.data += "Request failed";
           if (response.status != 200) {
             if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
@@ -177,7 +177,7 @@ angular.module('careWheels')
               template: 'Reminder times were not saved please contact your friendly CareWheels cusotmer support'
             });
           } else {
-            User.hidePasswordDD(response);
+            User.hidePassword(response, 'DD');
             fileloggerService.error("RemCtrl: CallRest: Rest status = 200 so there is some other issue. Details: " + JSON.stringify(response));
             var confirmPopup = $ionicPopup.alert({
               title: 'Reminder set',

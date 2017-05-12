@@ -8,5 +8,5 @@ angular.module("app.constants", [])
 	"downloadTime": "50",
 	"userCount": "5",
 	"maxHitIndicator":"5",
-	"backbuttonTimeout": "100"
+	"backbuttonPriority": "100"
 })

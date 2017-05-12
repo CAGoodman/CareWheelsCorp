@@ -128,7 +128,8 @@ gulp.task('getProperty', function () {
   console.log('Name = ' + data.apkDependencies.apkName)
   console.log('Company = ' + data.apkDependencies.apkCompany)
   console.log('Version = ' + data.apkDependencies.apkVersion)
-  console.log('APK = ' + data.apkDependencies.apkPackage)
+  console.log('APKarmv7 = ' + data.apkDependencies.apkPackagearmv7)
+  console.log('APKx86 = ' + data.apkDependencies.apkPackagex86)
   console.log('Date = ' + data.apkDependencies.apkDate);
 });
 
@@ -165,14 +166,22 @@ gulp.task('bumpDate', function () {
 
 //
 // For bumping APK name we use gulp-replace.
-// Usage: gulp bumpApk --apk "CareBank-armv7-04Jan17.apk"
-// How this works: In package.json it greps for the word "apkPackage" followed by anything and replaces
-// it with the word "apkPackage" + the actual apk name being passed as an argument
+// Usage: gulp bumpApk-armv7 --apk "CareBank-armv7-04Jan17.apk" or 
+// gulp bumpApk-x86 --apk "CareBank-x86-04Jan17.apk"
+// How this works: In package.json it greps for the word "apkPackage-armv7" or
+// "apkPackage-x86" followed by anything and replaces it with the word
+// "apkPackage-armv7" or "apkPackage-x86" + the actual apk name being passed as an argument
 //
 
-gulp.task('bumpApk', function () {
+gulp.task('bumpApk-armv7', function () {
   return gulp.src('./package.json')
-    .pipe(replace(/"apkPackage*.*/, "\"apkPackage\": "  + "\"" + argv.apk + "\""))
+    .pipe(replace(/"apkPackage-armv7*.*/, "\"apkPackage-armv7\": "  + "\"" + argv.apk + "\","))
+    .pipe(gulp.dest('./'));
+});
+
+gulp.task('bumpApk-x86', function () {
+    return gulp.src('./package.json')
+    .pipe(replace(/"apkPackage-x86*.*/, "\"apkPackage-x86\": "  + "\"" + argv.apk + "\""))
     .pipe(gulp.dest('./'));
 });
 

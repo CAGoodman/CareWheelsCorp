@@ -57,7 +57,9 @@ set year-num=%date:~12,8%
 REM Here we get the Date Stamp
 set DS=%day-num%%mo-name%%year-num%
 REM APK name is bumped up in package.json
-start gulp bumpApk --apk "CareBank-armv7-%DS%.apk"
+start gulp bumpApk-armv7 --apk "CareBank-armv7-%DS%.apk"
+pause
+start gulp bumpApk-x86 --apk "CareBank-x86-%DS%.apk"
 echo Did the bumpApk finish successfully?
 set /p ans=Enter y or n:
 IF "%ans%"=="y" goto DO_BUMPALL

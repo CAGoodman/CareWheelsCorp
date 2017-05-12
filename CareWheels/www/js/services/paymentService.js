@@ -27,7 +27,7 @@
 */
 
 angular.module('careWheels')
-.factory("PaymentService", function($http, $httpParamSerializerJQLike, User, API, fileloggerService){
+.factory("PaymentService", function($http, $httpParamSerializerJQLike, $ionicPopup, User, API, fileloggerService){
   var PaymentService = {};
 
   //
@@ -58,10 +58,10 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
-        User.hidePasswordPS(response);
+        User.hidePassword(response, 'PS');
         fileloggerService.info('PS:call():Call PaymentCredit: ' + JSON.stringify(response));
       }, function errorCallback(response) {
-        User.hidePasswordPS(response);
+        User.hidePassword(response, 'PS');
         var data = response.data || "Request failed";
         if (response.status != 200) {
           if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
@@ -113,10 +113,10 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
-        User.hidePasswordPS(response);
+        User.hidePassword(response, 'PS');
         fileloggerService.info('PaymentServ: sensorDataView():IS PaymentCredit: ' + JSON.stringify(response));
       }, function errorCallback(response) {
-        User.hidePasswordPS(response);
+        User.hidePassword(response, 'PS');
         var data = response.data || "Request failed";
         status = response.status;
         if (response.status != 200) {
@@ -169,17 +169,17 @@ angular.module('careWheels')
           'Content-Type': 'application/x-www-form-urlencoded'   //make Angular use the same content-type header as PHP
         }
       }).then(function successCallback(response) {    //the old $http success/error methods have been depricated; this is the new format
-        User.hidePasswordPS(response);
+        User.hidePassword(response, 'PS');
         fileloggerService.info("PaymentServ: memberSummary:Group Status PaymentCredit: " + JSON.stringify(response));
       }, function errorCallback(response) {
-        User.hidePasswordPS(response);
+        User.hidePassword(response, 'PS');
         var data = response.data || "Request failed";
         if (response.status != 200) {
           if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
             User.getHttpErrorCode("PaymentService.sensorDataView: ", response);
           }
           $ionicPopup.alert({
-            title: "Member summary was not updated correclty",
+            title: "Group view did not get the proper credit",
             subTitle: "Please contact your friendly CareBank customer support for help"
           });
           fileloggerService.error("PaymentServ: memberSummary: CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
@@ -188,10 +188,9 @@ angular.module('careWheels')
       })
     } else  {
       $ionicPopup.alert({
-        title: "Member summary was not updated correclty sue to bad credentials",
+        title: "Group view did not get the proper credit because of bad credentials",
         subTitle: "Please contact your friendly CareBank customer support for help"
       });
-      fileloggerService.warn("PaymentServ: memberSummary: Incorrect attempt to create notification for id #" + reminderNum);
       fileloggerService.error("PaymentServ: memberSummary: Cannot make REST call for memberSummary Payment because user credentials are undefined.");
     }
   };

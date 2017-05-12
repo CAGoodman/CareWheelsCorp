@@ -27,7 +27,6 @@ angular.module('careWheels')
    */
   var analysis = GroupInfo.getSelectedMemberIndex();
   $scope.GroupInfo = GroupInfo;
-  var timeNow = new Date().getHours();
   var phoneNumberError = false;
 
   $scope.alertLevel = '';
@@ -211,7 +210,7 @@ angular.module('careWheels')
       displayError();
       fileloggerService.error("ISCtrl: checkPhoneError:There is no phone number for " + analysis.name);
     }
-    else if ($scope.alertLevel != '') {
+    else if ($scope.showCallButton != '') { // The call button was pressed and the call button does exist do the payment
       PaymentService.call(analysis.username, $scope.alertLevel);
     }
   };  // checkPhoneError()

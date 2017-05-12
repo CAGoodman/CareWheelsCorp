@@ -35,8 +35,8 @@ angular.module('careWheels')
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		}).then(function successCallback(response) {
-
-			fileloggerService.info("UserServ: login: Successfully downloaded credentials", + JSON.stringify(response));
+			userService.hidePassword(response, 'DD');
+			fileloggerService.info("UserServ: login: Successfully downloaded credentials: " + JSON.stringify(response.config.data));
 
 			if (rmbr) {		// credentials are saved in local storage. In login.js it is retrived
 				window.localStorage['loginCredentials'] = angular.toJson({"username": uname, "password": passwd});
@@ -51,7 +51,7 @@ angular.module('careWheels')
 			GroupInfo.initGroupInfo(response.data);
 			userService.completedDataDownload("login: Credentials authentication completed");
 		}, function errorCallback(response) {
-			userService.hidePasswordDD(response);
+			userService.hidePassword(response, 'DD');
 			userService.completedDataDownload("login: Credentials authentication completed");
 			var errorMsg = "Login failed. There might be a network problem:  ";
 
@@ -141,13 +141,13 @@ angular.module('careWheels')
 				'Content-Type': 'application/x-www-form-urlencoded'
 			}
 		}).then(function successCallback(response) {
-			userService.hidePasswordVM(response);
-			fileloggerService.info("UserServ: setOnVacation: Successfully updated vacation settings!", + JSON.stringify(response));
+			userService.hidePassword(response, 'VM');
+			fileloggerService.info("UserServ: setOnVacation: Successfully updated vacation settings: " + JSON.stringify(response.config.data));
 			userService.completedDataDownload("setOnVacation: Vacation setting completed");       // DataDownload completed
 			return true;
 		},function errorCallback(response) {
 			userService.completedDataDownload("setOnVacation: Vacation setting completed");       // DataDownload completed
-			userService.hidePasswordVM(response);
+			userService.hidePassword(response, 'VM');
 			var errorMsg = "userService.setOnVacation: ";
 			fileloggerService.info("UserServ: setOnVacation: Vacation setting failed. Status: " + JSON.stringify(response));
 			for (var i = 0; i < response.data.length; i++) {
@@ -173,44 +173,49 @@ angular.module('careWheels')
 	userService.getHttpErrorCode = function(funcName, response){
 	    switch(response.status) {
 	      case -1:
-	      	response.statusText = "ERR_NETWORK_IO_SUSPENDED";
+	      	response.statusText = "Local Network Error";
 	        break;
 	      default:
 	      	fileloggerService.error("UserServ: " + funcName + "Unknown Error Code: " + errorCode + "Error: Some unknown network related error");
 	    }
 	} // userService.getHttpErrorCode
 
-	// "password=testalice&username=testalice&usernametofind=testalice" --> DownLoad
-	// "password=testalice&reminder1=+&reminder2=21:00:00&reminder3=19:00:00&username=testalice&usernametoupdate=testalice" --> Reminder
-	userService.hidePasswordDD = function(response){
-    	var pos = response.config.data.indexOf("&");  //positioned at the first & which is start of the username
-        response.config.data = response.config.data.slice(pos+1); // password is suppressed!!
-	} // userService.hidePasswordDD
 
-	// "alertlevel=na&callpayment=False&membersummarypayment=True&password=testalice&sensordataviewpayment=False&username=testalice&usernametocredit=testalice&usernametodebt="
-	userService.hidePasswordPS = function(response){
-		var str = response.config.data;				// Ref: W3 Schools, string manipulation in AngualrJS
-		var sln, pos1, pos2, str1, str2;
-		sln = str.length; pos1 = str.indexOf("pass"); pos2 = str.indexOf("sensor");
-	    str1 = str.substring(0, pos1); str2 = str.substr(pos2, sln);
-        response.config.data = str1 + str2; // password is suppressed!!
-	} // userService.hidePasswordPS
-
-	//"onvacation=false&password=testalice&username=testalice&usernametoupdate=testalice"
-	userService.hidePasswordVM = function(response){
-		var str = response.config.data;				// Ref: W3 Schools, string manipulation in AngualrJS
-		var sln, pos1, pos2, str1, str2;
-		sln = str.length; pos1 = str.indexOf("pass"); pos2 = str.indexOf("username");
-	    str1 = str.substring(0, pos1); str2 = str.substr(pos2, sln);
-        response.config.data = str1 + str2; // password is suppressed!!
-	}
+	userService.hidePassword = function(response, event){
+		switch (event) {
+			// "password=testalice&username=testalice&usernametofind=testalice" --> DownLoad
+			// "password=testalice&reminder1=+&reminder2=21:00:00&reminder3=19:00:00&username=testalice&usernametoupdate=testalice" --> Reminder
+			case 'DD':
+		    	var pos = response.config.data.indexOf("&");  //positioned at the first & which is start of the username
+		        response.config.data = response.config.data.slice(pos+1); // password is suppressed!!
+		        break;
+		   	// "alertlevel=na&callpayment=False&membersummarypayment=True&password=testalice&sensordataviewpayment=False&username=testalice&usernametocredit=testalice&usernametodebt="
+		    case 'PS':
+				var str = response.config.data;				// Ref: W3 Schools, string manipulation in AngualrJS
+				var sln, pos1, pos2, str1, str2;
+				sln = str.length; pos1 = str.indexOf("pass"); pos2 = str.indexOf("sensor");
+			    str1 = str.substring(0, pos1); str2 = str.substr(pos2, sln);
+		        response.config.data = str1 + str2; // password is suppressed!!
+		        break;
+		   	//"onvacation=false&password=testalice&username=testalice&usernametoupdate=testalice"
+		    case 'VM':
+				var str = response.config.data;				// Ref: W3 Schools, string manipulation in AngualrJS
+				var sln, pos1, pos2, str1, str2;
+				sln = str.length; pos1 = str.indexOf("pass"); pos2 = str.indexOf("username");
+			    str1 = str.substring(0, pos1); str2 = str.substr(pos2, sln);
+		        response.config.data = str1 + str2; // password is suppressed!!
+		    	break;
+		    default:
+		    	fileloggerService.error("UserServ: Unsupported event " + event + " The passwword might have been exposed");
+		}
+	} // userService.hidePassword()
 
 	userService.logout = function(event){
-		fileloggerService.info("UserServ: Logout called by", event);   // args contains the name of the function calling logout.
-	    $interval.cancel($rootScope.stopDownloadPromise);
-	    $rootScope.stopDownloadPromise = undefined;
+		fileloggerService.info("UserServ: Logout called by: ", event);   // args contains the name of the function calling logout.
+	    $interval.cancel($rootScope.downloadPromise);
+	    $rootScope.downloadPromise = undefined;
 	    $state.go('login', {}, {reload:true});
-    };
+    };	// userService.logout()
 
 	return userService;
 }); // factory

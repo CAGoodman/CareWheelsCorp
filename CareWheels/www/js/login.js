@@ -137,7 +137,7 @@ angular.module('careWheels')
     /**
       * This gets scheduled as the last operation of the login process
       * Before exiting this app the download scheduling has to be killed
-      * User.stopDownload is the Promise returned that is saved away for later killing
+      * downloadPromise is the Promise returned that is saved away for later killing
       * Schedule a download on an interval:
       *      1. download data
       *      2. wait
@@ -146,7 +146,7 @@ angular.module('careWheels')
     */
 
     function scheduleDownload(){
-      $rootScope.stopDownloadPromise = $interval(function(){
+      $rootScope.downloadPromise = $interval(function(){
         Download.DownloadData(function(){
           if ($state.current.name == "app.groupStatus") {
             $rootScope.autoRefresh = true;
@@ -183,10 +183,10 @@ angular.module('careWheels')
     }
 
 	var autoLoginCredentials = angular.fromJson(window.localStorage['autoLoginCredentials']);
-	console.log("On startup. Auto-login credentials are " + window.localStorage['autoLoginCredentials']);
+	fileloggerService.info("On startup. Auto-login credentials are " + window.localStorage['autoLoginCredentials']);
 
 	if (autoLoginCredentials) {
-      console.log("Performing auto-login");
+      fileloggerService.info("Performing auto-login");
       window.localStorage.removeItem("autoLoginCredentials");
       $scope.login(autoLoginCredentials.username, autoLoginCredentials.password, $scope.rememberMe);
 	}

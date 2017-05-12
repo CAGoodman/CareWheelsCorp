@@ -46,7 +46,6 @@ angular.module('careWheels', [
   $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
 
     fileloggerService.info("App: StateChangeStart: State change Start " + "From: " + fromState.name + " Next:" + next.name);
-    curState = next.name;
 
     //
     // When ever there is a state change which  means we go in and out of GroupStatus then
@@ -84,7 +83,7 @@ angular.module('careWheels', [
   $ionicPlatform.registerBackButtonAction(function (event) {
     fileloggerService.info("In Back button handler" + $ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
-  }, loginDependencies.backbuttonTimeout);
+  }, loginDependencies.backbuttonPriority);
 
   $ionicPlatform.ready(function () {
     if (window.cordova && window.cordova.plugins.Keyboard) {
@@ -101,7 +100,7 @@ angular.module('careWheels', [
 	  fileloggerService.info($state.current.name);
 	  if ($state.current.name != 'login') {
 	    window.localStorage["autoLoginCredentials"] = angular.toJson(User.credentials());
-        fileloggerService.info("The application is pausing from non-login state -- Saving " + angular.toJson(User.credentials()));
+        fileloggerService.info("The application is pausing from non-login state -- Saving " + User.credentials().username);
 	  } else {
 	    window.localStorage.removeItem("autoLoginCredentials");
         fileloggerService.info("The application is pausing from login state -- Removing Auto-login credentials for safety");

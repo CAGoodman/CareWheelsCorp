@@ -18,7 +18,7 @@ angular.module('careWheels')
 
   notifications.getData = function(){
     data = angular.fromJson(window.localStorage['Reminders']); // The produces an object called data
-    fileloggerService.info('NotifyServ: Reminder Data:' + JSON.stringify(data));
+    fileloggerService.info('NotifyServ: Reminder Data: ' + JSON.stringify(data));
     return angular.fromJson(window.localStorage['Reminders']);;
   };
 

@@ -45,7 +45,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 		// It is happening in back ground with the server hence wait for 50 mili seconds
 		// toDo: remove this once the callbacks for downland and analysis are set up
 		// Note: Any call enclosed between $interval() does not just fall through when stepping.
-		// groupArray[0] to grou[[4] has users in the same order irrespective of the user logged in
+		// groupArray[0] to group[4] has users in the same order irrespective of the user logged in
 
 		var initGroupInfoPromise = $interval(function () {
 			var groupArray = GroupInfo.groupInfo();
@@ -56,13 +56,13 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 				}
 				setGroupArray(groupArray);			// This is a critical call which sets the group of 5
 				checkCenterUserAlertLevel();
-			}
-			if ($rootScope.autoRefresh) {			//Skipping crediting user for group summary view because of auto-refresh
-				$rootScope.autoRefresh = false;
-			}
-			else {
-				fileloggerService.info("GSCtrl: runOnStateChange: Crediting user for group summary view " + "Username: " + creds.username);
-				PaymentService.memberSummary();
+				if ($rootScope.autoRefresh) {			//Skipping crediting user for group summary view because of auto-refresh
+					$rootScope.autoRefresh = false;
+				}
+				else {
+					fileloggerService.info("GSCtrl: runOnStateChange: Crediting user for group summary view " + "Username: " + creds.username);
+					PaymentService.memberSummary();
+				}
 			}
 		}, loginDependencies.downloadTime); 	// 50 mili sec delay to allow the download to happen
 
@@ -305,17 +305,10 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 				$scope.group[currentUser].username = groupArray[i].username;
 				$scope.group[currentUser].name = groupArray[i].name;
 				$scope.group[currentUser].vacationMode = groupArray[i].analysisData.vacationMode;
-
-				try {
-					fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
-					medsAlert = groupArray[i].analysisData.medsAlertLevel;
-					vacationMode = groupArray[i].analysisData.vacationMode;
-					$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode);
-				}
-				catch (Exception) {
-					$scope.group[currentUser].status = 'grey';
-					$scope.group[currentUser].error = true; //LoggedInUser error is not set
-				}
+				fridgeAlert = groupArray[i].analysisData.fridgeAlertLevel;
+				medsAlert = groupArray[i].analysisData.medsAlertLevel;
+				vacationMode = groupArray[i].analysisData.vacationMode;
+				$scope.group[currentUser].status = getAlertColor(fridgeAlert, medsAlert, vacationMode);
 				currentUser++;
 			}  // if()
 			// on the last element of the loop, now check health
@@ -379,8 +372,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 			alertString = 'red';
 		else if (fridge == 1 || meds == 1)
 			alertString = 'yellow';
-		else if (fridge == 0 || meds == 0)
-			alertString = 'blue';
+		else alertString = 'blue';			// The default state
 		return alertString;
     };	// getAlertColor();
 
