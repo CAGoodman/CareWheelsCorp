@@ -181,9 +181,9 @@ angular.module('careWheels')
           $scope.connectionError = false;
       });
     }
-
 	var autoLoginCredentials = angular.fromJson(window.localStorage['autoLoginCredentials']);
-	fileloggerService.info("On startup. Auto-login credentials are " + window.localStorage['autoLoginCredentials']);
+  if (autoLoginCredentials != undefined)
+    fileloggerService.info("On startup. Auto-login credentials are " + autoLoginCredentials.username);
 
 	if (autoLoginCredentials) {
       fileloggerService.info("Performing auto-login");

@@ -129,7 +129,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         if (callingDrv == "advanced") {
             $ionicPopup.alert({
               title: "Logfile has been uploaded to the CareWheels server!!",
-              subTitle: "Any concerns please contact one of our friendly customer service professional"
+              subTitle: "Any concerns please contact one of our friendly customer service professionals"
             });
         }
         self.info("LogServ:Logfile has been uploaded!!");
@@ -177,7 +177,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
             if (callingDrv == "advanced") {
               $ionicPopup.alert({
                 title: "Logfile has been uploaded to the CareWheels server!!",
-                subTitle: "Any concerns please contact one of our friendly customer service professional"
+                subTitle: "Any concerns please contact one of our friendly customer service professionals"
               });
             }
             self.error("LogServ: ERROR: Logfile failed to upload!!");

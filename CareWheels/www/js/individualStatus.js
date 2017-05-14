@@ -28,7 +28,7 @@ angular.module('careWheels')
   var analysis = GroupInfo.getSelectedMemberIndex();
   $scope.GroupInfo = GroupInfo;
   var phoneNumberError = false;
-
+  var alertLevel;
   function convertMedsOrMealsAlertLevelToColor(sensorArray) {
 
     var coloredArray = [];
@@ -142,14 +142,17 @@ angular.module('careWheels')
     // check for acceptable bounds or null phone number disable button if true
     if (meds < 0 || fridge < 0 || analysis.phoneNumber == null) {
       returnString += 'disableCallButton'; // error state
+      showCallButton = false;
     }
 
     // check for color status of button
     if (fridge >= 2 || meds >= 2) {
       returnString += ' button-assertive';  // Red
+      alertLevel = "red";
     }
     else if (fridge == 1 || meds == 1) {
       returnString += ' button-energized';  // Yellow
+      alertLevel - "yellow";
     }
     else {
       returnString += ' button-dark disableCallButton';
@@ -182,22 +185,7 @@ angular.module('careWheels')
 
     var alertNumFridge = analysis.analysisData.fridgeAlertLevel;
     var alertNumMeds = analysis.analysisData.medsAlertLevel;
-    //
-    // Alert intervals are defined for time ranges- 6:00AM-10:59AM, 11:00AM-3:59PM and 4:00PM-9:59PM.
-    // If there are no events and the interval is enabled for alerts and the user is present the alert is raised.
-    // fridgeAlertLevel is raised by 1(yellow) and medsAlertLevel is raised by 2(red).
-    // If the same condition persists for the next time interval food alerts goes red.
-    // fridgeAlertLevel escalates by 1 and medsAlertLevle escalates by 2
-    //
-    //
-    var alertLevel = '';
-    if (alertNumMeds >= 2) {
-      alertLevel = 'red';
-    } else {
-      if (alertNumFridge == 1){
-        alertLevel = 'yellow';
-      }
-    }
+
     return callString;
   };  // getPhoneNumber()
 
@@ -207,7 +195,7 @@ angular.module('careWheels')
       displayError();
       fileloggerService.error("ISCtrl: checkPhoneError:There is no phone number for " + analysis.name);
     }
-    else if ($scope.showCallButton != '') { // The call button was pressed and the call button does exist do the payment
+    else if ($scope.showCallButton != true) { // The call button was pressed and the call button does exist do the payment
       PaymentService.call(analysis.username, alertLevel);
     }
   };  // checkPhoneError()

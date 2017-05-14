@@ -97,7 +97,6 @@ angular.module('careWheels', [
 
   $ionicPlatform.ready(function() {
     document.addEventListener("pause", function() {
-	  fileloggerService.info($state.current.name);
 	  if ($state.current.name != 'login') {
 	    window.localStorage["autoLoginCredentials"] = angular.toJson(User.credentials());
         fileloggerService.info("The application is pausing from non-login state -- Saving " + User.credentials().username);
