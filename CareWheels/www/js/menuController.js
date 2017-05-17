@@ -121,13 +121,15 @@ angular.module('careWheels')
         fileloggerService.info('MenuCtrl: Name: ' + apkDependencies.apkName);
         fileloggerService.info('MenuCtrl: Company: ' + apkDependencies.apkCompany);
         fileloggerService.info('MenuCtrl: Version: ' + apkDependencies.apkVersion);
-        fileloggerService.info('MenuCtrl: Apk: ' + apkDependencies.apkPackage);
+        fileloggerService.info('MenuCtrl: Apk: ' + apkDependencies.apkPackagearmv7);
+        fileloggerService.info('MenuCtrl: Apk: ' + apkDependencies.apkPackagex86);
         fileloggerService.info('MenuCtrl: Date: ' + apkDependencies.apkDate);
         var aboutEntries = [
             { label: 'Name', value: apkDependencies.apkName },
             { label: 'Company', value: apkDependencies.apkCompany },
             { label: 'Version', value: apkDependencies.apkVersion },
-            { label: 'Apk', value: apkDependencies.apkPackage },
+            { label: "Apk's supported", value: apkDependencies.apkPackagearmv7},
+            { label: '', value: apkDependencies.apkPackagex86},
             { label: 'Date', value: apkDependencies.apkDate },
             { label: 'Cordova Version', value: window.device.cordova },
             { label: 'Model and Manufacturer', value: window.device.model + " " + window.device.manufacturer},
