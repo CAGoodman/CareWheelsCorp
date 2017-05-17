@@ -10,11 +10,11 @@
 
 angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
   .service('fileloggerService', function ($rootScope, $timeout, $interval, $q, $fileLogger, $filter, $ionicPlatform,
-    $ionicPopup, $cordovaFile, $cordovaFileTransfer,  $cordovaAppVersion, API, apkDependencies) {
+    $ionicPopup, $cordovaFileTransfer,  $cordovaAppVersion, API, apkDependencies) {
 
     var logFileName = "careWheelsLogFile.log";
     var username, password;
-    var fullPkg;
+    var fullPkg, apkPkg;
     $fileLogger.setTimestampFormat("yyyy-MM-ddTHH:mm:ss");
 
    //checks to see if cordova is available on this platform;
@@ -25,18 +25,17 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       return $filter('date')(today, 'yyyy-MM-dd-HH-mm-ss');
     };
 
-    // gets all possible info of the hardware, software and executing context to help in debug
-    this.getUserInfo = function () {
-      var headerPkg   = "Logfile Header For User: " + username + "\n"
-      var cordovaPkg  = "Cordova Version: " + window.device.cordova + "\n";
-      var apkPkg      = apkDependencies.apkPackage + " Version " + apkDependencies.apkVersion;
-      var datePkg     = " APK Date: " + apkDependencies.apkDate;
-      var osPkg       = "OS: " + window.device.platform + " Version: " + window.device.version + "\n";
-      var hardwarePkg = "Model and Manufacturer: " + window.device.model + " " + window.device.manufacturer + "\n";
-      var IDPkg       = "Serial Number: " + window.device.serial + " UUID: " + window.device.uuid + "\n";
-      fullPkg = headerPkg + cordovaPkg + apkPkg + datePkg + osPkg + hardwarePkg + IDPkg;
-      return fullPkg;
-    };
+    this.getApkPkg = function () {
+      return $q.all([
+        $cordovaAppVersion.getAppName(),
+        $cordovaAppVersion.getVersionNumber(),
+        $cordovaAppVersion.getVersionCode(),
+        $cordovaAppVersion.getPackageName()
+      ]).then(function (appInfo) {
+        apkPkg = appInfo[0] + ', Version ' + appInfo[1] + ', Build: ' + appInfo[2] + ', ID: ' + appInfo[3] + '\n';
+        return apkPkg;
+      })
+    } // getApkPkg()
 
     //
     // logUpload() gets called during login or from Advance/Upload menu which loads the current existing lofile.
@@ -60,6 +59,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       // save the reference to this
       var self = this;
       self.info("LogServ: Running on Android platform");
+
       var getFullPkg = function () {
         username = usernameIn;
         password = passwordIn;
@@ -68,8 +68,20 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         // values (or exceptions) when they are done processing. getFullPkg() gets called first
         // as part of logUpload() and then all the rest functions get called. These functions
         // execute asynchronously, but $q gurantees that the get used in the order listed.
-        return $q.resolve(self.getUserInfo());
+        return $q.resolve(self.getApkPkg());
       } // getFullPkg()
+
+      // gets all possible info of the hardware, software and executing context to help in debug
+      var getUserInfo = function () {
+        var headerPkg   = "Logfile Header For User: " + username + "\n"
+        var cordovaPkg  = "Cordova Version: " + window.device.cordova + "\n";
+        var datePkg     = "APK Date: " + apkDependencies.apkDate + "\n";
+        var osPkg       = "OS: " + window.device.platform + " Version: " + window.device.version + "\n";
+        var hardwarePkg = "Model and Manufacturer: " + window.device.model + " " + window.device.manufacturer + "\n";
+        var IDPkg       = "Serial Number: " + window.device.serial + " UUID: " + window.device.uuid + "\n";
+        fullPkg = headerPkg + cordovaPkg + apkPkg + datePkg + osPkg + hardwarePkg + IDPkg;
+        return fullPkg;
+      };
 
       var getFileURL = function (fullPkg) {
         //
@@ -166,6 +178,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       $ionicPlatform.ready(function () {
         self.info("LogServ: Ionic Platform is ready");
         getFullPkg()
+          .then(getUserInfo)
           .then(getFileURL)
           .then(upload)
           .then(cleanUp)

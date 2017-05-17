@@ -195,7 +195,7 @@ angular.module('careWheels')
       displayError();
       fileloggerService.error("ISCtrl: checkPhoneError:There is no phone number for " + analysis.name);
     }
-    else if ($scope.showCallButton != true) { // The call button was pressed and the call button does exist do the payment
+    else if ($scope.showCallButton == true) { // The call button was pressed and the call button does exist do the payment
       PaymentService.call(analysis.username, alertLevel);
     }
   };  // checkPhoneError()

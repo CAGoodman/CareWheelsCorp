@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="org.carewheels.carebank1" version="1.1.6" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>CareBank-1.1.6</name>
+<widget id="org.carewheels.carebank1" version="1.1.7" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>CareBank-1.1.7</name>
     <description>
     CareBank: a social care network platform
   </description>
@@ -55,4 +55,5 @@
     <plugin name="cordova-plugin-splashscreen" spec="~3.2.2" />
     <plugin name="cordova-plugin-statusbar" spec="~2.1.3" />
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
+    <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
 </widget>

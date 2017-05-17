@@ -68,7 +68,7 @@ angular.module('careWheels')
         break;
       default:
         $ionicPopup.alert({
-          title: "Debug was not Enabled, Currently supported level are 0 - Disable, 1 - DemoEnable, 2 - PullEnable, 3 - NA",
+          title: "Debug was not Enabled, Currently supported levels are 0 - Disable, 1 - DemoEnable, 2 - PullEnable, 3 - NA",
           subTitle: "Please select a number below the Debug Enable button"
         });
         return;
