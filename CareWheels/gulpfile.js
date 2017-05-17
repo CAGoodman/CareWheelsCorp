@@ -175,13 +175,13 @@ gulp.task('bumpDate', function () {
 
 gulp.task('bumpApk-armv7', function () {
   return gulp.src('./package.json')
-    .pipe(replace(/"apkPackage-armv7*.*/, "\"apkPackage-armv7\": "  + "\"" + argv.apk + "\","))
+    .pipe(replace(/"apkPackagearmv7*.*/, "\"apkPackagearmv7\": "  + "\"" + argv.apk + "\","))
     .pipe(gulp.dest('./'));
 });
 
 gulp.task('bumpApk-x86', function () {
     return gulp.src('./package.json')
-    .pipe(replace(/"apkPackage-x86*.*/, "\"apkPackage-x86\": "  + "\"" + argv.apk + "\""))
+    .pipe(replace(/"apkPackagex86*.*/, "\"apkPackagex86\": "  + "\"" + argv.apk + "\""))
     .pipe(gulp.dest('./'));
 });
 
