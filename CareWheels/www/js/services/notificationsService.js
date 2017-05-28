@@ -80,18 +80,18 @@ angular.module('careWheels')
                 title: "CareBank",
                 sound: null   //same, hopefully a different sound than red alerts
               }).then(function() {
-                fileloggerService.info("Reminder Notification: " + reminderNum + " has been scheduled for: " + time.toTimeString() + ", daily");
+                fileloggerService.info("Reminder Notification" + reminderNum + "has been scheduled for " + time.toTimeString() + ", daily");
               });
           }
         } else {    //need to deschedule notification if it has been turned off
           if(isAndroid){
             $cordovaLocalNotification.cancel(reminderNum, function() {
-              fileloggerService.info("NotifyServ: Reminder Notification: " + reminderNum + " has been descheduled.");
+              fileloggerService.info("NotifyServ: Reminder Notification" + reminderNum + " has been descheduled.");
             });
           }
         }
     } else if(reminderNum >=4) {
-      fileloggerService.warn("NotifyServ: Incorrect attempt to create notification for id #: " + reminderNum);
+      fileloggerService.warn("NotifyServ: Incorrect attempt to create notification for id #" + reminderNum);
     }
   };
 
@@ -100,7 +100,7 @@ angular.module('careWheels')
     if(isAndroid){
       for(i=1; i<4; ++i){
         $cordovaLocalNotification.clear(i, function() {
-          fileloggerService.info("NotifyServ: Reminder Notification: " + i + " is cleared");
+          fileloggerService.info("NotifyServ: Reminder Notification" + i + " is cleared");
         });
       }
     }
@@ -119,8 +119,8 @@ angular.module('careWheels')
         title: "Reminder notification could not be set",
         subTitle: "Please contact your friendly CareBank customer support for help"
       });
-      fileloggerService.warn("NotifyServ: Incorrect attempt to create notification for id #: " + reminderNum);
-      fileloggerService.error("NotifyServ: Reminder Notification Attempted to print Reminder id: " + id + ", but there are only 3 reminders!");
+      fileloggerService.warn("NotifyServ: Incorrect attempt to create notification for id #" + reminderNum);
+      fileloggerService.error("NotifyServ: Reminder Notification Attempted to print Reminder id " + id + ", but there are only 3 reminders!");
     } else {
       var hour = data[id].hours;
       if(hour<10) hour = 0 + String(hour);
