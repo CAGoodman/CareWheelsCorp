@@ -59,11 +59,13 @@ angular.module('careWheels')
   // ask the user to uninstall the released version of the APK and install a debug version of the APK
   //
 
+  // Tap Logo 3 times
+
   $scope.EnableDebug = function (dbgLevel) {
     switch(dbgLevel) {
       case "0":
       case "1":
-      case "2":
+      case "2":         // O Normal URL, 1 Alternate URL we do this from the login screen. Tap on the logo
       case "3":
         break;
       default:
