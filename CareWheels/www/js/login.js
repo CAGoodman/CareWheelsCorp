@@ -47,7 +47,11 @@ angular.module('careWheels')
     $scope.showHelp = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
     $scope.connectionError = false;
-    $scope.versionNumber = apkDependencies.apkVersion;
+    if (apkDependencies.apkPackagearmv7.search("dbg") == -1)
+      $scope.versionNumber = apkDependencies.apkVersion;
+    else
+      $scope.versionNumber = apkDependencies.apkVersion + " - DEBUG";
+
 
     //
     // If the rememberMe is set then the credentials are in the local memory so can be written

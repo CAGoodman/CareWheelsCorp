@@ -141,6 +141,7 @@ gulp.task('getProperty', function () {
 gulp.task('getVersion', function () {
   var data = require('./package.json')
   console.log('Version = ' + data.apkDependencies.apkVersion)
+  return data.apkDependencies.apkVersion;
 });
 
 //
@@ -191,8 +192,12 @@ gulp.task('bumpApk-x86', function () {
 // bumpApk will have run far earlier.
 //
 
-gulp.task('bumpAll', function(callback) {
-    runSequence('bumpPatch', ['bumpDate'], ['bumpConstants'], 'getProperty', callback);
+gulp.task('bumpPatchDate', function(callback) {
+    runSequence('bumpPatch', ['bumpDate'], callback);
+});
+
+gulp.task('bumpConstGetProp', function(callback) {
+    runSequence('bumpConstants', 'getProperty', callback);
 });
 
 //
