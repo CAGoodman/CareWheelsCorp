@@ -23,6 +23,7 @@ angular.module('careWheels')
       $interval, $timeout, GroupInfo, User, notifications, Download, fileloggerService, apkDependencies,
       loginDependencies){
 
+    $ionicHistory.clearHistory();       // This ensures the phone back button is disabled
     $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
     fileloggerService.info("Login: Login Controller Entered");
 

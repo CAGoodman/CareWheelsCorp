@@ -29,7 +29,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 
 	$scope.showBar = false;
 	$scope.barLegend = "";
-    $ionicHistory.clearHistory();
+    $ionicHistory.clearHistory();				// This ensures the phone back button is disabled
 	runOnStateChange();
 
 

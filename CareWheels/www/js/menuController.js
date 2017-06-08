@@ -110,10 +110,7 @@ angular.module('careWheels')
     };
 
     $scope.clickHelp = function () {
-        $ionicPopup.alert({
-            title: 'Help',
-            subTitle: "Help menu under construction!!"
-        });
+        window.open("https://sites.google.com/a/carewheels.com/carebank/");
     };
 
     $scope.clickAbout = function () {
