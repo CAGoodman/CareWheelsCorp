@@ -126,7 +126,7 @@ angular.module('careWheels', [
 
 
 // API factory for making all php endpoints globally accessible.
-.factory('API', function (cbUrls, cbMailAdd) {
+.factory('API', function (cbUrls) {
   var api = {
     userAndGroupInfo: cbUrls.careBankURL8443 + '/userandgroupmemberinfo.php',
     updateUserReminders: cbUrls.careBankURL8443 + '/updateuserreminders.php',
@@ -136,9 +136,7 @@ angular.module('careWheels', [
     updateSettings:cbUrls.careBankURL8443 + '/updatesettings.php',
     sensorDownLoad:cbUrls.careBankURL8443 + '/analysis.php',
     loggingServices8080:cbUrls.careBankURL8080 + '/logupload.php',
-    loggingServices8443:cbUrls.careBankURL8443 + '/logupload.php',
-    userHelp:cbUrls.careBankURLHelp,
-    userSupport:cbMailAdd.support
+    loggingServices8443:cbUrls.careBankURL8443 + '/logupload.php'
   };
   return api;
 });

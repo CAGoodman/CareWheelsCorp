@@ -56,38 +56,27 @@ set day-num=%date:~7,2%
 set year-num=%date:~12,8%
 REM Here we get the Date Stamp
 set DS=%day-num%%mo-name%%year-num%
+REM APK name is bumped up in package.json
+start gulp bumpApk-armv7 --apk "CareBank-armv7-%DS%.apk"
+pause
+start gulp bumpApk-x86 --apk "CareBank-x86-%DS%.apk"
+echo Did the bumpApk finish successfully?
+set /p ans=Enter y or n:
+IF "%ans%"=="y" goto DO_BUMPALL
+goto END
 
+:DO_BUMPALL
 REM This calls bumpPatch, bumpDate, bumpConstants and finally calls getProperty
 REM bumpApk, bumpPatch, bumpDate all bump it up in the package.json only
 REM bumpConstants creates a new file ngconstants.js which gets bundled with the APK
 REM ngconstants.js has all the source/binary controls
 
-start gulp bumpPatchDate
-echo Did the bumpPatchDate finish successfully?
-set /p ans=Enter y or n:
-IF "%ans%"=="y" goto BUMP_APK
-goto END
-
-:BUMP_APK
-REM APK name is bumped up in package.json
-REM Here we get the version form pakcahe.json
-set xxx=gulp getVersion
-for /f "tokens=1*delims== " %%r in ('%xxx%') do if "%%r"=="Version" set "return=%%s"
-set Version=%return%
-
 IF "%1"=="-d" (
-start gulp bumpApk-armv7 --apk "CareBank-armv7-%DS%-%Version%-dbg.apk"
+start /min gulp resetVersion --version "9.9.8"
 pause
-start gulp bumpApk-x86 --apk "CareBank-x86-%DS%-%Version%-dbg.apk"
-) ELSE (
-start gulp bumpApk-armv7 --apk "CareBank-armv7-%DS%-%Version%-rel.apk"
-pause
-start gulp bumpApk-x86 --apk "CareBank-x86-%DS%-%Version%-rel.apk
 )
-pause
-start gulp bumpConstGetProp
-
-echo Did the bumpApk finish successfully?
+start gulp bumpAll
+echo Did the bumpAll finish successfully?
 set /p ans=Enter y or n:
 IF "%ans%"=="y" goto APK_BUILD
 goto END
@@ -99,35 +88,35 @@ REM We get the bumped up Version from package.json and update config.xml
 set apkVersion=%%j
 )
 )
-REM Both of them work one is retained for future use. This will update config.xml
+REM Both of them work one is retained for future use
 set AppName=CareBank-%apkVersion:~1,-1%
 rem for /F %%a in (%apkVersion%) do set AppName=CareBank-%%a
 
 IF "%1"=="-d" (
-start cordova-update-config --appname "CareBank-BetaDbg"
+start /min cordova-update-config --appname "CareBank-BetaDbg"
 ) ELSE (
-start cordova-update-config --appname %AppName%
+start /min cordova-update-config --appname %AppName%
 )
 pause
-start cordova-update-config --appid "org.carewheels.carebank1"
+start /min cordova-update-config --appid "org.carewheels.carebank1"
 pause
 goto VERSION_DONE
 
 :VERSION_DONE
-start cordova-update-config --appversion %apkVersion%
+start /min cordova-update-config --appversion %apkVersion%
 pause
 IF "%1"=="-d" (
-del platforms\android\build\outputs\apk\*.apk >nul 2>&1
+del platforms\android\build\outputs\apk\*.apk
 start cordova build --debug android
 echo Did it build successfully?
 set /p ans=Enter y or n:
 cd platforms\android\build\outputs\apk
-ren android-armv7-debug.apk CareBank-armv7-%DS%-%Version%-dbg.apk
-ren android-x86-debug.apk CareBank-x86-%DS%-%Version%-dbg.apk
+ren android-armv7-debug.apk CareBank-armv7-%DS%-debug.apk
+ren android-x86-debug.apk CareBank-x86-%DS%-debug.apk
 echo Debug build done!!
 goto END
 ) ELSE (
-del platforms\android\build\outputs\apk\*.apk >nul 2>&1
+del platforms\android\build\outputs\apk\*.apk
 start cordova build --release android
 )
 REM At this point we get the file platforms\android\build\outputs\apk\android-release-unsigned.apk
@@ -169,10 +158,9 @@ rem To verify a apk is signed or unsinged use the following command
 rem jarsigner -verify -verbose -certs
 
 :ALIGNIT
-del CareBank-armv7-%DS%-%Version%-rel.apk >nul 2>&1
-del CareBank-x86-%DS%-%Version%-rel.apk >nul 2>&1
-zipalign -v 4 android-armv7-release-unsigned.apk CareBank-armv7-%DS%-%Version%-rel.apk
-zipalign -v 4 android-x86-release-unsigned.apk CareBank-x86-%DS%-%Version%-rel.apk
+del CareBank-armv7-%DS%.apk >nul 2>&1
+zipalign -v 4 android-armv7-release-unsigned.apk CareBank-armv7-%DS%.apk
+zipalign -v 4 android-x86-release-unsigned.apk CareBank-x86-%DS%.apk
 goto END
 
 :NO_KEY

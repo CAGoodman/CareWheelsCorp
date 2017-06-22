@@ -29,7 +29,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 
 	$scope.showBar = false;
 	$scope.barLegend = "";
-    $ionicHistory.clearHistory();				// This ensures the phone back button is disabled
+    $ionicHistory.clearHistory();
 	runOnStateChange();
 
 
@@ -82,7 +82,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 		var creds = User.credentials();
 		var groupArray = GroupInfo.groupInfo();
 		$scope.showBarCB = true;
-		$scope.barLegendCB = "CareBank";
+		$scope.barLegendCB = "Care Bank";
 		$scope.barClassCB = "bar-positive";
 		var status;	// Precdence is set as - Vacation, grey, red, yellow, blue
 		var loggedInUserIndex = $scope.group[0].selfUserIndex;
