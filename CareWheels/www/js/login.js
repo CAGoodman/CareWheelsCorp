@@ -20,7 +20,7 @@ angular.module('careWheels')
   .controller('loginController',
 
     function($rootScope, $scope, $controller, $state, $ionicLoading, $ionicHistory, $ionicPopup,
-      $interval, $timeout, GroupInfo, User, notifications, Download, fileloggerService, apkDependencies,
+      $interval, $timeout, API, GroupInfo, User, notifications, Download, fileloggerService, apkDependencies,
       loginDependencies){
 
     $ionicHistory.clearHistory();       // This ensures the phone back button is disabled
@@ -34,6 +34,7 @@ angular.module('careWheels')
 
     var loginTimeout = false;
     $scope.rememberMe = false;
+    $scope.userSupport = API.userSupport;
 
     //
     // If "remember credentials" is selected login credentials are stored in localStorage - userService.js

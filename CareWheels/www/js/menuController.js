@@ -10,7 +10,7 @@
 //
 angular.module('careWheels')
 
-.controller('menu', function ($rootScope, $scope, $state, $ionicHistory, $ionicPopup, apkDependencies, User, fileloggerService) {
+.controller('menu', function ($rootScope, $scope, $state, $ionicHistory, $ionicPopup, API, apkDependencies, User, fileloggerService) {
 
     fileloggerService.info("MenuCtrl: Menu Controller Entered");
 
@@ -110,7 +110,8 @@ angular.module('careWheels')
     };
 
     $scope.clickHelp = function () {
-        window.open("https://sites.google.com/a/carewheels.com/carebank/");
+        //window.open("https://sites.google.com/a/carewheels.com/carebank/");
+        window.open(API.userHelp);
     };
 
     $scope.clickAbout = function () {

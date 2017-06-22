@@ -51,6 +51,7 @@ angular.module('careWheels')
 			GroupInfo.initGroupInfo(response.data);
 			userService.completedDataDownload("login: Credentials authentication completed");
 		}, function errorCallback(response) {
+			if (response.data == null) response.data = "";
 			userService.hidePassword(response, 'DD');
 			userService.completedDataDownload("login: Credentials authentication completed");
 			var errorMsg = "Login failed. There might be a network problem:  ";
