@@ -20,9 +20,10 @@ angular.module('careWheels')
   .controller('loginController',
 
     function($rootScope, $scope, $controller, $state, $ionicLoading, $ionicHistory, $ionicPopup,
-      $interval, $timeout, GroupInfo, User, notifications, Download, fileloggerService, apkDependencies,
+      $interval, $timeout, API, GroupInfo, User, notifications, Download, fileloggerService, apkDependencies,
       loginDependencies){
 
+    $ionicHistory.clearHistory();       // This ensures the phone back button is disabled
     $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
     fileloggerService.info("Login: Login Controller Entered");
 
@@ -33,6 +34,7 @@ angular.module('careWheels')
 
     var loginTimeout = false;
     $scope.rememberMe = false;
+    $scope.userSupport = API.userSupport;
 
     //
     // If "remember credentials" is selected login credentials are stored in localStorage - userService.js
@@ -47,7 +49,11 @@ angular.module('careWheels')
     $scope.showHelp = false;
     $scope.logoImage = 'img/CareWheelsLogo.png';
     $scope.connectionError = false;
-    $scope.versionNumber = apkDependencies.apkVersion;
+    if (apkDependencies.apkPackagearmv7.search("dbg") == -1)
+      $scope.versionNumber = apkDependencies.apkVersion;
+    else
+      $scope.versionNumber = apkDependencies.apkVersion + " - DEBUG";
+
 
     //
     // If the rememberMe is set then the credentials are in the local memory so can be written
