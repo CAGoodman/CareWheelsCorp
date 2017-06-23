@@ -73,13 +73,11 @@ angular.module('careWheels')
 
         }
         else {
-            //fileloggerService.info("MenuCtrl:clickPocketMother: Exit");
             openSense();
         }
     };
 
     $scope.clickCyclos = function() {
-        //fileloggerService.info("MenuCtrl:clickCyclos: Enter");
         $scope.isChecked.value = false;
         var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
         if (!noWarn) {
@@ -100,7 +98,6 @@ angular.module('careWheels')
 
         }
         else {
-            //fileloggerService.info("MenuCtrl:clickCyclos: Exit");
             openCyclos();
         }
     };
@@ -110,7 +107,6 @@ angular.module('careWheels')
     };
 
     $scope.clickHelp = function () {
-        //window.open("https://sites.google.com/a/carewheels.com/carebank/");
         window.open(API.userHelp);
     };
 

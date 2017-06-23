@@ -61,6 +61,14 @@ The browser calls the index.html first and that loads this file.
 					<div class="miniCardHeader center">
         				<table width="100%">
                 			<tr>
+                				<td rowspan="2" width="5%" align="center" style="vertical-align: middle;"></td>
+                        		<td align="center">Balance</td>
+                			</tr>
+                			<tr>
+                        		<td align="center">{{group[0].balance | number:1}}</td>
+                			</tr>
+                			<!-- Once the Debit/Credit issue is fixed just replace the top with the bottom code
+                			<tr>
                         		<td align="center">Balance</td>
                         		<td rowspan="2" width="10%" align="center" style="vertical-align: middle;"> = </td>
                         		<td align="center">Donated</td>
@@ -72,6 +80,7 @@ The browser calls the index.html first and that loads this file.
                         		<td align="center">{{group[0].credit | number:1}}</td>
                         		<td align="center">{{group[0].debit  | number:1}}</td>
                 			</tr>
+							-->
         				</table>
 					</div>
 				</div>
