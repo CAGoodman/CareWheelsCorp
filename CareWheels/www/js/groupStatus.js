@@ -113,16 +113,16 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 				break;
 			default:
 				$ionicPopup.alert({
-		            title: "Vacation mode not set. Status: " + status + " Alert level undetected for Username: " + creds.username,
-		            subTitle: "Please contact your friendly CareBank customer support for help"
+		            title: "Vacation mode not set. Status: " + status + " Alert level not detected for Username: " + creds.username + ' [GS1]',
+		            subTitle: "Contact support"
 	        	});
 				fileloggerService.error("GSCtrl: checkCenterUserAlertLevel:Bad alert status: " + status + "Username: " + creds.username);
 				$scope.showBarVM = false;
 		}	// switch()
 		if (i > loginDependencies.userCount) {
 			$ionicPopup.alert({
-	            title: "Vacation mode not set. " + i + " user count exceeds expected user count " + loginDependencies.userCount,
-	            subTitle: "Please contact your friendly CareBank customer support for help"
+	            title: "Vacation mode not set. " + i + " user count exceeds expected user count " + loginDependencies.userCount + ' [GS2]',
+	            subTitle: "Contact support"
 	    	});
 			fileloggerService.error("GSCtrl: checkCenterUserAlertLevel:Username: " + creds.username + " is missing");
 		}
@@ -239,8 +239,8 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 		// error unable to load user object;
 		if (user == null || user == undefined) {
 			$ionicPopup.alert({
-	            title: "Username is missing or undefined",
-	            subTitle: "Please contact your friendly CareBank customer support for help"
+	            title: "Username undefined [GS3]",
+	            subTitle: "Contact support"
 	        });
 		} else {
 
@@ -253,8 +253,8 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 				}
 			}
 			$ionicPopup.alert({
-	            title: "Username: " + user.username + " is missing or undefnined",
-	            subTitle: "Please contact your friendly CareBank customer support for help"
+	            title: "Username: " + user.username + " is undefnined [GS4]",
+	            subTitle: "Contact support"
 		    })
 	    }
 	    fileloggerService.error("GSCtrl: getLoggedInUser(): Unknown username: " + user.username);
@@ -327,7 +327,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
     // An error popup dialog
     function displayError(errorString) {
 		var alertPopup = $ionicPopup.alert({
-			title: '<div class="errorTitle">Unable to load sensor data for:</div>',
+			title: '<div class="errorTitle">Unable to load sensor data for:</div> [GS5]',
 			template: '<div class="errorTemplate">' + errorString + '</div>',
 			buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
 				text: 'Okay',

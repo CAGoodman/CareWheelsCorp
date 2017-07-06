@@ -68,8 +68,8 @@ angular.module('careWheels')
             User.getHttpErrorCode("PaymentService.call", response);
           }
           $ionicPopup.alert({
-            title: "Proper credit for your Call could not be made due to network or other issues",
-            subTitle: "Please contact your friendly CareBank customer support for help"
+            title: "Credit not made because of network issues [PS1]",
+            subTitle: "Contact support"
           });
           fileloggerService.error("PaymentServ: call: CreditPosted: " + data + ", ReasonCode: " + response.statusText);
           fileloggerService.error("PaymentServ: call: " + JSON.stringify(response));
@@ -77,8 +77,8 @@ angular.module('careWheels')
       })
     } else {
     $ionicPopup.alert({
-        title: "Proper credit for your Call could not be made as there is a problem with your credentials",
-        subTitle: "Please contact your friendly CareBank customer support for help"
+        title: "Credit not made because of credential issues [PS2]",
+        subTitle: "Clease support"
       });
       fileloggerService.error("PaymentServ: call:Cannot make REST call for Call  Payment because user credentials are undefined.");
     }
@@ -124,8 +124,8 @@ angular.module('careWheels')
             User.getHttpErrorCode("PaymentService.sensorDataView: ", response);
           }
           $ionicPopup.alert({
-            title: "Sensor data view did not get the proper credit",
-            subTitle: "Please contact your friendly CareBank customer support for help"
+            title: "Sensor data view did not credit becasue network issues [PS3]",
+            subTitle: "Contact support"
           });
           fileloggerService.error("PaymentServ:sensorDataView: CreditPosted: " + data + ", ReasonCode: " + response.statusText);
           fileloggerService.error("PaymentServ:sensorDataView: " + JSON.stringify(response));
@@ -134,8 +134,8 @@ angular.module('careWheels')
       })
     } else {
        $ionicPopup.alert({
-        title: "Sensor data view did not get the proper credit because there was some credential issues",
-        subTitle: "Please contact your friendly CareBank customer support for help"
+        title: "Sensor data view did not credit because of credential issues [PS4]",
+        subTitle: "Contact support"
       });
       fileloggerService.error("PaymentServ:sensorDataView: Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
     }
@@ -179,8 +179,8 @@ angular.module('careWheels')
             User.getHttpErrorCode("PaymentService.sensorDataView: ", response);
           }
           $ionicPopup.alert({
-            title: "Group view did not get the proper credit",
-            subTitle: "Please contact your friendly CareBank customer support for help"
+            title: "Group view did not get credit because of network issues [PS5]",
+            subTitle: "Contact support"
           });
           fileloggerService.error("PaymentServ: memberSummary: CreditPosted: " + data + ", ReasonCode: " + response.statusText);
           fileloggerService.error("PaymentServ: memberSummary: " + JSON.stringify(response));
@@ -188,8 +188,8 @@ angular.module('careWheels')
       })
     } else  {
       $ionicPopup.alert({
-        title: "Group view did not get the proper credit because of bad credentials",
-        subTitle: "Please contact your friendly CareBank customer support for help"
+        title: "Group view did not get credit because of credential issues [PS6]",
+        subTitle: "Contact support"
       });
       fileloggerService.error("PaymentServ: memberSummary: Cannot make REST call for memberSummary Payment because user credentials are undefined.");
     }

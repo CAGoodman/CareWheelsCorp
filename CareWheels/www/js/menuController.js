@@ -51,6 +51,11 @@ angular.module('careWheels')
         value: false
     };
 
+
+    $scope.InitiateLogout = function () {
+        User.logout("MenuCtrl: InitiateLogout: Successfully logged out");
+    }
+
     $scope.clickPocketMother = function() {
         fileloggerService.info("MenuCtrl:clickPocketMother: Enter");
         $scope.isChecked.value = false;
@@ -58,7 +63,7 @@ angular.module('careWheels')
         if (!noWarn) {
 
             $ionicPopup.confirm({
-                title: 'You are now leaving CareWheels',
+                title: 'You are now leaving CareWheels [MC1]',
                 template: '<ion-checkbox ng-model="isChecked.value" ng-checked="isChecked.value">Do not show again</ion-checkbox>',
                 scope: $scope
             })
@@ -83,7 +88,7 @@ angular.module('careWheels')
         if (!noWarn) {
 
             $ionicPopup.confirm({
-                title: 'You are now leaving CareWheels',
+                title: 'You are now leaving CareWheels [MC2]',
                 template: '<ion-checkbox ng-model="isChecked.value" ng-checked="isChecked.value">Do not show again</ion-checkbox>',
                 scope: $scope
             })
@@ -107,7 +112,7 @@ angular.module('careWheels')
     };
 
     $scope.clickHelp = function () {
-        window.open(API.userHelp);
+        window.open(API.userHelp, '_system');
     };
 
     $scope.clickAbout = function () {
@@ -159,7 +164,7 @@ angular.module('careWheels')
                 fileloggerService.info("MenuCtrl: Sen.Se Pocketmother application Entered");
             }, function(error) {
                 $ionicPopup.alert({
-                    title: 'Error',
+                    title: 'Pocketmother Error [MC3]',
                     subTitle: "Sen.se application not available"
                 });
             })
@@ -181,7 +186,7 @@ angular.module('careWheels')
                 fileloggerService.info("MenuCtrl: Cyclos application Entered");
             }, function(error) {
                 $ionicPopup.alert({
-                    title: 'Error',
+                    title: 'Cyclos Error [MC4]',
                     subTitle: "Cyclos application not available"
                 });
             })

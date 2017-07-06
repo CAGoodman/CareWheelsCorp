@@ -59,7 +59,7 @@ angular.module('careWheels')
 			fileloggerService.error("UserServ: login:  " + errorMsg + "Status: " + response.status);
 
 			if (failCount >= 3) {
-				errorMsg += "Exceeding invalid login attempts. Please Contact admin";
+				errorMsg += "Exceeding invalid login attempts. Contact support";
 			} else {
 				switch(response.status) {
 					case -1:
@@ -76,20 +76,21 @@ angular.module('careWheels')
 						errorMsg += "Unable to reach the server ";
 						break;
 					default:
+						// The response.data is comning from the OS
 						if (response.data === "Your access is blocked by exceeding invalid login attempts") {
-							errorMsg += "Account got blocked by exceeding invalid login attempts. Please contact admin";
+							errorMsg += "Account blocked, too many login attempts. Contact support";
 						}
 						failCount++;
 						var alertPopup = $ionicPopup.alert({
-							title: 'Login failed!',
-							template: [errorMsg + response.data]
+							title: 'Login failed [US1]',
+							template: [errorMsg]
 						});
 						fileloggerService.error("UserServ: login: " + errorMsg + JSON.stringify(response));
 						return;
 				} // switch
 				var alertPopup = $ionicPopup.alert({
-					title: 'Login failed!',
-					template: [errorMsg + response.data]
+					title: 'Login failed [US2]',
+					template: [errorMsg]
 				});
 				fileloggerService.error("UserServ: login: " + errorMsg + JSON.stringify(response));
 			} // else

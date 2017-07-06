@@ -26,7 +26,7 @@ angular.module('careWheels', [
 ])
 
 
-.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $ionicPopup, $state, User, loginDependencies, fileloggerService) {
+.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, User, loginDependencies, Download, fileloggerService) {
 
   //
   // preLogin.log will save away the console.log messages we miss out in the main log file careWheelsLocalLogFile.log.
@@ -81,7 +81,7 @@ angular.module('careWheels', [
   });
 
   $ionicPlatform.registerBackButtonAction(function (event) {
-    fileloggerService.info("In Back button handler" + $ionicHistory.backTitle());
+    fileloggerService.info("App: In Back button handler" + $ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
   }, loginDependencies.backbuttonPriority);
 
@@ -95,22 +95,39 @@ angular.module('careWheels', [
     }
   });
 
+  //
+  // While entring pause state:
+  // To facilitate auto login when resuming from a background activity we set the values of autoLoginCredentials
+  // to user credentials. However if the user had gone to background when in the login screen meaning logged out
+  // state then we should not login. The rule is come back to the same state as it was before going to background
+  //
+
   $ionicPlatform.ready(function() {
     document.addEventListener("pause", function() {
 	  if ($state.current.name != 'login') {
 	    window.localStorage["autoLoginCredentials"] = angular.toJson(User.credentials());
-        fileloggerService.info("The application is pausing from non-login state -- Saving " + User.credentials().username);
+        fileloggerService.info("App: The application is pausing from non-login state -- Saving " + User.credentials().username);
 	  } else {
 	    window.localStorage.removeItem("autoLoginCredentials");
-        fileloggerService.info("The application is pausing from login state -- Removing Auto-login credentials for safety");
+        fileloggerService.info("App: The application is pausing from login state -- Removing Auto-login credentials for safety");
 	  }
     }, false);
   });
 
+  //
+  // When coming out background and doing a resume if autoLoginCredentials was set we need to do a referesh
+  // automatically to give the current view to the user.
+  //
    $ionicPlatform.ready(function() {
     document.addEventListener("resume", function() {
-      window.localStorage.removeItem("autoLoginCredentials");
-      fileloggerService.info("The application is resuming -- Removing Auto-login credentials");
+      if(Window.localStorage['autoLoginCredentials'] != null) {
+        Download.DownloadData(function(){
+          fileloggerService.info("App: Pull down refresh done!");
+          $state.go($state.current, {}, {reload: true});
+        });
+        window.localStorage.removeItem("autoLoginCredentials");
+        fileloggerService.info("App: The application is resuming -- Removing Auto-login credentials");
+      }
     }, false);
   });
 

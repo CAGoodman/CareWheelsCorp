@@ -189,7 +189,11 @@ angular.module('careWheels')
     return callString;
   };  // getPhoneNumber()
 
-  // button press event
+  //
+  // When the Call Button is pressed the control comes here. This is a button press event
+  // If the user number has not been configured then callString has (000) 000-0000 in which case Call
+  // is disabled by setting showCallButton = false.
+  //
   $scope.checkPhoneError = function () {
     if (phoneNumberError) {
       displayError();
@@ -224,8 +228,8 @@ angular.module('careWheels')
   function displayError() {
     phoneNumberError = true;
     var alertPopup = $ionicPopup.alert({
-      title: '<div class="errorTitle">There is no phone number for this member.</div>',
-      template: '<div class="errorTemplate">Please contact your friendly CareBank customer support for help.</div>',
+      title: '<div class="errorTitle">There is no phone number for this member.</div> [IS1]',
+      template: '<div class="errorTemplate"> Contact support.</div>',
       buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
         text: 'Okay',
         type: 'button-calm'

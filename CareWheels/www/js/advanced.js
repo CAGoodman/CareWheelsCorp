@@ -22,16 +22,12 @@ angular.module('careWheels')
     });
   }
 
-  $scope.InitiateLogout = function () {
-    User.logout("AdvCtrl: InitiateLogout: Successfully logged out");
-  }
-
   $scope.ClearMemory = function () {
     window.applicationCache.abort();
     window.caches.delete(100);
     window.localStorage.clear();
     $ionicPopup.alert({
-       title: "Data and cache memory cleared!!",
+       title: "Data and cache memory cleared [AD1]",
        subTitle: ""
     });
     fileloggerService.info("AdvCtrl: ClearMemory: Successfully cleared memory");
@@ -70,20 +66,20 @@ angular.module('careWheels')
         break;
       default:
         $ionicPopup.alert({
-          title: "Debug was not Enabled, Currently supported levels are 0 - Disable, 1 - DemoEnable, 2 - PullEnable, 3 - NA",
-          subTitle: "Please select a number below the Debug Enable button"
+          title: "Debug not Enabled, Supported levels are 0 - Disable, 1 - DemoEnable, 2 - PullEnable, 3 - NA [AD2]",
+          subTitle: "Select a number below the Debug Enable button"
         });
         return;
     }
     $rootScope.dbgLevel = dbgLevel;
     if (dbgLevel != 0) {
       $ionicPopup.alert({
-        title: "Debug Enabled. Set to level: " + dbgLevel,
+        title: "Debug Enabled. Set to level: " + dbgLevel + ' [AD3]',
         subTitle: "Do a Screen Refresh. After the debug run set it back to 0"
       });
     } else {
       $ionicPopup.alert({
-        title: "Debug Disabled. Set to level: 0",
+        title: "Debug Disabled. Set to level: 0 [AD4]",
         subTitle: "Do a Screen Refresh to restore default data"
       });
     }
