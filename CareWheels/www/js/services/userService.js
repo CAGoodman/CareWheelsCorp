@@ -64,8 +64,12 @@ angular.module('careWheels')
 				switch(response.status) {
 					case -1:
 					    if (response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
-				            userService.getHttpErrorCode("userService.login: ", response);
+				            userService.getHttpErrorCode("login: ", response);
 				        }
+				        errorMsg += response.statusText;
+				        break;
+				    case 0:
+				    	errorMsg += "Network Error";
 					case 400:
 						errorMsg += "Please check your credentials! ";
 						break;
@@ -76,21 +80,23 @@ angular.module('careWheels')
 						errorMsg += "Unable to reach the server ";
 						break;
 					default:
-						// The response.data is comning from the OS
+						// The response.data is comning from the OS. This message from OS was observed very consistently
+						// Even if this were to change in the future no harm is done!!
 						if (response.data === "Your access is blocked by exceeding invalid login attempts") {
 							errorMsg += "Account blocked, too many login attempts. Contact support";
 						}
 						failCount++;
+						errorMsg += " Err = " + response.status;
 						var alertPopup = $ionicPopup.alert({
 							title: 'Login failed [US1]',
-							template: [errorMsg]
+							template: [errorMsg + " Err = " + response.status]
 						});
 						fileloggerService.error("UserServ: login: " + errorMsg + JSON.stringify(response));
 						return;
 				} // switch
 				var alertPopup = $ionicPopup.alert({
 					title: 'Login failed [US2]',
-					template: [errorMsg]
+					template: [errorMsg + " Err = " + response.status]
 				});
 				fileloggerService.error("UserServ: login: " + errorMsg + JSON.stringify(response));
 			} // else
@@ -129,7 +135,7 @@ angular.module('careWheels')
     };
 
     userService.setOnVacation = function (uname, passwd, onVacationSetting) {
-		userService.waitForDataDownload("Vacation setting under process: ");	// Blocking the user till the data download is done
+		userService.waitForDataDownload("Vacation setting under progress: ");	// Blocking the user till the data download is done
 		return $http({
 			url: API.updateSettings,
 			method: 'POST',
@@ -158,7 +164,7 @@ angular.module('careWheels')
 
 			if (response.status != 200) {
 				if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
-            		User.getHttpErrorCode("userService.setOnVacation: ", response);
+            		User.getHttpErrorCode("setOnVacation: ", response);
           		}
 			  	errorMsg = "Unable to update settings on server!";
 			}
@@ -172,13 +178,17 @@ angular.module('careWheels')
 		})
 	};	// userService.setOnVacation
 
+	//
+	// As and when we encounter new error code we add it to the switch.
+	//
+
 	userService.getHttpErrorCode = function(funcName, response){
 	    switch(response.status) {
 	      case -1:
 	      	response.statusText = "Local Network Error";
 	        break;
 	      default:
-	      	fileloggerService.error("UserServ: " + funcName + "Unknown Error Code: " + errorCode + "Error: Some unknown network related error");
+	      	fileloggerService.error("UserServ: " + funcName + "Unknown Error Code: " + user.errorCode + "Error: Unknown network related error");
 	    }
 	} // userService.getHttpErrorCode
 

@@ -115,15 +115,14 @@ angular.module('careWheels', [
   });
 
   //
-  // When coming out background and doing a resume if autoLoginCredentials was set we need to do a referesh
+  // When coming out background and doing a resume if autoLoginCredentials was set we need to do a refresh
   // automatically to give the current view to the user.
   //
    $ionicPlatform.ready(function() {
     document.addEventListener("resume", function() {
-      if(Window.localStorage['autoLoginCredentials'] != null) {
+      if(window.localStorage['autoLoginCredentials'] != "null") {
         Download.DownloadData(function(){
-          fileloggerService.info("App: Pull down refresh done!");
-          $state.go($state.current, {}, {reload: true});
+          fileloggerService.info("App: Auto login refresh done!");
         });
         window.localStorage.removeItem("autoLoginCredentials");
         fileloggerService.info("App: The application is resuming -- Removing Auto-login credentials");

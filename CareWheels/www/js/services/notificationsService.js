@@ -53,7 +53,7 @@ angular.module('careWheels')
       if(isAndroid){
         $cordovaLocalNotification.schedule({    //omitting 'at' and 'every' params means it occurs once, immediately
           id: reminderNum,
-          message: "There are red alert(s) on your CareWheel!",
+          message: "Red Alert! Please check your Group now.",
           title: "CareBank",
           sound: null   //should be updated to freeware sound
         }).then(function() {
@@ -76,7 +76,7 @@ angular.module('careWheels')
                 id: reminderNum,
                 at: time,
                 every: "day",
-                text: "Reminder " + reminderNum + ": Please check the status of your CareWheel group using the CareBank application",
+                text: "Reminder " + reminderNum + ": Please check your Group",
                 title: "CareBank",
                 sound: null   //same, hopefully a different sound than red alerts
               }).then(function() {

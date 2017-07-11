@@ -100,7 +100,8 @@ set apkVersion=%%j
 )
 )
 REM Both of them work one is retained for future use. This will update config.xml
-set AppName=CareBank-%apkVersion:~1,-1%
+set AppName=CareBank
+REM set AppName=CareBank-%apkVersion:~1,-1% in case we want to put the version number
 rem for /F %%a in (%apkVersion%) do set AppName=CareBank-%%a
 
 IF "%1"=="-d" (

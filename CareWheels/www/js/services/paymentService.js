@@ -78,7 +78,7 @@ angular.module('careWheels')
     } else {
     $ionicPopup.alert({
         title: "Credit not made because of credential issues [PS2]",
-        subTitle: "Clease support"
+        subTitle: "Contact support"
       });
       fileloggerService.error("PaymentServ: call:Cannot make REST call for Call  Payment because user credentials are undefined.");
     }

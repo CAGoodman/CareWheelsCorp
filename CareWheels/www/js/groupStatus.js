@@ -253,7 +253,7 @@ function ($rootScope, $scope, $interval, $state, $ionicHistory, $ionicPopup, $lo
 				}
 			}
 			$ionicPopup.alert({
-	            title: "Username: " + user.username + " is undefnined [GS4]",
+	            title: "User Credentials invalid [GS4]",
 	            subTitle: "Contact support"
 		    })
 	    }
