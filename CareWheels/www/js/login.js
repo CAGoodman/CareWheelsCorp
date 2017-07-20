@@ -194,8 +194,13 @@ angular.module('careWheels')
 	//
   // When the app is logged out autoLoginCredentials is not saved and does not come into picture
   // Only when the app goes to background then autologin facilitates for a auto login
-  // Refer to app.js for more details.
+  // Refer to app.js for more details. We have tgo remove the autoLoginCredentials at this point
+  // or else we cannot log out at all. But we have to remove it only when the user has tapped on logout button
   //
+
+  $rootScope.$on("logout", function(evt,data){
+    window.localStorage.removeItem("autoLoginCredentials");
+  })
 
   if (autoLoginCredentials) {
       fileloggerService.info("Performing auto-login");

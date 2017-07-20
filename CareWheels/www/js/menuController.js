@@ -53,6 +53,7 @@ angular.module('careWheels')
 
 
     $scope.InitiateLogout = function () {
+        $scope.$emit("logout", "null");
         User.logout("MenuCtrl: InitiateLogout: Successfully logged out");
     }
 
@@ -123,13 +124,13 @@ angular.module('careWheels')
         fileloggerService.info('MenuCtrl: Apk: ' + apkDependencies.apkPackagearmv7);
         fileloggerService.info('MenuCtrl: Apk: ' + apkDependencies.apkPackagex86);
         fileloggerService.info('MenuCtrl: Date: ' + apkDependencies.apkDate);
+        var packageList = apkDependencies.apkPackagearmv7 + "<br>" + apkDependencies.apkPackagex86 + "<br>" + apkDependencies.ipaPackageAX;
         var aboutEntries = [
             { label: 'Name', value: apkDependencies.apkName },
             { label: 'Company', value: apkDependencies.apkCompany },
             { label: 'Version', value: apkDependencies.apkVersion },
-            { label: "Apk's supported", value: apkDependencies.apkPackagearmv7},
-            { label: '', value: apkDependencies.apkPackagex86},
-            { label: 'Date', value: apkDependencies.apkDate },
+            { label: "Packages supported", value: packageList},
+            { label: 'Build Date', value: apkDependencies.apkDate },
             { label: 'Cordova Version', value: window.device.cordova },
             { label: 'Model and Manufacturer', value: window.device.model + " " + window.device.manufacturer},
             { label: 'Serial Number and UUID', value: window.device.serial +  " " +window.device.uuid}

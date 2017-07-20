@@ -75,14 +75,20 @@ set xxx=gulp getVersion
 for /f "tokens=1*delims== " %%r in ('%xxx%') do if "%%r"=="Version" set "return=%%s"
 set Version=%return%
 
+REM The IPA lines are place holders for the future iOS support. All apple processors start with A and a number hence AX
+
 IF "%1"=="-d" (
 start gulp bumpApk-armv7 --apk "CareBank-armv7-%DS%-%Version%-dbg.apk"
 pause
 start gulp bumpApk-x86 --apk "CareBank-x86-%DS%-%Version%-dbg.apk"
+pause
+start gulp bumpIpa-AX --ipa "CareBank-AX-%DS%-%Version%-dbg.ipa"
 ) ELSE (
 start gulp bumpApk-armv7 --apk "CareBank-armv7-%DS%-%Version%-rel.apk"
 pause
-start gulp bumpApk-x86 --apk "CareBank-x86-%DS%-%Version%-rel.apk
+start gulp bumpApk-x86 --apk "CareBank-x86-%DS%-%Version%-rel.apk"
+pause
+start gulp bumpIpa-AX --ipa "CareBank-AX-%DS%-%Version%-rel.ipa"
 )
 pause
 start gulp bumpConstGetProp

@@ -205,7 +205,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     //
 
     var logInternal = function (functionName, args) {
-      if (!passMessage(args, "")) return;
+      if (!passMessage(args, "")) return;             // Allows messages with args value to pass blocks the rest
       if (!$rootScope.fileUploaded) {
         var time = new Date();
         args[0] = time.toLocaleString() + ": " + args[0];
@@ -232,6 +232,8 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       logInternal('error', arguments);
     }
 
+    // During debug this acts as a filter and allows only message which have args stirng in them
+    // The string in msg is manually typed by the developer and apk rebuilt.
     var passMessage = function (args, msg){
       if (!args) return false;
       if (msg == "") return true;

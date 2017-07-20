@@ -130,6 +130,7 @@ gulp.task('getProperty', function () {
   console.log('Version = ' + data.apkDependencies.apkVersion)
   console.log('APKarmv7 = ' + data.apkDependencies.apkPackagearmv7)
   console.log('APKx86 = ' + data.apkDependencies.apkPackagex86)
+  console.log('IPAAX = ' + data.apkDependencies.ipaPackageAX)
   console.log('Date = ' + data.apkDependencies.apkDate);
 });
 
@@ -182,7 +183,13 @@ gulp.task('bumpApk-armv7', function () {
 
 gulp.task('bumpApk-x86', function () {
     return gulp.src('./package.json')
-    .pipe(replace(/"apkPackagex86*.*/, "\"apkPackagex86\": "  + "\"" + argv.apk + "\""))
+    .pipe(replace(/"apkPackagex86*.*/, "\"apkPackagex86\": "  + "\"" + argv.apk + "\","))
+    .pipe(gulp.dest('./'));
+});
+
+gulp.task('bumpIpa-AX', function () {
+    return gulp.src('./package.json')
+    .pipe(replace(/"ipaPackageAX*.*/, "\"ipaPackageAX\": "  + "\"" + argv.ipa + "\""))
     .pipe(gulp.dest('./'));
 });
 

@@ -222,6 +222,10 @@ angular.module('careWheels')
 		}
 	} // userService.hidePassword()
 
+	//
+	// This function gets called when user taps the logout button. Logging out means we get back to the login screen
+	// However before getting back we need to ensure the DataDownLoad() which is happening in the background is killed
+	//
 	userService.logout = function(event){
 		fileloggerService.info("UserServ: Logout called by: ", event);   // args contains the name of the function calling logout.
 	    $interval.cancel($rootScope.downloadPromise);
