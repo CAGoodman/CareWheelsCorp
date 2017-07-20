@@ -2,11 +2,11 @@
   "apkDependencies": {
     "apkName": "CareBank-Application",
     "apkCompany": "CareWheels Corporation",
-    "apkVersion": "1.1.18",
-    "apkDate": "Wed Jul 19 2017 21:51:03 GMT-0700 (Pacific Daylight Time)",
-    "apkPackagearmv7": "CareBank-armv7-19Jul17-1.1.18-rel.apk",
-    "apkPackagex86": "CareBank-x86-19Jul17-1.1.18-rel.apk",
-	"ipaPackageAX": "CareBank-AX-19Jul17-1.1.18-rel.ipa"
+    "apkVersion": "1.1.19",
+    "apkDate": "Thu Jul 20 2017 14:58:45 GMT-0700 (Pacific Daylight Time)",
+    "apkPackagearmv7": "CareBank-armv7-20Jul17-1.1.19-rel.apk",
+    "apkPackagex86": "CareBank-x86-20Jul17-1.1.19-rel.apk",
+	"ipaPackageAX": "CareBank-AX-20Jul17-1.1.19-rel.ipa"
   },
   "dependencies": {
     "@ionic-native/app-version": "^3.8.0",

@@ -227,6 +227,7 @@ angular.module('careWheels')
 	// However before getting back we need to ensure the DataDownLoad() which is happening in the background is killed
 	//
 	userService.logout = function(event){
+		window.localStorage.removeItem("autoLoginCredentials");
 		fileloggerService.info("UserServ: Logout called by: ", event);   // args contains the name of the function calling logout.
 	    $interval.cancel($rootScope.downloadPromise);
 	    $rootScope.downloadPromise = undefined;

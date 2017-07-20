@@ -51,9 +51,7 @@ angular.module('careWheels')
         value: false
     };
 
-
     $scope.InitiateLogout = function () {
-        $scope.$emit("logout", "null");
         User.logout("MenuCtrl: InitiateLogout: Successfully logged out");
     }
 
