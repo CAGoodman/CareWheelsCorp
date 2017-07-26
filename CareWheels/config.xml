@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="org.carewheels.carebank1" version="1.1.14" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>CareBank-1.1.14</name>
-  <description>
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="org.carewheels.carebank1" version="1.1.19" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>CareBank</name>
+    <description>
     CareBank: a social care network platform
   </description>
   <author email="CAG@CareWheels.org" href="http://carewheels.org/">

@@ -165,7 +165,7 @@ angular.module('careWheels')
     // An error popup dialog
     function displayError(index) {
       var errorStrings = [
-        'Please try again, or contact a system administrator.',
+        'Please try again, or contact support',
         'Please check your internet connection.'
       ];
       var buttonText = [
@@ -174,7 +174,7 @@ angular.module('careWheels')
       ];
 
       var alertPopup = $ionicPopup.alert({
-        title: '<div class="errorTitle">Unable to Connect With CareWheels</div>',
+        title: '<div class="errorTitle">Unable to Connect With CareWheels</div> [LG1]',
         template: '<div class="errorTemplate">' + errorStrings[index] + '</div>',
         buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
           text: buttonText[index],
@@ -191,7 +191,7 @@ angular.module('careWheels')
   if (autoLoginCredentials != undefined)
     fileloggerService.info("On startup. Auto-login credentials are " + autoLoginCredentials.username);
 
-	if (autoLoginCredentials) {
+  if (autoLoginCredentials) {
       fileloggerService.info("Performing auto-login");
       window.localStorage.removeItem("autoLoginCredentials");
       $scope.login(autoLoginCredentials.username, autoLoginCredentials.password, $scope.rememberMe);

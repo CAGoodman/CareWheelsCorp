@@ -51,6 +51,10 @@ angular.module('careWheels')
         value: false
     };
 
+    $scope.InitiateLogout = function () {
+        User.logout("MenuCtrl: InitiateLogout: Successfully logged out");
+    }
+
     $scope.clickPocketMother = function() {
         fileloggerService.info("MenuCtrl:clickPocketMother: Enter");
         $scope.isChecked.value = false;
@@ -58,7 +62,7 @@ angular.module('careWheels')
         if (!noWarn) {
 
             $ionicPopup.confirm({
-                title: 'You are now leaving CareWheels',
+                title: 'You are now leaving CareWheels [MC1]',
                 template: '<ion-checkbox ng-model="isChecked.value" ng-checked="isChecked.value">Do not show again</ion-checkbox>',
                 scope: $scope
             })
@@ -73,19 +77,17 @@ angular.module('careWheels')
 
         }
         else {
-            //fileloggerService.info("MenuCtrl:clickPocketMother: Exit");
             openSense();
         }
     };
 
     $scope.clickCyclos = function() {
-        //fileloggerService.info("MenuCtrl:clickCyclos: Enter");
         $scope.isChecked.value = false;
         var noWarn = angular.fromJson(window.localStorage["noLeaveAppWarn"]);
         if (!noWarn) {
 
             $ionicPopup.confirm({
-                title: 'You are now leaving CareWheels',
+                title: 'You are now leaving CareWheels [MC2]',
                 template: '<ion-checkbox ng-model="isChecked.value" ng-checked="isChecked.value">Do not show again</ion-checkbox>',
                 scope: $scope
             })
@@ -100,7 +102,6 @@ angular.module('careWheels')
 
         }
         else {
-            //fileloggerService.info("MenuCtrl:clickCyclos: Exit");
             openCyclos();
         }
     };
@@ -110,8 +111,7 @@ angular.module('careWheels')
     };
 
     $scope.clickHelp = function () {
-        //window.open("https://sites.google.com/a/carewheels.com/carebank/");
-        window.open(API.userHelp);
+        window.open(API.userHelp, '_system');
     };
 
     $scope.clickAbout = function () {
@@ -122,13 +122,13 @@ angular.module('careWheels')
         fileloggerService.info('MenuCtrl: Apk: ' + apkDependencies.apkPackagearmv7);
         fileloggerService.info('MenuCtrl: Apk: ' + apkDependencies.apkPackagex86);
         fileloggerService.info('MenuCtrl: Date: ' + apkDependencies.apkDate);
+        var packageList = apkDependencies.apkPackagearmv7 + "<br>" + apkDependencies.apkPackagex86 + "<br>" + apkDependencies.ipaPackageAX;
         var aboutEntries = [
             { label: 'Name', value: apkDependencies.apkName },
             { label: 'Company', value: apkDependencies.apkCompany },
             { label: 'Version', value: apkDependencies.apkVersion },
-            { label: "Apk's supported", value: apkDependencies.apkPackagearmv7},
-            { label: '', value: apkDependencies.apkPackagex86},
-            { label: 'Date', value: apkDependencies.apkDate },
+            { label: "Packages supported", value: packageList},
+            { label: 'Build Date', value: apkDependencies.apkDate },
             { label: 'Cordova Version', value: window.device.cordova },
             { label: 'Model and Manufacturer', value: window.device.model + " " + window.device.manufacturer},
             { label: 'Serial Number and UUID', value: window.device.serial +  " " +window.device.uuid}
@@ -163,7 +163,7 @@ angular.module('careWheels')
                 fileloggerService.info("MenuCtrl: Sen.Se Pocketmother application Entered");
             }, function(error) {
                 $ionicPopup.alert({
-                    title: 'Error',
+                    title: 'Pocketmother Error [MC3]',
                     subTitle: "Sen.se application not available"
                 });
             })
@@ -185,7 +185,7 @@ angular.module('careWheels')
                 fileloggerService.info("MenuCtrl: Cyclos application Entered");
             }, function(error) {
                 $ionicPopup.alert({
-                    title: 'Error',
+                    title: 'Cyclos Error [MC4]',
                     subTitle: "Cyclos application not available"
                 });
             })

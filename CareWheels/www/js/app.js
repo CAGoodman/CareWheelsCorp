@@ -26,7 +26,7 @@ angular.module('careWheels', [
 ])
 
 
-.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $ionicPopup, $state, User, loginDependencies, fileloggerService) {
+.run(function ($rootScope, $interval, $ionicPlatform, $ionicHistory, $state, User, loginDependencies, Download, fileloggerService) {
 
   //
   // preLogin.log will save away the console.log messages we miss out in the main log file careWheelsLocalLogFile.log.
@@ -81,7 +81,7 @@ angular.module('careWheels', [
   });
 
   $ionicPlatform.registerBackButtonAction(function (event) {
-    fileloggerService.info("In Back button handler" + $ionicHistory.backTitle());
+    fileloggerService.info("App: In Back button handler" + $ionicHistory.backTitle());
     $state.go($ionicHistory.backTitle());
   }, loginDependencies.backbuttonPriority);
 
@@ -95,22 +95,44 @@ angular.module('careWheels', [
     }
   });
 
+  //
+  // Entering Pause state - pushed to background:
+  // To facilitate auto login when resuming from Pause "autoLoginCredentials" is saved.
+  // However if the user had Paused when in the login screen meaning logged out
+  // state then we should not login. The rule is come back to the same state as it was before going to background
+  // To make life easy irrespective of the view window from where we paused on resume we come back to GS view only.
+  //
+
   $ionicPlatform.ready(function() {
-    document.addEventListener("pause", function() {
-	  if ($state.current.name != 'login') {
-	    window.localStorage["autoLoginCredentials"] = angular.toJson(User.credentials());
-        fileloggerService.info("The application is pausing from non-login state -- Saving " + User.credentials().username);
-	  } else {
-	    window.localStorage.removeItem("autoLoginCredentials");
-        fileloggerService.info("The application is pausing from login state -- Removing Auto-login credentials for safety");
-	  }
+    fileloggerService.info("App:Registering pause handler");
+    document.addEventListener("pause", function() {        // Listening on the transition to Pause state
+  	  if ($state.current.name != 'login') {                  // We are in the process of going to Pause state
+  	    window.localStorage["autoLoginCredentials"] = angular.toJson(User.credentials());
+          fileloggerService.info("App: Pausing from non-login state - Saved Auto-login credentials " + User.credentials().username);
+  	  } else {
+  	      window.localStorage.removeItem("autoLoginCredentials");
+          fileloggerService.info("App: Pausing from login state - Removed Auto-login credentials");
+  	  }
     }, false);
   });
 
+  //
+  // Exiting Pause and Resuming - pulled forward to foreground
+  // When coming out of Pause and doing a resume if autoLoginCredentials was set we need to do a refresh
+  // automatically to give the current view to the user.
+  //
+
    $ionicPlatform.ready(function() {
-    document.addEventListener("resume", function() {
-      window.localStorage.removeItem("autoLoginCredentials");
-      fileloggerService.info("The application is resuming -- Removing Auto-login credentials");
+    fileloggerService.info("App:Registering resume handler");
+    document.addEventListener("resume", function() {              // Listening on the transition from Pause to Resume state
+      if(window.localStorage['autoLoginCredentials'] != null) {
+        Download.DownloadData(function(){
+          $state.go($state.current, {}, {reload: true});
+          fileloggerService.info("App: Auto login refresh done!");
+        });
+        window.localStorage.removeItem("autoLoginCredentials");
+        fileloggerService.info("App: Resuming -- Removing Auto-login credentials");
+      }
     }, false);
   });
 

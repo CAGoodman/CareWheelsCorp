@@ -53,7 +53,7 @@ angular.module('careWheels')
       if(isAndroid){
         $cordovaLocalNotification.schedule({    //omitting 'at' and 'every' params means it occurs once, immediately
           id: reminderNum,
-          message: "There are red alert(s) on your CareWheel!",
+          message: "Red Alert! Please check your Group now.",
           title: "CareBank",
           sound: null   //should be updated to freeware sound
         }).then(function() {
@@ -76,7 +76,7 @@ angular.module('careWheels')
                 id: reminderNum,
                 at: time,
                 every: "day",
-                text: "Reminder " + reminderNum + ": Please check in with your CareWheels friendly customer support!",
+                text: "Reminder " + reminderNum + ": Please check your Group",
                 title: "CareBank",
                 sound: null   //same, hopefully a different sound than red alerts
               }).then(function() {
@@ -116,8 +116,8 @@ angular.module('careWheels')
   notifications.Reminder_As_String = function(id){
     if(id>2){
       $ionicPopup.alert({
-        title: "Reminder notification could not be set",
-        subTitle: "Please contact your friendly CareBank customer support for help"
+        title: "Reminder notification not set [NS1]",
+        subTitle: "Contact support"
       });
       fileloggerService.warn("NotifyServ: Incorrect attempt to create notification for id #: " + reminderNum);
       fileloggerService.error("NotifyServ: Reminder Notification Attempted to print Reminder id: " + id + ", but there are only 3 reminders!");

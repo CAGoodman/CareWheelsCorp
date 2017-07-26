@@ -48,10 +48,10 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         // The point to note is the logfile is available for other means of retrival later
         $rootScope.fileUploaded = true; // This is not a Android platform so we will allow the file log to continue
         $ionicPopup.alert({
-          title: "This is not a Android device. " + usernameIn + " please note no logfile will be created",
-          subTitle: "Please contact your friendly CareBank customer support for help"
+          title: "Not an Android device. Logfile not created [LS1]",
+          subTitle: "Contact support"
         });
-        this.error("LogServ: ERROR: Not a Android Device " + "Please contact your friendly CareWheels Customer Support");
+        this.error("LogServ: ERROR: Not a Android Device. Contact support");
         return;
       }
 
@@ -140,11 +140,11 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
         self.info("LogServ: Done uploading log file!. username: " + usernameIn);
         if (callingDrv == "advanced") {
             $ionicPopup.alert({
-              title: "Logfile has been uploaded to the CareWheels server!!",
-              subTitle: "Any concerns please contact one of our friendly customer service professionals"
+              title: "Logfile uploaded to server [LS2]",
+              subTitle: "Contact support if you have concerns"
             });
         }
-        self.info("LogServ:Logfile has been uploaded!!");
+        self.info("LogServ:Logfile has been uploaded");
 
         // delete old log file and create a new one
         $fileLogger.deleteLogfile().then(function() {
@@ -189,11 +189,11 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
             self.error("LogServ: ERROR: Error target " + error.target);
             if (callingDrv == "advanced") {
               $ionicPopup.alert({
-                title: "Logfile has been uploaded to the CareWheels server!!",
-                subTitle: "Any concerns please contact one of our friendly customer service professionals"
+              title: "Logfile uploaded to server [LS3]",
+              subTitle: "Contact support if you have concerns"
               });
             }
-            self.error("LogServ: ERROR: Logfile failed to upload!!");
+            self.error("LogServ: ERROR: Logfile failed to upload");
           });
       }); // $ionicPlatform.ready()
     };  // logUpload()
@@ -205,7 +205,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
     //
 
     var logInternal = function (functionName, args) {
-      if (!passMessage(args, "")) return;
+      if (!passMessage(args, "")) return;             // Allows messages with args value to pass blocks the rest
       if (!$rootScope.fileUploaded) {
         var time = new Date();
         args[0] = time.toLocaleString() + ": " + args[0];
@@ -232,6 +232,8 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
       logInternal('error', arguments);
     }
 
+    // During debug this acts as a filter and allows only message which have args stirng in them
+    // The string in msg is manually typed by the developer and apk rebuilt.
     var passMessage = function (args, msg){
       if (!args) return false;
       if (msg == "") return true;

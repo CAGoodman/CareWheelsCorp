@@ -374,8 +374,8 @@ angular.module('careWheels')
       unameList += groupInfo[i].username + " ";
     }
     $ionicPopup.alert({
-      title: "Username is missing or undefined",
-      subTitle: "Please contact your friendly CareBank customer support for help"
+      title: "Username is undefined [GIS1]",
+      subTitle: "Contact support"
     });
     fileloggerService.error("GIServ: SetMember(): Could not find username: " + Username + " in the username list: " + unameList);
     User.logout("GIServ: ERROR: Could not get Username. Logging out");
@@ -389,8 +389,8 @@ angular.module('careWheels')
       }
     }
     $ionicPopup.alert({
-      title: "Username is missing or undefined",
-      subTitle: "Please contact your friendly CareBank customer support for help"
+      title: "Username is undefined[GIS2]",
+      subTitle: "Contact support"
     });
     fileloggerService.error("GIServ: groupInfoService.getMember: Could not find username " + groupInfoMember.username);
     User.logout("GIServ: ERROR: Could not set Username. Logging out");
