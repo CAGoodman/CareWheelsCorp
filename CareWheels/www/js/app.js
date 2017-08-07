@@ -35,7 +35,8 @@ angular.module('careWheels', [
   window.localStorage.removeItem('preLogin.log');
   window.localStorage['preLogin.log'] = "\n******Pre Login Log Messages Begin****** \n\n";
   $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets stored in preLogin.log
-  fileloggerService.info("App: Main App Entered");
+  fileloggerService.info("App: Run Function Entered");
+  $rootScope.paramsRestored = false;
 
   //
   // When ionic.serve is run this is the entry point to the application
@@ -93,6 +94,7 @@ angular.module('careWheels', [
     if (window.StatusBar) {
       StatusBar.styleDefault();
     }
+	User.initPersistentStorage();
   });
 
   //
@@ -107,11 +109,14 @@ angular.module('careWheels', [
     fileloggerService.info("App:Registering pause handler");
     document.addEventListener("pause", function() {        // Listening on the transition to Pause state
   	  if ($state.current.name != 'login') {                  // We are in the process of going to Pause state
-  	    window.localStorage["autoLoginCredentials"] = angular.toJson(User.credentials());
-          fileloggerService.info("App: Pausing from non-login state - Saved Auto-login credentials " + User.credentials().username);
+		  // window.localStorage["autoLoginCredentials"] = angular.toJson(User.credentials());
+		  // User.writePersistentStorage("autoLoginCredentials", angular.toJson(User.credentials()));
+          // fileloggerService.info("App: Pausing from non-login state - Saved Auto-login credentials " + User.credentials().username);
+		  fileloggerService.info("App: Pausing from non-login state");
   	  } else {
-  	      window.localStorage.removeItem("autoLoginCredentials");
-          fileloggerService.info("App: Pausing from login state - Removed Auto-login credentials");
+  	      // window.localStorage.removeItem("autoLoginCredentials");
+		  User.deletePersistentStorage("autoLoginCredentials");
+          fileloggerService.info("App: Pausing from login state - Removed Auto-login credentials for safety");
   	  }
     }, false);
   });
@@ -125,18 +130,20 @@ angular.module('careWheels', [
    $ionicPlatform.ready(function() {
     fileloggerService.info("App:Registering resume handler");
     document.addEventListener("resume", function() {              // Listening on the transition from Pause to Resume state
-      if(window.localStorage['autoLoginCredentials'] != null) {
+      // if(window.localStorage['autoLoginCredentials'] != null) {
+	  if (User.readPersistentStorage("autoLoginCredentials") != null) {
         Download.DownloadData(function(){
           $state.go($state.current, {}, {reload: true});
-          fileloggerService.info("App: Auto login refresh done!");
+          fileloggerService.info("App: Resume refresh done!");
         });
-        window.localStorage.removeItem("autoLoginCredentials");
-        fileloggerService.info("App: Resuming -- Removing Auto-login credentials");
+        // window.localStorage.removeItem("autoLoginCredentials");
+		// User.deletePersistentStorage("autoLoginCredentials");
+        fileloggerService.info("App: Resuming -- Initiating refresh");
       }
     }, false);
   });
 
-  fileloggerService.info("App: Main App Exited");
+  fileloggerService.info("App: Run Function Exited");
 
 })
 
