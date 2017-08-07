@@ -36,7 +36,9 @@ angular.module('careWheels', [
   window.localStorage['preLogin.log'] = "\n******Pre Login Log Messages Begin****** \n\n";
   $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets stored in preLogin.log
   fileloggerService.info("App: Run Function Entered");
+  
   $rootScope.paramsRestored = false;
+  $rootScope.numRestoreParamsIters = 0;
 
   //
   // When ionic.serve is run this is the entry point to the application

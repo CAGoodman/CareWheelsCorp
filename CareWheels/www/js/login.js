@@ -28,12 +28,26 @@ angular.module('careWheels')
     fileloggerService.info("Login: Login Controller Entered");
 	
 	// On application start up, wait until parameters have been restored (asynchronously) from persistent storage
+	// Show logo while params are being restored
+	
+    $scope.logoImage = 'img/CareWheelsLogo.png';
+    if (apkDependencies.apkPackagearmv7.search("dbg") == -1)
+      $scope.versionNumber = apkDependencies.apkVersion;
+    else
+      $scope.versionNumber = apkDependencies.apkVersion + " - DEBUG";
+  
 	if ($rootScope.paramsRestored == false) {
-		fileloggerService.info("Login: Waiting for params to be restored from persistent storage");
-		var paramPromise = $timeout(function(){
-            $state.reload();                    // reload the view (try again)
-          }, 100);
-		return;
+		fileloggerService.info("Login: Waiting for params to be restored from persistent storage - Iter: " + $rootScope.numRestoreParamsIters + "/" + loginDependencies.maxRestoreParamsIters);
+		if ($rootScope.numRestoreParamsIters < loginDependencies.maxRestoreParamsIters) {
+			var paramPromise = $timeout(function(){
+				$state.reload();                    // reload the view (try again)
+			}, loginDependencies.restoreParamsInterval);
+			$rootScope.numRestoreParamsIters++;
+			return;
+		} else {
+			fileloggerService.error("Login: Exceeded max iterations waiting for parameters to be restored - Iter: " + $rootScope.numRestoreParamsIters);
+			$rootScope.paramsRestored = true;	// Don't get stuck restoring parameters after max iterations
+		}
 	}
 
     //
@@ -57,12 +71,7 @@ angular.module('careWheels')
 
     $scope.showPassword = false;
     $scope.showHelp = false;
-    $scope.logoImage = 'img/CareWheelsLogo.png';
     $scope.connectionError = false;
-    if (apkDependencies.apkPackagearmv7.search("dbg") == -1)
-      $scope.versionNumber = apkDependencies.apkVersion;
-    else
-      $scope.versionNumber = apkDependencies.apkVersion + " - DEBUG";
 
 
     //
