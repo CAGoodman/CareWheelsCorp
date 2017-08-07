@@ -256,12 +256,12 @@ angular.module('careWheels')
 			fileloggerService.info("userService.param1ReadSuccess: Param1 = " + res.rows.item(0).rhs);
 			window.localStorage.setItem("loginCredentials", res.rows.item(0).rhs);
 		}
-		$rootScope.paramsRestored = true;
 	}
 	
 	userService.param1ReadError = function 	(e) {
 		window.localStorage.removeItem("loginCredentials");
-		fileloggerService.info("userService.param1ReadError: " + e);
+		fileloggerService.info("userService.param1ReadError: " + e.message);
+		$rootScope.paramsRestored = true;
 	}	
 	
 	userService.param2ReadSuccess = function (tx, res) {
@@ -271,14 +271,29 @@ angular.module('careWheels')
 			fileloggerService.info("userService.param2ReadSuccess: Param2 = " + res.rows.item(0).rhs);
 			window.localStorage.setItem("autoLoginCredentials", res.rows.item(0).rhs);
 		}
-		$rootScope.paramsRestored = true;
 	}
 	
 	userService.param2ReadError = function 	(e) {
 		window.localStorage.removeItem("autoLoginCredentials");
-		fileloggerService.info("userService.param2ReadError: " + e);
+		fileloggerService.info("userService.param2ReadError: " + e.message);
 		$rootScope.paramsRestored = true;
 	}	
+	
+	userService.param3ReadSuccess = function (tx, res) {
+		window.localStorage.removeItem("Reminders");
+		fileloggerService.info("userService.param3ReadSuccess: Result length = " + res.rows.length);
+		if (res.rows.length > 0) {
+			fileloggerService.info("userService.param3ReadSuccess: Param2 = " + res.rows.item(0).rhs);
+			window.localStorage.setItem("Reminders", res.rows.item(0).rhs);
+		}
+		$rootScope.paramsRestored = true;
+	}
+	
+	userService.param3ReadError = function 	(e) {
+		window.localStorage.removeItem("Reminders");
+		fileloggerService.info("userService.param3ReadError: " + e.message);
+		$rootScope.paramsRestored = true;
+	}
 	
 	userService.initPersistentStorage = function() {
 		paramDB = window.sqlitePlugin.openDatabase({name: 'param.db', location: 'default'});
@@ -288,6 +303,7 @@ angular.module('careWheels')
 			tx.executeSql('CREATE TABLE IF NOT EXISTS param_table (lhs text primary key, rhs text)');
  			tx.executeSql("SELECT lhs, rhs FROM param_table WHERE lhs = ?", ["loginCredentials"], userService.param1ReadSuccess, userService.param1ReadError);
  			tx.executeSql("SELECT lhs, rhs FROM param_table WHERE lhs = ?", ["autoLoginCredentials"], userService.param2ReadSuccess, userService.param2ReadError);
+			tx.executeSql("SELECT lhs, rhs FROM param_table WHERE lhs = ?", ["Reminders"], userService.param3ReadSuccess, userService.param3ReadError);
 		});
 		
 	}	// userService.initPersistentStorage()
