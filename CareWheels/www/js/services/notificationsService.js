@@ -8,7 +8,7 @@
 //
 angular.module('careWheels')
 //Notifications Component, as defined in design document. To be used to generate User Reminders and Red Alert tray notifications on Android.
-.factory("notifications", function($cordovaLocalNotification, fileloggerService){
+.factory("notifications", function($cordovaLocalNotification, User, fileloggerService){
 
   var isAndroid = window.cordova !== undefined;    //checks to see if cordova is available on this platform; platform() erroneously returns 'android' on Chrome Canary so it won't work
   var data;   //needs to be called outside the functions so it persists for all of them
@@ -17,9 +17,11 @@ angular.module('careWheels')
 
 
   notifications.getData = function(){
-    data = angular.fromJson(window.localStorage['Reminders']); // The produces an object called data
+    // data = angular.fromJson(window.localStorage['Reminders']); // The produces an object called data
+	data = angular.fromJson(User.readPersistentStorage('Reminders')); 
     fileloggerService.info('NotifyServ: Reminder Data: ' + JSON.stringify(data));
-    return angular.fromJson(window.localStorage['Reminders']);;
+    // return angular.fromJson(window.localStorage['Reminders']);
+	return angular.fromJson(User.readPersistentStorage('Reminders')); 
   };
 
   notifications.Time = function() {
@@ -29,7 +31,8 @@ angular.module('careWheels')
   //To be called during app startup after login; retrieves saved alert times (if they exist) or creates default alerts (if they don't)
   //and calls Create_Notif for each of them
   notifications.Init_Notifs = function() {
-    data = angular.fromJson(window.localStorage['Reminders']);
+    // data = angular.fromJson(window.localStorage['Reminders']);
+	data = angular.fromJson(User.readPersistentStorage('Reminders')); 
     fileloggerService.info('NotifyServ: Reminder data: ' + JSON.stringify(data));
     if(data==null){   //have notifications been initialized before?
       data = [];    //data param needs to be initialized before indices can be added
@@ -69,7 +72,8 @@ angular.module('careWheels')
       time.setSeconds(seconds);
       data[reminderNum-1].seconds = seconds;
       data[reminderNum-1].on = isOn;
-      window.localStorage['Reminders'] = angular.toJson(data);   //save data so new reminder is stored
+      // window.localStorage['Reminders'] = angular.toJson(data);   //save data so new reminder is stored
+	  User.writePersistentStorage('Reminders', angular.toJson(data));
       if(isOn){
         if(isAndroid){
               $cordovaLocalNotification.schedule({
@@ -105,7 +109,8 @@ angular.module('careWheels')
       }
     }
 
-    window.localStorage['Reminders'] = null;   //and delete Reminders array
+    // window.localStorage['Reminders'] = null;   //and delete Reminders array
+	User.deletePersistentStorage('Reminders');
     data = null;
   };
 

@@ -10,5 +10,7 @@ angular.module("app.constants", [])
 	"downloadTime": "50",
 	"userCount": "5",
 	"maxHitIndicator":"5",
-	"backbuttonPriority": "100"
+	"backbuttonPriority": "100",
+	"restoreParamsInterval": "100",
+	"maxRestoreParamsIters": "50"
 })

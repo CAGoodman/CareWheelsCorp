@@ -26,9 +26,32 @@ angular.module('careWheels')
     $ionicHistory.clearHistory();       // This ensures the phone back button is disabled
     $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets storedin preLogin.log
     fileloggerService.info("Login: Login Controller Entered");
+	
+	// On application start up, wait until parameters have been restored (asynchronously) from persistent storage
+	// Show logo while params are being restored
+	
+    $scope.logoImage = 'img/CareWheelsLogo.png';
+    if (apkDependencies.apkPackagearmv7.search("dbg") == -1)
+      $scope.versionNumber = apkDependencies.apkVersion;
+    else
+      $scope.versionNumber = apkDependencies.apkVersion + " - DEBUG";
+  
+	if ($rootScope.paramsRestored == false) {
+		fileloggerService.info("Login: Waiting for params to be restored from persistent storage - Iter: " + $rootScope.numRestoreParamsIters + "/" + loginDependencies.maxRestoreParamsIters);
+		if ($rootScope.numRestoreParamsIters < loginDependencies.maxRestoreParamsIters) {
+			var paramPromise = $timeout(function(){
+				$state.reload();                    // reload the view (try again)
+			}, loginDependencies.restoreParamsInterval);
+			$rootScope.numRestoreParamsIters++;
+			return;
+		} else {
+			fileloggerService.error("Login: Exceeded max iterations waiting for parameters to be restored - Iter: " + $rootScope.numRestoreParamsIters);
+			$rootScope.paramsRestored = true;	// Don't get stuck restoring parameters after max iterations
+		}
+	}
 
     //
-    // When the app starts it enrters via app.js and then execution comes here.
+    // When the app starts it enters via app.js and then execution comes here.
     // The login screen is still not painted at this point. It is painted as we move down
     //
 
@@ -41,18 +64,14 @@ angular.module('careWheels')
     // Else it is removed. Here we unconditionally retrive the creds. We either get valid creds or null.
     //
 
-	var credentials = angular.fromJson(window.localStorage['loginCredentials']);
+	// var credentials = angular.fromJson(window.localStorage['loginCredentials']);
+	var credentials = angular.fromJson(User.readPersistentStorage("loginCredentials"));
 
     $ionicHistory.nextViewOptions({disableBack: true});
 
     $scope.showPassword = false;
     $scope.showHelp = false;
-    $scope.logoImage = 'img/CareWheelsLogo.png';
     $scope.connectionError = false;
-    if (apkDependencies.apkPackagearmv7.search("dbg") == -1)
-      $scope.versionNumber = apkDependencies.apkVersion;
-    else
-      $scope.versionNumber = apkDependencies.apkVersion + " - DEBUG";
 
 
     //
@@ -93,6 +112,9 @@ angular.module('careWheels')
       User.login(uname, passwd, rmbr).then(function(response) {
 
         if (User.credentials()) {
+		  // Save login credentials for auto-login if session is interrupted by the OS reclaiming resources
+		  User.writePersistentStorage("autoLoginCredentials", angular.toJson(User.credentials()));
+		    
           Download.InitddVar();
           fileloggerService.logUpload(uname, passwd, "login");   // User is authenticated let us load the log file
 
@@ -187,14 +209,17 @@ angular.module('careWheels')
           $scope.connectionError = false;
       });
     }
-	var autoLoginCredentials = angular.fromJson(window.localStorage['autoLoginCredentials']);
+	
+  // var autoLoginCredentials = angular.fromJson(window.localStorage['autoLoginCredentials']);
+  var autoLoginCredentials = angular.fromJson(User.readPersistentStorage("autoLoginCredentials"));
   if (autoLoginCredentials != undefined)
     fileloggerService.info("On startup. Auto-login credentials are " + autoLoginCredentials.username);
 
   if (autoLoginCredentials) {
       fileloggerService.info("Performing auto-login");
-      window.localStorage.removeItem("autoLoginCredentials");
+      // window.localStorage.removeItem("autoLoginCredentials");
+	  User.deletePersistentStorage("autoLoginCredentials");
       $scope.login(autoLoginCredentials.username, autoLoginCredentials.password, $scope.rememberMe);
-	}
+  }
 });
 
