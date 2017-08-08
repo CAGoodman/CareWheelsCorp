@@ -253,7 +253,7 @@ angular.module('careWheels')
 		window.localStorage.removeItem("loginCredentials");
 		fileloggerService.info("userService.param1ReadSuccess: Result length = " + res.rows.length);
 		if (res.rows.length > 0) {
-			fileloggerService.info("userService.param1ReadSuccess: Param1 = " + res.rows.item(0).rhs);
+			fileloggerService.info("userService.param1ReadSuccess: Param1 = " + res.rows.item(0).rhs.substring(0,20) + " ...");
 			window.localStorage.setItem("loginCredentials", res.rows.item(0).rhs);
 		}
 	}
@@ -268,7 +268,7 @@ angular.module('careWheels')
 		window.localStorage.removeItem("autoLoginCredentials");
 		fileloggerService.info("userService.param2ReadSuccess: Result length = " + res.rows.length);
 		if (res.rows.length > 0) {
-			fileloggerService.info("userService.param2ReadSuccess: Param2 = " + res.rows.item(0).rhs);
+			fileloggerService.info("userService.param2ReadSuccess: Param2 = " + res.rows.item(0).rhs.substring(0,20) + " ...");
 			window.localStorage.setItem("autoLoginCredentials", res.rows.item(0).rhs);
 		}
 	}
@@ -284,7 +284,7 @@ angular.module('careWheels')
 		fileloggerService.info("userService.param3ReadSuccess: Result length = " + res.rows.length);
 		if (res.rows.length > 0) {
 			fileloggerService.info("userService.param3ReadSuccess: Param2 = " + res.rows.item(0).rhs);
-			window.localStorage.setItem("Reminders", res.rows.item(0).rhs);
+			window.localStorage.setItem("Reminders", res.rows.item(0).rhs.substring(0,20) + " ...");
 		}
 		$rootScope.paramsRestored = true;
 	}
@@ -296,6 +296,9 @@ angular.module('careWheels')
 	}
 	
 	userService.initPersistentStorage = function() {
+		if (!window.cordova)
+			return;
+		
 		paramDB = window.sqlitePlugin.openDatabase({name: 'param.db', location: 'default'});
 		fileloggerService.info("userService.initPersistentStorage: Param database opened");
 		
@@ -309,11 +312,16 @@ angular.module('careWheels')
 	}	// userService.initPersistentStorage()
 	
 	userService.writePersistentStorage = function(key, value) {
+		fileloggerService.info("userService.writePersistentStorage: " + key + ":" + value.substring(0,20) + " ...");
+
+		window.localStorage.setItem(key, value);
+		
+		if (!window.cordova)
+			return;
+		
 		if (paramDB == null) {
 			fileloggerService.error("userService.writePersistentStorage: Param database uninitialized");
 		}
-		
-		fileloggerService.info("userService.writePersistentStorage: " + key + ":" + value);
 		
 		paramDB.transaction(function(tx) {
 			tx.executeSql('CREATE TABLE IF NOT EXISTS param_table (lhs text primary key, rhs text)');
@@ -324,45 +332,31 @@ angular.module('careWheels')
 				return null;
 			});
  			tx.executeSql("INSERT INTO param_table (lhs, rhs) VALUES (?,?)", [key, value], function(tx, res) {
-				fileloggerService.info("userService.writePersistentStorage: Insert successful " + key + ":" + value);
+				fileloggerService.info("userService.writePersistentStorage: Insert successful " + key + ":" + value.substring(0,20) + " ...");
  			}, function(e) {
 				fileloggerService.error("userService.writePersistentStorage: Insert ERROR: " + e.message);
 			});
 		});	
 		
-		window.localStorage.setItem(key, value);
 	}	// userService.writePersistentStorage()
 	
-	userService.oldreadPersistentStorage = function(key) {
-		if (paramDB == null) {
-			fileloggerService.error("userService.readPersistentStorage: Param database uninitialized");
-			return null;
-		}		
-		
-		paramDB.transaction(function(tx) {
-			tx.executeSql('CREATE TABLE IF NOT EXISTS param_table (lhs text primary key, rhs text)');
- 			tx.executeSql("SELECT lhs, rhs FROM param_table WHERE lhs = ?", [key], function(tx, res) {
-				fileloggerService.info("userService.readPersistentStorage: Select successful: " + key + ":" + res.rows.item(0).rhs);
-				return res.rows.item(0).rhs;
- 			}, function(e) {
-				fileloggerService.error("userService.readPersistentStorage: Select ERROR: " + e.message);
-				return null;
-			});
-		});			
-		
-	}	// userService.oldreadPersistentStorage()
 	
 	userService.readPersistentStorage = function(key) {
 		return window.localStorage.getItem(key);
 	}	// userService.readPersistentStorage()
 	
 	userService.deletePersistentStorage = function(key) {
+		fileloggerService.info("userService.deletePersistentStorage: " + key);
+		
+		window.localStorage.removeItem(key);
+		
+		if (!window.cordova)
+			return;
+		
 		if (paramDB == null) {
 			fileloggerService.error("userService.deletePersistentStorage: Param database uninitialized");
 			return;
 		}
-		
-		fileloggerService.info("userService.deletePersistentStorage: " + key);
 		
 		paramDB.transaction(function(tx) {
 			tx.executeSql('CREATE TABLE IF NOT EXISTS param_table (lhs text primary key, rhs text)');
@@ -374,7 +368,6 @@ angular.module('careWheels')
 			});
 		});		
 
-		window.localStorage.removeItem(key);
 	}	// userService.deletePersistentStorage()
 
 	return userService;

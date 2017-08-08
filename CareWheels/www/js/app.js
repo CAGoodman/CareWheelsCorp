@@ -37,7 +37,7 @@ angular.module('careWheels', [
   $rootScope.fileUploaded = false;   // This will ensure the preLogin messages gets stored in preLogin.log
   fileloggerService.info("App: Run Function Entered");
   
-  $rootScope.paramsRestored = false;
+  $rootScope.paramsRestored = !window.cordova; // Set to false under Cordova and true under the browser
   $rootScope.numRestoreParamsIters = 0;
 
   //
