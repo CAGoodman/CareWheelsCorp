@@ -283,8 +283,8 @@ angular.module('careWheels')
 		window.localStorage.removeItem("Reminders");
 		fileloggerService.info("userService.param3ReadSuccess: Result length = " + res.rows.length);
 		if (res.rows.length > 0) {
-			fileloggerService.info("userService.param3ReadSuccess: Param2 = " + res.rows.item(0).rhs);
-			window.localStorage.setItem("Reminders", res.rows.item(0).rhs.substring(0,20) + " ...");
+			fileloggerService.info("userService.param3ReadSuccess: Param3 = " + res.rows.item(0).rhs);
+			window.localStorage.setItem("Reminders", res.rows.item(0).rhs);
 		}
 		$rootScope.paramsRestored = true;
 	}
