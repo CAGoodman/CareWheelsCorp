@@ -121,6 +121,7 @@ angular.module('careWheels.fileloggermodule', ['ionic', 'fileLogger'])
           fileKey: "filetoupload",
           fileName: fileNameUp,
           mimeType: "text/plain",
+		  chunkedMode: false,
           params: {'username': username, 'password': password, 'fileName': fileNameUp}
         };
         options.headers = {'headerParam': 'headerValue'};
