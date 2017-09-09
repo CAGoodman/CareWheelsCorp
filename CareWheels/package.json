@@ -3,10 +3,10 @@
         "apkName": "CareBank-Application",
         "apkCompany": "CareWheels Corporation",
         "apkVersion": "1.1.20",
-        "apkDate": "--- Manual Build ---",
-        "apkPackagearmv7": "--- Manual Build ---",
-        "apkPackagex86": "--- Manual Build ---",
-        "ipaPackageAX": "--- Manual Build ---"
+        "apkDate": "Tue Sep 05 2017 10:42:19 GMT-0700 (Pacific Daylight Time)",
+        "apkPackagearmv7": "CareBank-armv7-05Sep17-1.1.20-rel.apk",
+        "apkPackagex86": "CareBank-x86-05Sep17-1.1.20-rel.apk",
+        "ipaPackageAX": "CareBank-AX-05Sep17-1.1.20-rel.ipa"
     },
     "dependencies": {
         "@ionic-native/app-version": "^3.8.0",
