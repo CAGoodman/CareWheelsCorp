@@ -67,19 +67,19 @@ angular.module('careWheels')
           if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
             User.getHttpErrorCode("PaymentService.call", response);
           }
-          $ionicPopup.alert({
-            title: "Credit not made because of network issues [PS1]",
-            subTitle: "Contact support"
-          });
+          //$ionicPopup.alert({
+          //  title: "Credit not made because of network issues [PS1]",
+          //  subTitle: "Contact support"
+          //});
           fileloggerService.error("PaymentServ: call: CreditPosted: " + data + ", ReasonCode: " + response.statusText);
           fileloggerService.error("PaymentServ: call: " + JSON.stringify(response));
         } else fileloggerService.info("PaymentServ: call: Success: " + "CreditPosted: " + data.creditPosted + "ReasonCode: " + data.reasonCode);
       })
     } else {
-    $ionicPopup.alert({
-        title: "Credit not made because of credential issues [PS2]",
-        subTitle: "Contact support"
-      });
+    //$ionicPopup.alert({
+    //    title: "Credit not made because of credential issues [PS2]",
+    //    subTitle: "Contact support"
+    //  });
       fileloggerService.error("PaymentServ: call:Cannot make REST call for Call  Payment because user credentials are undefined.");
     }
   };    // PaymentService.call
@@ -123,20 +123,20 @@ angular.module('careWheels')
           if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
             User.getHttpErrorCode("PaymentService.sensorDataView: ", response);
           }
-          $ionicPopup.alert({
-            title: "Sensor data view did not credit becasue network issues [PS3]",
-            subTitle: "Contact support"
-          });
+          //$ionicPopup.alert({
+          //  title: "Sensor data view did not credit becasue network issues [PS3]",
+          //  subTitle: "Contact support"
+          //});
           fileloggerService.error("PaymentServ:sensorDataView: CreditPosted: " + data + ", ReasonCode: " + response.statusText);
           fileloggerService.error("PaymentServ:sensorDataView: " + JSON.stringify(response));
         } else fileloggerService.info("PaymentServ:sensorDataView: Success: " + "CreditPosted: " + data.creditPosted +
                 "ReasonCode: " + data.reasonCode);
       })
     } else {
-       $ionicPopup.alert({
-        title: "Sensor data view did not credit because of credential issues [PS4]",
-        subTitle: "Contact support"
-      });
+       //$ionicPopup.alert({
+       // title: "Sensor data view did not credit because of credential issues [PS4]",
+       // subTitle: "Contact support"
+       //});
       fileloggerService.error("PaymentServ:sensorDataView: Cannot make REST call for sensorDataView Payment because user credentials are undefined.");
     }
   };  // PaymentService.sensorDataView
@@ -178,19 +178,19 @@ angular.module('careWheels')
           if (response.status == -1 && response.statusText === "") { // When net work is down the errorCode = -1 meaning ERR_NETWORK_IO_SUSPENDED
             User.getHttpErrorCode("PaymentService.sensorDataView: ", response);
           }
-          $ionicPopup.alert({
-            title: "Group view did not get credit because of network issues [PS5]",
-            subTitle: "Contact support"
-          });
+          //$ionicPopup.alert({
+          //  title: "Group view did not get credit because of network issues [PS5]",
+          //  subTitle: "Contact support"
+          //});
           fileloggerService.error("PaymentServ: memberSummary: CreditPosted: " + data + ", ReasonCode: " + response.statusText);
           fileloggerService.error("PaymentServ: memberSummary: " + JSON.stringify(response));
         } else fileloggerService.info("PaymentServ: memberSummary: Success: " + "CreditPosted: " + data.creditPosted + " ReasonCode: " + data.reasonCode);
       })
     } else  {
-      $ionicPopup.alert({
-        title: "Group view did not get credit because of credential issues [PS6]",
-        subTitle: "Contact support"
-      });
+      //$ionicPopup.alert({
+      //  title: "Group view did not get credit because of credential issues [PS6]",
+      //  subTitle: "Contact support"
+      //});
       fileloggerService.error("PaymentServ: memberSummary: Cannot make REST call for memberSummary Payment because user credentials are undefined.");
     }
   };
