@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="http://carewheels.org/images/CareWheelsLogoName-FractalMandala-Trans-100x100.png" alt="CareWheels Logo"/>
+  <img src="https://media-exp1.licdn.com/dms/image/C560BAQGxg9XntBvz0w/company-logo_100_100/0/1571955990616?e=1645056000&v=beta&t=xqjgB8VbDb0yQzgnmjlybrmVm-1mf_nd2WzzcS_rBfY"/>
 </p>
 
 
@@ -20,10 +20,6 @@ Science and Technology on Independence, Technology, and Connection in Older Age.
 TeleCare remote sensor monitoring and TimeBanking to convert our surplus human capital into shared social capital, 
 empowering people to live interdependently, take better care of each other, and uphold the social determinants of health.
 
-<p align="center">
-  <img src="http://carewheels.org/images/CareBank/SmartPhone-Alice82.png" alt="CareBank: Method for Social Care Networking – US 62/383,565"/>
-</p>
-
-For more information, please visit http://carewheels.org/carebank
+For more information, please visit https://www.carewheels.com/
 
 For more details, issues or concerns please contact Claude.Goodman@CareWheels.com  
